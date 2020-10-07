@@ -22,4 +22,49 @@
             /index.ts   //The entry point for the project
     ```
 
+## Feature/Implementation List
 
+### Creating Form
+- Add questions 
+- - Type-in (Paragraph, short, number, email, etc.)
+- - Radio Buttons, MCQ
+- - MCQ Grid
+- - Ranking/Preferential Voting w/ max limit
+- - Column Grids
+- - Upload file/image
+
+- Form Schemas (tentative)
+```
+Form{
+        formID,
+        formName,
+        Time stamp, 
+}
+
+Questions{
+        FormID,
+        QuestionNumber, 
+        body, 
+        responseType
+} 
+
+Responses{
+        Question Number, 
+        Form Number, 
+        Response Body
+}
+```
+
+
+### Viewing Responses
+
+- Admin level access to board members
+- Download responses as .csv
+- Sort responses
+- Filter responses
+- RegEx on text fields 
+
+### Misc
+- Auto save form state for a limited amount of time - cookies/session stores
+- Download response as a user
+- Dynamic form themeing (background, colors)
