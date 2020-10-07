@@ -25,34 +25,26 @@
 ## Feature/Implementation List
 
 ### Creating Form
+
 - Add questions 
-- - Type-in (Paragraph, short, number, email, etc.)
-- - Radio Buttons, MCQ
-- - MCQ Grid
-- - Ranking/Preferential Voting w/ max limit
-- - Column Grids
-- - Upload file/image
+  - Type-in (Paragraph, short, number, email, etc.)
+  - Radio Buttons, MCQ
+  - MCQ Grid
+  - Ranking/Preferential Voting w/ max limit
+  - Column Grids
+  - Upload file/image
+  - Form Schemas (tentative)
 
-- Form Schemas (tentative)
+```mermaid
+graph TD;
+  FormSchema-->QuestionSchema;
+  FormSchema-->ResponseSchema;
 ```
-Form{
-        formID,
-        formName,
-        Time stamp, 
-}
 
-Questions{
-        FormID,
-        QuestionNumber, 
-        body, 
-        responseType
-} 
-
-Responses{
-        Question Number, 
-        Form Number, 
-        Response Body
-}
+```
+FormSchema -> FormID, FormName, TimeStamp
+QuestionSchema -> FormID, QuestionID, QuestionType, QuestionBody
+ResponseSchmea -> FormID, QuestionID, ReponseBody
 ```
 
 
