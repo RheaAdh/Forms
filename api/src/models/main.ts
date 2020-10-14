@@ -13,6 +13,13 @@ export interface Name extends Document{
         last: string;
         }
 }
+
+export interface Form extends Document{
+   Form:{
+        question: [string];
+        }
+}
+
 export interface Heading extends Document{
    Heading:{
        choice1:String, 
@@ -43,7 +50,7 @@ export interface IUser extends Document {
     Short:String,
     img:Object,
     file:Object,
-    question:String,
+    Form?:Form,
     Heading?: Heading,
     Queries?: Queries
 }
@@ -88,20 +95,23 @@ const main: Schema = new Schema({
         contentType: String,
         allowedFormats: ["pdf", "txt","html"]
     },
-    question: {
-        type: String,
-        minlength: 10,
-        maxlength: 1000,
-      },
-      answerOptions: {
-        type: [AnswerOptionSchema],
-        default: undefined,
-        validate: {
-          validator: function(value: any) {
-            return value && value.length === 4;
+   
+    Form:{
+        question: {
+            type: [String],
+            minlength: 10,
+            maxlength: 1000,
           },
-          message: 'Answer options should be 4.'
-        }, 
+          answerOptions: {
+            type: [AnswerOptionSchema],
+            default: undefined,
+            validate: {
+              validator: function(value: any) {
+                return value && value.length === 4;
+              },
+              message: 'Answer options should be 4.'
+            }, 
+        },
     },
     Heading: [{choice1:String, choice2:String, choice3:String, choice4:String, choice5:String,}],
     Queries: [{query1:String, query2:String, query3:String, query4:String, query5:String,}]
