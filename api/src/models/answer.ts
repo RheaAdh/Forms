@@ -6,22 +6,34 @@ export interface Answer extends Document {
     isCorrectAnswer:Boolean
 }
 
-
 export const AnswerOptionSchema: Schema = new Schema({
-  optionNumber: {
-    type: Number
-  },
-  answerBody: {
-    type: String,
-    minlength: 1,
-    maxlength: 200,
-  },
-  isCorrectAnswer: { // you can store the correct answer with question id in another model.
-    type: Boolean,
-    default: false
-  }
-}, {
-  _id: false
-});
+    form_id: {
+      type:mongoose.Schema.Types.ObjectId,
+      ref:'form',
+      required: true
+    },
+    q_id:{
+      type : mongoose.Schema.Types.ObjectId,
+      ref:'question',
+      required: true
+    },
+    answer_id: {
+      type:mongoose.Schema.Types.ObjectId,
+      unique:true,
+    },
+    u_id: {
+      type:mongoose.Schema.Types.ObjectId,
+      required: true
+    },
+    optionNumber: {
+      type: Number
+    },
+    answerBody: {
+      type: String,
+      minlength: 1,
+      maxlength: 200,
+    }
+  } 
+);
 
 export default mongoose.model<Answer>('AnswerOptionSchema', AnswerOptionSchema);
