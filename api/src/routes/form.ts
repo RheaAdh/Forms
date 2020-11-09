@@ -34,3 +34,12 @@ export async function addForm(req: Request, res: Response) {
     res.send("Form added");
   }
 }
+export async function deleteForm(req: Request, res: Response) {
+  await mongo.connectMongo();
+  form.deleteOne({form_id:req.body.form_id},(err)=>{
+    if(err) throw err
+    res.json({
+      success:true
+    })
+  })
+}

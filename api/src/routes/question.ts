@@ -45,3 +45,12 @@ export async function addQuestion(req: Request, res: Response) {
     res.send("Question added");
   }
 }
+export async function deleteQuestion(req: Request, res: Response) {
+  await mongo.connectMongo();
+  form.deleteOne({q_id:req.body.q_id},(err)=>{
+    if(err) throw err
+    res.json({
+      success:true
+    })
+  })
+}
