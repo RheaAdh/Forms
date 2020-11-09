@@ -5,8 +5,10 @@ import form from "../models/form";
 export async function deleteQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
   form.deleteOne({q_id:req.body.q_id},(err)=>{
-    if(err) res.send(err)
-    else res.send("question deleted")
+    if(err) throw err
+    res.json({
+      success:true
+    })
   })
 }
 

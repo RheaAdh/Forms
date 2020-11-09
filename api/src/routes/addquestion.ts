@@ -11,11 +11,21 @@ export async function addQuestion(req: Request, res: Response) {
   let answeroptions=req.body.answerOptions;
   let answercolumns=req.body.answerColumns;
 
-  if(!formid) res.send("invalid formid") ;
-  if(!qid) res.send("invalid qid") ;
-  if(!qtype) res.send("invalid qtype") ;
-  if(!answeroptions) res.send("invalid answeroptions") ;
-  if(!answercolumns) res.send("invalid answercolumns") ;
+  if(!formid) {
+    return {"status":"false", message: "invalid formid"}    
+  }
+  if(!qid) {
+    return {"status":"false", message: "invalid q_id"}    
+  }
+  if(!qtype) {
+    return {"status":"false", message: "invalid q_type"}    
+  }
+  if(!answeroptions) {
+    return {"status":"false", message: "invalid answerOptions"}    
+  }
+  if(!answercolumns) {
+    return {"status":"false", message: "invalid answerColumns"}    
+  }
 
   if(qid&&formid&&qtype&&answercolumns&&answeroptions){
     const newQuestion =new form({
@@ -25,7 +35,13 @@ export async function addQuestion(req: Request, res: Response) {
       answerOptions:answeroptions,
       answerColumns:answercolumns
   })
-    await newQuestion.save();
-    res.send("question added");
+  
+    await newQuestion.save((err)=>{
+      if(err) throw err;
+      res.json({
+        success:true
+      })
+    });
+    res.send("Question added");
   }
 }

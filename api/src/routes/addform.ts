@@ -9,9 +9,15 @@ export async function addForm(req: Request, res: Response) {
   let bgimg=req.body.bg_img;
   let file=req.body.file;
 
-  if(!formid) res.send("invalid formid") ;
-  if(!bgimg) res.send ("invalid bgimg");
-  if(!file) res.send ("invalid file");
+  if(!formid) {
+    return {"status":"false", message: "invalid form_id"}    
+  }
+  if(!bgimg) {
+    return {"status":"false", message: "invalid bg_img"}    
+  }
+  if(!file) {
+    return {"status":"false", message: "invalid file"}    
+  }
 
   if(file&&formid&&bgimg){
     const newForm =new form({
@@ -19,7 +25,12 @@ export async function addForm(req: Request, res: Response) {
       bg_img:bgimg,
       file:file
   })
-    await newForm.save();
-    res.send("form added");
+    await newForm.save((err)=>{
+      if (err) throw err
+      res.json({
+        success:true
+      })
+    });
+    res.send("Form added");
   }
 }
