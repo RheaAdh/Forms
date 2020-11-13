@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 import * as mongo from "../config/mongo";
-import form from "../models/question";
+import question from "../models/question";
 
 export async function addQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
@@ -12,23 +12,23 @@ export async function addQuestion(req: Request, res: Response) {
   let answercolumns=req.body.answerColumns;
 
   if(!formid) {
-    return {"status":"false", message: "invalid formid"}    
+    return res .send({"status":"false", message: "invalid formid"})    
   }
   if(!qid) {
-    return {"status":"false", message: "invalid q_id"}    
+    return res.send({"status":"false", message: "invalid q_id"})   
   }
   if(!qtype) {
-    return {"status":"false", message: "invalid q_type"}    
+    return res.send({"status":"false", message: "invalid q_type"})    
   }
   if(!answeroptions) {
-    return {"status":"false", message: "invalid answerOptions"}    
+    return res.send({"status":"false", message: "invalid answerOptions"} )   
   }
   if(!answercolumns) {
-    return {"status":"false", message: "invalid answerColumns"}    
+    return res.send({"status":"false", message: "invalid answerColumns"} )   
   }
 
   if(qid&&formid&&qtype&&answercolumns&&answeroptions){
-    const newQuestion =new form({
+    const newQuestion =new question({
       form_id:formid,
       q_id:qid,
       q_type:qtype,
@@ -38,19 +38,31 @@ export async function addQuestion(req: Request, res: Response) {
   
     await newQuestion.save((err)=>{
       if(err) throw err;
-      res.json({
-        success:true
+      res.send({
+        success:true,
+        msg:"added question"
       })
     });
-    res.send("Question added");
   }
 }
 export async function deleteQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
-  form.deleteOne({q_id:req.body.q_id},(err)=>{
+  question.deleteOne({q_id:req.body.q_id},(err)=>{
     if(err) throw err
     res.json({
-      success:true
+      success:true,
+      msg:"deleted question"
     })
   })
 }
+export async function viewQuestion(req: Request, res: Response) {
+  await mongo.connectMongo();
+  question.findOne({q_id:req.body.q_id},(err)=>{
+    if(err) return res.send({success:false, msg: err})
+    res.json({
+      success:true,
+      msg:"view question"
+    })
+  })
+}
+

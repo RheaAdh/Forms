@@ -10,13 +10,13 @@ export async function addForm(req: Request, res: Response) {
   let file=req.body.file;
 
   if(!formid) {
-    return {"status":"false", message: "invalid form_id"}    
+    return res.send({"status":"false", message: "invalid form_id"}    )
   }
   if(!bgimg) {
-    return {"status":"false", message: "invalid bg_img"}    
+    return res.send({"status":"false", message: "invalid bg_img"}    )
   }
   if(!file) {
-    return {"status":"false", message: "invalid file"}    
+    return res.send({"status":"false", message: "invalid file"}   ) 
   }
 
   if(file&&formid&&bgimg){
@@ -26,20 +26,31 @@ export async function addForm(req: Request, res: Response) {
       file:file
   })
     await newForm.save((err)=>{
-      if (err) throw err
+      if(err) return res.send({success:false, msg: err})
       res.json({
-        success:true
+        success:true,
+        msg:"Form added"
       })
     });
-    res.send("Form added");
   }
 }
 export async function deleteForm(req: Request, res: Response) {
   await mongo.connectMongo();
   form.deleteOne({form_id:req.body.form_id},(err)=>{
-    if(err) throw err
+    if(err) return res.send({success:false, msg: err})
     res.json({
-      success:true
+      success:true,
+      msg:"deleted form"
+    })
+  })
+}
+export async function viewForm(req: Request, res: Response) {
+  await mongo.connectMongo();
+  form.findOne({form_id:req.body.form_id},(err)=>{
+    if(err) return res.send({success:false, msg: err})
+    res.json({
+      success:true,
+      msg:"view form"
     })
   })
 }

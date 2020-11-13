@@ -13,22 +13,22 @@ export async function addResponse(req: Request, res: Response) {
   let answerBody=req.body.answerBody;
 
   if(!formid) {
-    return {"status":"false", message: "invalid formid"}    
+    return  res.send({"status":"false", message: "invalid formid"})    
   }
   if(!qid) {
-    return {"status":"false", message: "invalid q_id"}    
+    return  res.send({"status":"false", message: "invalid q_id"})    
   }
   if(!answerid) {
-    return {"status":"false", message: "invalid answer_id"}    
+    return  res.send({"status":"false", message: "invalid answer_id"})    
   }
   if(!uid) {
-    return {"status":"false", message: "invalid u_id"}    
+    return  res.send({"status":"false", message: "invalid u_id"})    
   }
   if(!answerBody) {
-    return {"status":"false", message: "invalid answerBody"}    
+    return  res.send({"status":"false", message: "invalid answerBody"})    
   }
   if(!optionNumber){
-    return {"status":"false", message: "invalid optionNumber"} 
+    return  res.send({"status":"false", message: "invalid optionNumber"}) 
   }
 
   if(qid&&formid&&answerBody&&uid&&answerid){
@@ -44,10 +44,10 @@ export async function addResponse(req: Request, res: Response) {
     await newResponse.save((err)=>{
       if(err) throw err;
       res.json({
-        success:true
+        success:true,
+        msg:"Response saved"
       })
     });
-    res.send("Response saved");
   }
 }
 export async function deleteResponse(req: Request, res: Response) {
@@ -55,7 +55,18 @@ export async function deleteResponse(req: Request, res: Response) {
   answer.deleteOne({answer_id:req.body.answer_id},(err)=>{
     if(err) throw err
     res.json({
-      success:true
+      success:true,
+      msg:"delete response"
+    })
+  })
+}
+export async function viewResponse(req: Request, res: Response) {
+  await mongo.connectMongo();
+  answer.findOne({q_id:req.body.q_id},(err)=>{
+    if(err) return res.send({success:false, msg: err})
+    res.json({
+      success:true,
+      msg:"view response"
     })
   })
 }
