@@ -6,12 +6,24 @@ import mongoose, { Schema, Document } from "mongoose";
 //   };
 // }
 
-//!BASE QUESTION SCHEMA
+//!FORM SCHEMA
+const formSchema: Schema = new Schema({
+  name: String,
+  bg_img: String,
+  file: String,
+});
+
+//?COMPILE FORM MODEL
+export const Form = mongoose.model("form", formSchema);
+
+//!BASE QUESTION SCHEMA WITH QUESTION-TYPE DISCRIMINATOR
 const options = { discriminatorKey: "question-type" };
 const questionSchema: Schema = new Schema(
   {
     text: String,
     description: String,
+    form: { type: Schema.Types.ObjectId, ref: "Form" },
+    answer: { type: Schema.Types.ObjectId, ref: "Answer" },
   },
   options
 );
@@ -25,7 +37,7 @@ const mcqSchema: Schema = new Schema({
   correct_answer: String,
 });
 
-//?COMPILE MCQ SCEMA
+//?COMPILE MCQ MODEL
 export const Mcq = Question.discriminator("mcq", mcqSchema);
 
 //!LINEAR SCHEMA INHERITS CHILD OF BASE QUESTION SCHEMA
@@ -42,13 +54,25 @@ export const LinearScale = Question.discriminator(
   linearScaleSchema
 );
 
-//!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
-const form: Schema = new Schema({
-  name: String,
-  bg_img: String,
-  file: String,
-  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
+//!BASE ANSWER SCHEMA WITH THE SAME QUESTION-TYPE DISCRIMINATOR
+const answerSchema: Schema = new Schema({
+  question: { type: Schema.Types.ObjectId, ref: "Question" },
 });
 
-//?COMPILE FORM MODEL
-export const Form = mongoose.model("form", form);
+//?COMPILE ANSWER MODEL
+export const Answer = mongoose.model("answer", answerSchema);
+
+//!OOC SCHEMA
+const oneOptionCorrectSchema: Schema = new Schema({ chosen_option: String });
+
+//?COMPILE OOC MODEL
+export const oneOptionCorrect = Answer.discriminator(
+  "ooc",
+  oneOptionCorrectSchema
+);
+
+//!LINEAR SCALE ANSWER SCHEMA
+const lsAnswerSchema: Schema = new Schema({ chosen_number: Number });
+
+//?COMPILE LINEAR SCALE ANSWER MODEL
+export const lsAnswer = Answer.discriminator("lsa", lsAnswerSchema);

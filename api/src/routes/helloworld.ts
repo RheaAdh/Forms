@@ -2,7 +2,15 @@ import { Response, Request } from "express";
 import * as mongo from "../config/mongo";
 import test from "../models/Test";
 
-import { Form, Question, Mcq, LinearScale } from "../models/form";
+import {
+  Form,
+  Question,
+  Mcq,
+  LinearScale,
+  Answer,
+  oneOptionCorrect,
+  lsAnswer,
+} from "../models/form";
 
 export function helloWorld(req: Request, res: Response) {
   res.send({ data: "Hello World!" });
@@ -75,6 +83,7 @@ export async function dbTesting(req: Request, res: Response) {
   // const newQuestion = new Mcq({
   //   text: "What is 3+0?",
   //   decription: "Choose wisely",
+  //   form: newForm,
   //   options: [
   //     { option_number: "a", text: "6" },
   //     { option_number: "b", text: "3" },
@@ -82,7 +91,7 @@ export async function dbTesting(req: Request, res: Response) {
   //   ],
   // });
 
-  // //res.send(newQuestion);
+  // // // //res.send(newQuestion);
   // try {
   //   await newQuestion.save();
   // } catch (e) {
@@ -92,6 +101,7 @@ export async function dbTesting(req: Request, res: Response) {
   // const newQuestion2 = new LinearScale({
   //   text: "How long is your first name",
   //   decription: "mine isn't that long",
+  //   form: newForm2,
   //   min: 2,
   //   max: 15,
   //   min_label: "Damn short",
@@ -102,70 +112,18 @@ export async function dbTesting(req: Request, res: Response) {
   // } catch (e) {
   //   console.log("could not save quesion 2");
   // }
-  // res.send(newQuestion);
-  // //res.send(newQuestion);;
-  // let form1: any;
-  // try {
-  //   form1 = await Form.findOne({ name: "form-one" });
-  // } catch (error) {
-  //   console.log("Couldnt get form");
-  // }
 
-  // form1.questions.push(newQuestion);
-  // try {
-  //   await form1.save();
-  // } catch (error) {
-  //   console.error(error);
-  // }
+  const questionOne: any = await Question.findById("5fb38ac6b1ebf6533c2e812f");
 
-  // let form2: any;
-  // try {
-  //   form2 = await Form.findOne({ name: "form-one" });
-  // } catch (error) {
-  //   console.log("Couldnt get form");
-  // }
+  const newAnswer = new lsAnswer({
+    chosen_number: "7",
+    question: questionOne,
+  });
 
-  // form2.questions.push(newQuestion2);
-  // try {
-  //   await form2.save();
-  // } catch (error) {
-  //   console.error(error);
-  // }
+  questionOne.answer = newAnswer;
 
-  // res.send(form2);
+  // await questionOne.save();
+  await newAnswer.save();
 
-  // console.log(form1);
-  // //   let q1;
-  // //   try {
-  // //     q1 = await Question.findOne({});
-  // //   } catch (error) {
-  // //     console.log("Coutnt get question");
-  // //   }
-  // //   console.log(q1);
-  // //   res.send(q1);
-  // form1.questions.push(newQuestion);
-  // let form2: any;
-  // try {
-  //   form2 = await Form.findOne({ name: "form-two" });
-  // } catch (error) {
-  //   console.log("Couldnt get form");
-  // }
-  // console.log(form1);
-  // form2.questions.push(newQuestion2);
-
-  // await form1.save();
-  // await form2.save();
-
-  // try {
-  //   const bruh = await Form.find().populate("questions");
-  //   console.log(bruh);
-  // } catch (error) {
-  //   console.log("coudnt find forms");
-  //   console.log(error);
-  // }
-
-  const everything = await Form.find({ name: "form-one" }).populate(
-    "questions"
-  );
-  res.send(everything);
+  res.send(newAnswer);
 }
