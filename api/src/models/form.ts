@@ -1,17 +1,39 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+//todo:
+//Make form schema
+//Make example question base schema and two children
+//Make example answer base schema and two children
+//Make example routes (switch case)
+
 // export interface Form extends Document {
 //   Form: {
 //     form_id: mongoose.Schema.Types.ObjectId;
 //   };
 // }
 
+//!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
+const form: Schema = new Schema({
+  title: { type: String, required: true },
+  description: String,
+  bg_img: String, //NOT SURE
+  file: String, //NOT SURE
+  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
+  color_theme: String,
+});
+
+//?COMPILE FORM MODEL
+export const Form = mongoose.model("form", form);
+
 //!BASE QUESTION SCHEMA
 const options = { discriminatorKey: "question-type" };
 const questionSchema: Schema = new Schema(
   {
-    text: String,
-    description: String,
+    question_text: { type: String, required: true },
+    description: { type: String },
+    //question_type: String This is  made by default by the discriminator key
+    answer: { type: Schema.Types.ObjectId, ref: "Answer" },
+    required: Boolean,
   },
   options
 );
@@ -41,14 +63,3 @@ export const LinearScale = Question.discriminator(
   "linearscale",
   linearScaleSchema
 );
-
-//!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
-const form: Schema = new Schema({
-  name: String,
-  bg_img: String,
-  file: String,
-  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
-});
-
-//?COMPILE FORM MODEL
-export const Form = mongoose.model("form", form);
