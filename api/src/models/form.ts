@@ -48,7 +48,10 @@ const oocQuestionSchema: Schema = new Schema({
 });
 
 //?COMPILE MCQ SCEMA
-export const oocQuestion = Question.discriminator("ooc", oocQuestionSchema);
+export const oocQuestion = Question.discriminator(
+  "ooc-question",
+  oocQuestionSchema
+);
 
 //!LINEAR SCHEMA INHERITS CHILD OF BASE QUESTION SCHEMA
 const lsQuestionSchema: Schema = new Schema({
@@ -61,7 +64,7 @@ const lsQuestionSchema: Schema = new Schema({
 
 //?COMPILE LINEAR SCALE SCHEMA
 export const lsQuestion = Question.discriminator(
-  "linearscale",
+  "ls-question",
   lsQuestionSchema
 );
 
@@ -77,10 +80,10 @@ export const Answer = mongoose.model("answer", answerSchema);
 const oocAnswerSchema: Schema = new Schema({ chosen_option: String });
 
 //?COMPILE OOC MODEL
-export const oocAnswer = Answer.discriminator("ooc", oocAnswerSchema);
+export const oocAnswer = Answer.discriminator("ooc-answer", oocAnswerSchema);
 
 //!LINEAR SCALE ANSWER SCHEMA
 const lsAnswerSchema: Schema = new Schema({ chosen_number: Number });
 
 //?COMPILE LINEAR SCALE ANSWER MODEL
-export const lsAnswer = Answer.discriminator("lsa", lsAnswerSchema);
+export const lsAnswer = Answer.discriminator("ls-answer", lsAnswerSchema);
