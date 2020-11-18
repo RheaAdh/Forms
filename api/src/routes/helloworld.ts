@@ -2,7 +2,14 @@ import { Response, Request } from "express";
 import * as mongo from "../config/mongo";
 import test from "../models/Test";
 
-import { Form, Question, Mcq, LinearScale } from "../models/form";
+import {
+  Form,
+  Question,
+  oocAnswer,
+  oocQuestion,
+  lsAnswer,
+  lsQuestion,
+} from "../models/form";
 
 export function helloWorld(req: Request, res: Response) {
   res.send({ data: "Hello World!" });
@@ -72,15 +79,15 @@ export async function dbTesting(req: Request, res: Response) {
 
   //!--------TESTING QUESTION PLACE---------
 
-  // const newQuestion = new Mcq({
-  //   text: "What is 3+0?",
-  //   decription: "Choose wisely",
-  //   options: [
-  //     { option_number: "a", text: "6" },
-  //     { option_number: "b", text: "3" },
-  //     { option_number: "c", text: "9" },
-  //   ],
-  // });
+  const newQuestion = new oocQuestion({
+    text: "What is 3+0?",
+    decription: "Choose wisely",
+    options: [
+      { option_number: "a", text: "6" },
+      { option_number: "b", text: "3" },
+      { option_number: "c", text: "9" },
+    ],
+  });
 
   // //res.send(newQuestion);
   // try {
@@ -89,7 +96,7 @@ export async function dbTesting(req: Request, res: Response) {
   //   console.log("could not save quesion");
   // }
 
-  // const newQuestion2 = new LinearScale({
+  // const newQuestion2 = new lsAnswer({
   //   text: "How long is your first name",
   //   decription: "mine isn't that long",
   //   min: 2,
@@ -163,9 +170,4 @@ export async function dbTesting(req: Request, res: Response) {
   //   console.log("coudnt find forms");
   //   console.log(error);
   // }
-
-  const everything = await Form.find({ name: "form-one" }).populate(
-    "questions"
-  );
-  res.send(everything);
 }

@@ -42,16 +42,17 @@ const questionSchema: Schema = new Schema(
 export const Question = mongoose.model("question", questionSchema);
 
 //!MCQ SCHEMA INHERITS CHILD OF BASE QUESTION SCHEMA
-const mcqSchema: Schema = new Schema({
+const oocQuestionSchema: Schema = new Schema({
+  //ooc: one option correct
   options: [{ option_number: String, text: String }],
-  correct_answer: String,
 });
 
 //?COMPILE MCQ SCEMA
-export const Mcq = Question.discriminator("mcq", mcqSchema);
+export const oocQuestion = Question.discriminator("ooc", oocQuestionSchema);
 
 //!LINEAR SCHEMA INHERITS CHILD OF BASE QUESTION SCHEMA
-const linearScaleSchema: Schema = new Schema({
+const lsQuestionSchema: Schema = new Schema({
+  //ls: linear scale
   min: Number,
   max: Number,
   min_label: String,
@@ -59,7 +60,27 @@ const linearScaleSchema: Schema = new Schema({
 });
 
 //?COMPILE LINEAR SCALE SCHEMA
-export const LinearScale = Question.discriminator(
+export const lsQuestion = Question.discriminator(
   "linearscale",
-  linearScaleSchema
+  lsQuestionSchema
 );
+
+//!BASE ANSWER SCHEMA WITH THE SAME QUESTION-TYPE DISCRIMINATOR
+const answerSchema: Schema = new Schema({
+  question: { type: Schema.Types.ObjectId, ref: "Question" },
+});
+
+//?COMPILE ANSWER MODEL
+export const Answer = mongoose.model("answer", answerSchema);
+
+//!OOC SCHEMA
+const oocAnswerSchema: Schema = new Schema({ chosen_option: String });
+
+//?COMPILE OOC MODEL
+export const oocAnswer = Answer.discriminator("ooc", oocAnswerSchema);
+
+//!LINEAR SCALE ANSWER SCHEMA
+const lsAnswerSchema: Schema = new Schema({ chosen_number: Number });
+
+//?COMPILE LINEAR SCALE ANSWER MODEL
+export const lsAnswer = Answer.discriminator("lsa", lsAnswerSchema);
