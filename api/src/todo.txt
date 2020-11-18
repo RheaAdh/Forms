@@ -1,0 +1,61 @@
+FORM SCHEMA:
+- Title
+- Description
+- bg image
+- theme
+- Questions (array of question ids)
+
+QUESTION BASE SCHEMA:
+- Question text
+- Question Description
+- Question type
+- Answer id
+- Required
+
+QUESTION TYPE AND ANSWER TYPE SCHEMAS:
+
+SHORT ANSWER:
+
+PARAGRAPH:
+
+MULTIPLE CHOICE:
+
+CHECKBOXES:
+
+DROPDOWN:
+
+LINEAR SCALE:
+
+MULTIPLE CHOICE GRID:
+
+TICK BOX GRID:
+
+
+
+ANSWER BASE SHEMA:
+
+- Question
+- Answer Type
+
+
+
+Get routes:
+
+- Show forms page
+- Edit form page
+
+Post routes:
+
+- Add Form
+- Delete Form
+
+- Add Question
+- Edit Question
+- Delete Question
+
+- Get Response
+
+
+
+
+
