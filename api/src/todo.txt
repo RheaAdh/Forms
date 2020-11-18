@@ -4,6 +4,7 @@ FORM SCHEMA:
 - bg image
 - theme
 - Questions (array of question ids)
+- Answer (array of answer ids):have put it just in case
 
 QUESTION BASE SCHEMA:
 - Question text
@@ -14,15 +15,15 @@ QUESTION BASE SCHEMA:
 
 QUESTION TYPE AND ANSWER TYPE SCHEMAS:
 
-SHORT ANSWER:
+SHORT ANSWER:done
 
-PARAGRAPH:
+PARAGRAPH:done
 
-MULTIPLE CHOICE:
+MULTIPLE CHOICE:done
 
-CHECKBOXES:
+CHECKBOXES:done
 
-DROPDOWN:
+DROPDOWN:done
 
 LINEAR SCALE:
 
