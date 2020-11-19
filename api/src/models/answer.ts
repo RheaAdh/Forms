@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { Question } from "./question";
+
 //!BASE ANSWER SCHEMA WITH THE SAME QUESTION-TYPE DISCRIMINATOR
 const options = { discriminatorKey: "answer-type" };
 
