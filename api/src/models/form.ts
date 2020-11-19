@@ -70,10 +70,13 @@ export const lsQuestion = Question.discriminator(
 
 //!BASE ANSWER SCHEMA WITH THE SAME QUESTION-TYPE DISCRIMINATOR
 const options2 = { discriminatorKey: "answer-type" };
-const answerSchema: Schema = new Schema({
-  question: { type: Schema.Types.ObjectId, ref: "Question" },
-  options2,
-});
+
+const answerSchema: Schema = new Schema(
+  {
+    question: { type: Schema.Types.ObjectId, ref: "Question" },
+  },
+  options2
+);
 
 //?COMPILE ANSWER MODEL
 export const Answer = mongoose.model("answer", answerSchema);

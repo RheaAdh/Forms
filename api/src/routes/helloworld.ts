@@ -36,18 +36,22 @@ export async function dbTesting(req: Request, res: Response) {
   //!---------END OF TEST COLLECTION-----------
 
   //!---------TESTING FORM PLACE-------------
-  // const newForm = new Form({
-  //   name: "form-one",
-  //   bg_img: "picture-one",
-  //   file: "html-one",
-  // });
+  const newForm = new Form({
+    title: "form-one",
+    bg_img: "picture-one",
+    file: "html-one",
+    descritption: "bruh",
+    color_theme: "blue",
+  });
 
-  // try {
-  //   await newForm.save();
-  // } catch (e) {
-  //   console.log("could not save form");
-  //   console.log(e);
-  // }
+  try {
+    await newForm.save();
+  } catch (e) {
+    console.log("could not save form");
+    console.log(e);
+  }
+
+  res.send(newForm);
 
   // const newForm2 = new Form({
   //   name: "form-two",
