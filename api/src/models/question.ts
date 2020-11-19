@@ -1,27 +1,58 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { AnswerOptionSchema } from "./answer";
+import { Answer } from "./answer";
+const options = { discriminatorKey: "question-type" };
 
-const q: Schema = new Schema({
-  form_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "form",
+//!BASE QUESTION SCHEMA
+
+const questionSchema: Schema = new Schema(
+  {
+    question_text: { type: String, required: true },
+    description: { type: String },
+    //question_type: String This is  made by default by the discriminator key
+    answer: { type: Schema.Types.ObjectId, ref: "Answer" },
+    required: Boolean,
   },
-  q_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    unique: true,
-    required: true,
-  },
-  q_type: {
-    type: String,
-    required: true,
-  },
-  answerOptions: {
-    type: [AnswerOptionSchema],
-    default: undefined,
-  },
-  answerColumns: {
-    type: [String],
-  },
+  options
+);
+
+//?COMPILE QUESTION MODEL
+export const Question = mongoose.model("question", questionSchema);
+
+// SHORT ANSWER:
+const shortSchema: Schema = new Schema({
+  options: { text: String },
 });
-
-export default mongoose.model("bruh", q);
+export const shortQuestion = Question.discriminator(
+  "short-answer",
+  shortSchema
+);
+// PARAGRAPH:
+const paragraphSchema: Schema = new Schema({
+  options: { text: String },
+});
+export const paragraphQuestion = Question.discriminator(
+  "paragraph-answer",
+  paragraphSchema
+);
+// MULTIPLE CHOICE:
+const mcqSchema: Schema = new Schema({
+  //array of text
+  options: [{ text: String }],
+});
+export const mcqQuestion = Question.discriminator("mcq-answer", mcqSchema);
+// CHECKBOXES:
+const checkboxSchema: Schema = new Schema({
+  options: [{ text: String }],
+});
+export const checkboxQuestion = Question.discriminator(
+  "checkbox-answer",
+  checkboxSchema
+);
+// DROPDOWN:
+const dropdownSchema: Schema = new Schema({
+  options: [{ text: String }],
+});
+export const dropdownQuestion = Question.discriminator(
+  "dropdown-answer",
+  dropdownSchema
+);

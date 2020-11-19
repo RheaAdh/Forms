@@ -2,14 +2,7 @@ import { Response, Request } from "express";
 import * as mongo from "../config/mongo";
 import test from "../models/Test";
 
-import {
-  Form,
-  Question,
-  oocAnswer,
-  oocQuestion,
-  lsAnswer,
-  lsQuestion,
-} from "../models/form";
+import { Form } from "../models/form";
 
 export function helloWorld(req: Request, res: Response) {
   res.send({ data: "Hello World!" });
