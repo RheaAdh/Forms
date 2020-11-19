@@ -76,15 +76,15 @@ export async function dbTesting(req: Request, res: Response) {
 
   //!--------TESTING QUESTION PLACE---------
 
-  const newQuestion = new oocQuestion({
-    text: "What is 3+0?",
-    decription: "Choose wisely",
-    options: [
-      { option_number: "a", text: "6" },
-      { option_number: "b", text: "3" },
-      { option_number: "c", text: "9" },
-    ],
-  });
+  // const newQuestion = new oocQuestion({
+  //   text: "What is 3+0?",
+  //   decription: "Choose wisely",
+  //   options: [
+  //     { option_number: "a", text: "6" },
+  //     { option_number: "b", text: "3" },
+  //     { option_number: "c", text: "9" },
+  //   ],
+  // });
 
   // //res.send(newQuestion);
   // try {
