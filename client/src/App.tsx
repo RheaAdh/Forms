@@ -1,18 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
 import NewFormPage from "./pages/NewForm";
+import Forms from "./components/FormList";
+import NewForm from "./components/NewForm";
 
 function App() {
-  const [text, setText] = useState('loading...');
+  const [text, setText] = useState("loading...");
   useEffect(() => {
-    fetch('/api/helloworld')
-    .then((resp:any) => resp.json())
-    .then((data:any) => setText(data['data']));
+    fetch("http://localhost:7000/api/helloworld")
+      .then((resp: any) => resp.json())
+
+      .then((data: any) => setText(data.data));
   });
   return (
     <div className="App">
-      <NewFormPage/>
+      {text}
+      <NewFormPage />
+      <Forms />
+      <NewForm />
     </div>
   );
 }
