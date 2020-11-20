@@ -1,9 +1,13 @@
 import React from "react";
 import QuestionList from "../components/QuestionList";
+import { Link } from "react-router-dom";
 
 const NewFormPage = () => {
     return(
-        <QuestionList/>
+        <div>
+            <Link to="/"><button>Back</button></Link>
+            <QuestionList/>
+        </div>
     )
 }
 

@@ -2,7 +2,7 @@ import React from "react"
 
 const Question = () => {
     return(
-        <div>
+        <div >
             <div className="question-title">
                 <span>Question:</span>
                 <input type="text" />

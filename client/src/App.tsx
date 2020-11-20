@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import NewFormPage from "./pages/NewForm";
-import Forms from "./components/FormList";
-import NewForm from "./components/NewForm";
+import NewFormPage from "./pages/NewFormPage";
+import FormsPage from "./pages/FormsPage";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
 function App() {
   const [text, setText] = useState("loading...");
@@ -14,10 +14,10 @@ function App() {
   });
   return (
     <div className="App">
-      {text}
-      <NewFormPage />
-      <Forms />
-      <NewForm />
+      <Router>
+        <Route path="/" exact component={FormsPage} />
+        <Route path="/newform" component={NewFormPage} />
+      </ Router>
     </div>
   );
 }

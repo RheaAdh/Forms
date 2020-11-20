@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const NewForm = () => {
   const addForm = () => {
@@ -20,7 +21,7 @@ const NewForm = () => {
       });
   };
 
-  return <button onClick={addForm}>Add New Form</button>;
+  return <Link to="/newform" ><button onClick={addForm}>Add New Form</button></ Link>
 };
 
 export default NewForm;
