@@ -19,17 +19,13 @@ const questionSchema: Schema = new Schema(
 export const Question = mongoose.model("question", questionSchema);
 
 // SHORT ANSWER:
-const shortSchema: Schema = new Schema({
-  options: { text: String },
-});
+const shortSchema: Schema = new Schema({});
 export const shortQuestion = Question.discriminator(
   "short-answer",
   shortSchema
 );
 // PARAGRAPH:
-const paragraphSchema: Schema = new Schema({
-  options: { text: String },
-});
+const paragraphSchema: Schema = new Schema({});
 export const paragraphQuestion = Question.discriminator(
   "paragraph-answer",
   paragraphSchema

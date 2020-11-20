@@ -1,9 +1,91 @@
 import { Response, Request } from "express";
 import * as mongo from "../config/mongo";
-//import form from "../models/question";
+import {
+  Question,
+  shortQuestion,
+  paragraphQuestion,
+  mcqQuestion,
+  checkboxQuestion,
+  dropdownQuestion,
+} from "../models/question";
+import { Form } from "../models/form";
 
 export async function addQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
+
+  let {
+    formid,
+    question_type,
+    question_text,
+    description,
+    required,
+    options,
+  } = req.body;
+
+  //?FIND FORM
+
+  let form: any;
+  try {
+    form = await Form.findById(formid);
+  } catch (error) {
+    console.error(error);
+  }
+
+  const common = {
+    question_text: question_text,
+    description: description,
+    required: required,
+  };
+
+  let newQuestion;
+
+  switch (question_type) {
+    case "short-answer": {
+      newQuestion = new shortQuestion({ ...common });
+      break;
+    }
+
+    case "paragraph-answer": {
+      newQuestion = new paragraphQuestion({ ...common });
+      break;
+    }
+
+    case "mcq-answer": {
+      newQuestion = new mcqQuestion({ ...common, options: [...options] });
+      break;
+    }
+
+    case "checkbox-answer": {
+      newQuestion = new checkboxQuestion({ ...common, options: [...options] });
+      break;
+    }
+
+    case "dropdown-answer": {
+      newQuestion = new dropdownQuestion({ ...common, options: [...options] });
+      break;
+    }
+
+    default:
+      newQuestion = new Question({ ...common });
+  }
+
+  try {
+    await newQuestion.save();
+    console.log("Questoin saved!!");
+  } catch (error) {
+    console.log("Couldnt save question");
+  }
+
+  form.questions.push(newQuestion);
+
+  try {
+    await form.save();
+    console.log("Form saved!!");
+  } catch (error) {
+    console.log("Couldnt save form");
+  }
+
+  res.json(newQuestion);
 
   // let formid=req.body.form_id;
   // let qid=req.body.q_id;

@@ -5,7 +5,7 @@ const NewForm = () => {
     const form = { title: "A lot of forms will have the same title now" };
 
     fetch("http://localhost:7000/api/addForm", {
-      method: "POST", // or 'PUT'
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
