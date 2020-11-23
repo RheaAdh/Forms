@@ -10,7 +10,11 @@ const form: Schema = new Schema({
   //array of question ids
   questions: [{ type: Schema.Types.ObjectId, ref: "Question" }],
   answers: [{ type: Schema.Types.ObjectId, ref: "Answer" }],
-});
+}, 
+  {
+    timestamps:true,
+  }
+);
 
 //?COMPILE FORM MODEL
 

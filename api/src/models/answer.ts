@@ -51,3 +51,38 @@ export const dropdownAnswer = Answer.discriminator(
   "dropdown-answer",
   dropdownAnswerSchema
 );
+
+
+//LINEAR SCALE: linearscale-answer is answer type
+const linearscaleAnswerSchema: Schema = new Schema({ selected_option: Number });
+export const linearscaleAnswer = Answer.discriminator(
+  "linearscale-answer",
+  linearscaleAnswerSchema
+)
+//MULTIPLE CHOICE GRID: multiplechoicegrid-answer is answer type 
+const multiplechoicegridAnswerSchema: Schema = new Schema({ selected_option: [String] })
+export const multiplechoicegridAnswer = Answer.discriminator(
+  "multiplechoicegrid-answer",
+  multiplechoicegridAnswerSchema
+)
+//CHECKBOXES GRID: checkboxgrid-answer is answer type
+const checkboxgridAnswerSchema: Schema = new Schema({  selected_option: [[String]]  })
+export const checkboxgridAnswer = Answer.discriminator(
+  "checkboxgrid-answer",
+  checkboxgridAnswerSchema
+)
+//DATE: date-answer is answer type
+const dateAnswerSchema : Schema = new Schema ({ selected_date: Date })
+export const dateAnswer = Answer.discriminator(
+  "date-answer",
+  dateAnswerSchema
+)
+//TIME: time-answer is answer type
+const timeAnswerSchema : Schema = new Schema ({
+      time_hour: {type:Number,min : 1, max : 23 },     // Time is in 24 hrs Clock format
+      time_min: {type:Number, min : 0 , max : 59}
+})
+export const timeAnswer = Answer.discriminator(
+  "time-answer",
+  timeAnswerSchema
+)

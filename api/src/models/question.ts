@@ -52,3 +52,46 @@ export const dropdownQuestion = Question.discriminator(
   "dropdown-answer",
   dropdownSchema
 );
+
+
+//LINEAR SCALE:
+const linearscaleSchema: Schema = new Schema({
+  lowRating:{type:Number,min:0,max:1},
+  highRating:{type:Number,min:2,max:10},
+  lowRatingLabel:{type:String,default:'Low'},
+  highRatingLabel:{type:String,default:'High'} 
+});
+export const linearscaleQuestion = Question.discriminator(
+  "linearscale-answer",
+   linearscaleSchema   
+);
+//MULTIPLE CHOICE GRID:
+const multiplechoicegridSchema:Schema = new Schema({
+  rowLabel:[String],
+  colLabel:[String],
+})
+export const multiplechoicegridQuestion = Question.discriminator(
+  "multiplechoicegrid-answer",
+  multiplechoicegridSchema
+);
+//CHECKBOXES GRID:
+const checkboxgridSchema:Schema = new Schema({
+  rowLabel:[String],
+  colLabel:[String],
+});
+export const checkboxgridQuestion = Question.discriminator(
+  "checkboxgrid-answer",
+  checkboxgridSchema
+);
+//DATE:
+const dateSchema:Schema = new Schema({})
+export const dateQuestion = Question.discriminator(
+  "date-answer",
+  dateSchema
+)
+//TIME:
+const timeSchema:Schema = new Schema({})
+export const timeQuestion = Question.discriminator(
+  "time-answer",
+  timeSchema
+) 
