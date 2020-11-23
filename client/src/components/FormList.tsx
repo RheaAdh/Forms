@@ -1,45 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import Form from "../components/Form";
 
-const Forms = () => {
-  const [forms, setForms] = useState<any[]>([]);
-  const [loading, setLoading] = useState<Boolean>(false);
+interface props {
+  forms: any[];
+}
 
-  //!WHY IS THIS NOT WORKING??
-  //   const fetchForms = async () => {
-  //     setLoading(true);
-  //     const resp = await fetch("http://localhost:7000/api/getforms");
-  //     console.log(resp);
-  //     const data: any = resp.json();
-  //     setForms(data);
-  //     setLoading(false);
-  //   };
-
-  useEffect(() => {
-    setLoading(true);
-    fetch("http://localhost:7000/api/getforms")
-      .then((resp: any) => {
-        return resp.json();
-      })
-
-      .then((data: any) => {
-        setForms(data);
-        setLoading(false);
-      });
-    // fetchForms();
-  }, []);
-
+const Forms: React.FC<props> = ({ forms }) => {
   return (
     <div>
       Forms:
-      {loading ? (
+      {!forms ? (
         "Loading..."
       ) : (
         <div>
           {forms.map((form) => (
-            <div>
-              {form.title}
-              {form.color_theme}
-            </div>
+            <Form form={form} key={form._id} />
           ))}
         </div>
       )}

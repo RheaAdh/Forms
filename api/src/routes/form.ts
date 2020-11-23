@@ -9,6 +9,14 @@ export async function getForms(req: Request, res: Response) {
   res.json(forms);
 }
 
+export async function getForm(req: Request, res: Response) {
+  await mongo.connectMongo();
+
+  const form = await Form.findById(req.params.formid);
+
+  res.json(form);
+}
+
 export async function addForm(req: Request, res: Response) {
   await mongo.connectMongo();
 

@@ -1,6 +1,6 @@
 import express, { Response, Request } from "express";
 import { helloWorld, dbTesting } from "./helloworld";
-import { deleteForm, addForm, getForms } from "./form";
+import { deleteForm, addForm, getForms, getForm } from "./form";
 import { addQuestion, deleteQuestion } from "./question";
 import { addResponse, deleteResponse } from "./response";
 
@@ -9,6 +9,7 @@ router.get("/helloworld", helloWorld);
 router.get("/db", dbTesting);
 
 router.get("/getforms", getForms);
+router.get("/getform/:formid", getForm);
 router.post("/addform", addForm);
 router.delete("/deleteform", deleteForm);
 
