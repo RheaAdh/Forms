@@ -16,10 +16,11 @@ const EditFormPage: React.FC<props> = ({ forms }) => {
 
   useEffect(() => setForm(forms.find((ele) => ele._id === formid)), [forms]);
 
-  useEffect(() => {
-    if (form) {
-    }
-  });
+  // useEffect(() => {
+  //   if (form) {
+  //     questions = form.questions.map((q) => fetch)
+  //   }
+  // });
 
   //!WHY DOES THIS WORK
   //setForm(forms.find((ele) => ele._id === formid));
