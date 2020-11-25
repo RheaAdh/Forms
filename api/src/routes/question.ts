@@ -127,12 +127,26 @@ export async function addQuestion(req: Request, res: Response) {
   //   res.send("Question added");
   // }
 }
+
+export async function getQuestions(req: Request, res: Response) {
+  await mongo.connectMongo();
+
+  const questions = await Question.find().exec();
+  res.json(questions);
+}
 export async function deleteQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
-  // form.deleteOne({q_id:req.body.q_id},(err)=>{
-  //   if(err) throw err
+  try {
+    await Question.findByIdAndDelete(req.body.id);
+    res.send("Deleted successfully");
+  } catch (error) {
+    res.end("You messed up.... again");
+    console.error(error);
+  }
+  //   , (err) => {
+  //   if (err) throw err;
   //   res.json({
-  //     success:true
-  //   })
-  // })
+  //     success: true,
+  //   });
+  // });
 }

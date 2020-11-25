@@ -73,7 +73,7 @@ export async function deleteForm(req: Request, res: Response) {
     await Form.findByIdAndDelete(req.body.id);
     res.send("Deleted successfully");
   } catch (error) {
-    res.end("You fucked up.... again");
+    res.end("You messed up.... again");
     console.error(error);
   }
   //   , (err) => {
