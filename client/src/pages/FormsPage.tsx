@@ -1,13 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import FormList from "../components/FormList";
 import NewForm from "../components/NewForm";
 import Forms from "../components/FormList";
 
-interface props {
-  forms: any[];
-}
+const FormsPage: React.FC = () => {
+  const [forms, setForms] = useState<any[]>([]);
 
-const FormsPage: React.FC<props> = ({ forms }) => {
+  useEffect(() => {
+    fetch("http://localhost:7000/api/getforms")
+      .then((resp: any) => {
+        return resp.json();
+      })
+
+      .then((data: any) => {
+        setForms(data);
+      });
+  }, []);
   return (
     <div>
       <FormList forms={forms} />

@@ -2,11 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import QuestionList from "../components/QuestionList";
 import { Link, useParams } from "react-router-dom";
 
-interface props {
-  forms: any[];
-}
-
-const EditFormPage: React.FC<props> = ({ forms }) => {
+const EditFormPage: React.FC = () => {
   console.log("EDIT FORM PAGE RERENDERS");
   const { formid } = useParams();
 
@@ -14,7 +10,16 @@ const EditFormPage: React.FC<props> = ({ forms }) => {
 
   let questions = [];
 
-  useEffect(() => setForm(forms.find((ele) => ele._id === formid)), [forms]);
+  useEffect(() => {
+    fetch(`http://localhost:7000/api/getform/${formid}`)
+      .then((resp: any) => {
+        return resp.json();
+      })
+
+      .then((data: any) => {
+        setForm(data);
+      });
+  }, []);
 
   // useEffect(() => {
   //   if (form) {

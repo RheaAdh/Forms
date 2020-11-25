@@ -7,7 +7,6 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 function App() {
   console.log("APP IS RERENDERED");
   // const [text, setText] = useState("loading...");
-  const [forms, setForms] = useState<any[]>([]);
 
   // useEffect(() => {
   //   fetch("http://localhost:7000/api/helloworld")
@@ -26,26 +25,10 @@ function App() {
   //     setLoading(false);
   //   };
 
-  useEffect(() => {
-    //console.log(text);
-
-    fetch("http://localhost:7000/api/getforms")
-      .then((resp: any) => {
-        return resp.json();
-      })
-
-      .then((data: any) => {
-        setForms(data);
-      });
-    // fetchForms();
-  }, []);
   return (
     <div className="App">
-      <Route path="/" exact render={() => <FormsPage forms={forms} />} />
-      <Route
-        path="/editform/:formid"
-        render={() => <EditFormPage forms={forms} />}
-      />
+      <Route path="/" exact render={() => <FormsPage />} />
+      <Route path="/editform/:formid" render={() => <EditFormPage />} />
     </div>
   );
 }
