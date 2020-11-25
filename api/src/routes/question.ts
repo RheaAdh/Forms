@@ -7,6 +7,11 @@ import {
   mcqQuestion,
   checkboxQuestion,
   dropdownQuestion,
+  linearscaleQuestion,
+  multiplechoicegridQuestion,
+  checkboxgridQuestion,
+  dateQuestion,
+  timeQuestion,
 } from "../models/question";
 import { Form } from "../models/form";
 
@@ -20,6 +25,12 @@ export async function addQuestion(req: Request, res: Response) {
     description,
     required,
     options,
+    lowRating,
+    highRating,
+    lowRatingLabel,
+    highRatingLabel,
+    rowLabel,
+    colLabel,
   } = req.body;
 
   //?FIND FORM
@@ -62,6 +73,45 @@ export async function addQuestion(req: Request, res: Response) {
 
     case "dropdown-answer": {
       newQuestion = new dropdownQuestion({ ...common, options: [...options] });
+      break;
+    }
+
+    case "linearscale-answer": {
+      newQuestion = new linearscaleQuestion({
+        ...common,
+        lowRating: [...lowRating],
+        highRating: [...highRating],
+        lowRatingLabel: [...lowRatingLabel],
+        highRatingLabel: [...highRatingLabel],
+      });
+      break;
+    }
+
+    case "multiplechoicegrid-answer": {
+      newQuestion = new multiplechoicegridQuestion({
+        ...common,
+        rowLabel: [...rowLabel],
+        colLabel: [...colLabel],
+      });
+      break;
+    }
+
+    case "checkboxgrid-answer": {
+      newQuestion = new checkboxgridQuestion({
+        ...common,
+        rowLabel: [...rowLabel],
+        colLabel: [...colLabel],
+      });
+      break;
+    }
+
+    case "date-answer": {
+      newQuestion = new dateQuestion({ ...common });
+      break;
+    }
+
+    case "time-answer": {
+      newQuestion = new timeQuestion({ ...common });
       break;
     }
 
