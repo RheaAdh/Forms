@@ -1,7 +1,12 @@
 import express, { Response, Request } from "express";
 import { helloWorld, dbTesting } from "./helloworld";
 import { deleteForm, addForm, getForms, getForm } from "./form";
-import { addQuestion, deleteQuestion, getQuestions } from "./question";
+import {
+  addQuestion,
+  deleteQuestion,
+  getQuestions,
+  getQuestion,
+} from "./question";
 import { addResponse, deleteResponse } from "./response";
 
 const router = express.Router();
@@ -14,6 +19,7 @@ router.post("/addform", addForm);
 router.delete("/deleteform", deleteForm);
 
 router.get("/getquestions", getQuestions);
+router.get("/getquestion/:qid", getQuestion);
 router.post("/addquestion", addQuestion);
 router.delete("/deletequestion", deleteQuestion);
 

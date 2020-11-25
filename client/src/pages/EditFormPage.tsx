@@ -7,8 +7,7 @@ const EditFormPage: React.FC = () => {
   const { formid } = useParams();
 
   const [form, setForm] = useState<any>();
-
-  let questions = [];
+  const [questions, setQuestions] = useState<any[]>();
 
   useEffect(() => {
     fetch(`http://localhost:7000/api/getform/${formid}`)
@@ -21,21 +20,26 @@ const EditFormPage: React.FC = () => {
       });
   }, []);
 
-  // useEffect(() => {
-  //   if (form) {
-  //     questions = form.questions.map((q) => fetch)
-  //   }
-  // });
+  useEffect(() => {
+    if (form) {
+      const qs: any[] = [];
+      form.questions.map((qid: any) =>
+        fetch(`http://localhost:7000/api/getquestion/${qid}`)
+          .then((resp: any) => {
+            return resp.json();
+          })
 
-  //!WHY DOES THIS WORK
-  //setForm(forms.find((ele) => ele._id === formid));
+          .then((data: any) => {
+            console.log(data);
+            qs.push(data);
+          })
+      );
+      console.log(qs);
+      setQuestions(qs);
+    }
 
-  //const form = forms.find((ele) => ele._id === formid);
-
-  // useEffect(() => {
-  //   if (form) {
-  //   }
-  // }, []);
+    console.log(questions);
+  }, [form]);
 
   return form ? (
     <div>
@@ -51,6 +55,7 @@ const EditFormPage: React.FC = () => {
   );
 };
 
+//!POSTMAN COPY-PASTE
 // "formid": "5fb61c61ac3bc523cf528434",
 // "question_type": "mcq-answer",
 // "question_text": "Who is your favourite Rick?",

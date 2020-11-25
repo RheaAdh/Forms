@@ -184,6 +184,15 @@ export async function getQuestions(req: Request, res: Response) {
   const questions = await Question.find().exec();
   res.json(questions);
 }
+
+export async function getQuestion(req: Request, res: Response) {
+  await mongo.connectMongo();
+
+  const question = await Question.findById(req.params.qid);
+
+  res.json(question);
+}
+
 export async function deleteQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
   try {
