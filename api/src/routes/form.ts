@@ -61,9 +61,9 @@ export async function addForm(req: Request, res: Response) {
   try {
     await newForm.save();
     console.log("Form added!");
-    res.send("Form added");
+    res.send(newForm);
   } catch (error) {
-    res.send("Form not added");
+    res.send(error);
   }
 }
 

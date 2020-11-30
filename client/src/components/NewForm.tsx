@@ -1,9 +1,28 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, FormEvent } from "react";
+import { useHistory } from "react-router-dom";
+
+import useFormState from "../hooks/useFormState";
 
 const NewForm = () => {
-  const addForm = () => {
-    const form = { title: "A lot of forms will have the same title now" };
+  const [addedForm, setAddedForm] = useState<any | null>(null);
+
+  const history = useHistory();
+
+  const [title, handleTitle, resetTitle] = useFormState("");
+
+  //INITALLY addedForm IS NULL SO HISTORY DOESNT PUSH, BUT WHEN THE POST REQUEST IS
+  //COMPLETE THE addedForm IS SET TO THE ADDED FORM, TRIGGERING A RERENDER, SO THAN
+  //HISTORY GETS PUSHED
+
+  addedForm && history.push(`/editForm/${addedForm._id}`);
+
+  console.log({ title });
+
+  console.log({ addedForm });
+
+  const addForm = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = { title: title };
 
     fetch("http://localhost:7000/api/addForm", {
       method: "POST",
@@ -14,7 +33,7 @@ const NewForm = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Success:", data);
+        setAddedForm(data);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -22,9 +41,12 @@ const NewForm = () => {
   };
 
   return (
-    <Link to="/newform">
-      <button onClick={addForm}>Add New Form</button>
-    </Link>
+    <div>
+      <form onSubmit={addForm}>
+        <input type="text" value={title} onChange={handleTitle} />
+        <button type="submit">Add New Form</button>
+      </form>
+    </div>
   );
 };
 
