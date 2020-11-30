@@ -26,6 +26,7 @@ const Form: React.FC<props> = ({ form }) => {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
+        history.go(0);
       })
       .catch((error) => {
         console.error("Error:", error);

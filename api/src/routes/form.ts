@@ -68,12 +68,13 @@ export async function addForm(req: Request, res: Response) {
 }
 
 export async function deleteForm(req: Request, res: Response) {
+  let deletedForm;
   await mongo.connectMongo();
   try {
-    await Form.findByIdAndDelete(req.body.id);
-    res.send("Deleted successfully");
+    deletedForm = await Form.findOneAndDelete({ _id: req.body.id });
+    res.send(deletedForm);
   } catch (error) {
-    res.end("You messed up.... again");
+    res.end(res.send(error));
     console.error(error);
   }
   //   , (err) => {
