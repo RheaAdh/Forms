@@ -6,6 +6,7 @@ import {
   deleteQuestion,
   getQuestions,
   getQuestion,
+  getQuestionsByFormid,
 } from "./question";
 import { addResponse, deleteResponse } from "./response";
 
@@ -20,6 +21,7 @@ router.delete("/deleteform", deleteForm);
 
 router.get("/getquestions", getQuestions);
 router.get("/getquestion/:qid", getQuestion);
+router.get("/getquestionsbyformid/:formid", getQuestionsByFormid);
 router.post("/addquestion", addQuestion);
 router.delete("/deletequestion", deleteQuestion);
 

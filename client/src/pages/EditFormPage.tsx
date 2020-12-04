@@ -22,20 +22,15 @@ const EditFormPage: React.FC = () => {
 
   useEffect(() => {
     if (form) {
-      const qs: any[] = [];
-      form.questions.map((qid: any) =>
-        fetch(`http://localhost:7000/api/getquestion/${qid}`)
-          .then((resp: any) => {
-            return resp.json();
-          })
+      fetch(`http://localhost:7000/api/getquestionsbyformid/${formid}`)
+        .then((resp: any) => {
+          return resp.json();
+        })
 
-          .then((data: any) => {
-            console.log(data);
-            qs.push(data);
-          })
-      );
-      console.log(qs);
-      setQuestions(qs);
+        .then((data: any) => {
+          console.log(data);
+          setQuestions(data);
+        });
     }
 
     console.log(questions);

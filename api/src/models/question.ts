@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Mongoose } from "mongoose";
 import { Answer } from "./answer";
 const options = { discriminatorKey: "question-type" };
 
@@ -6,6 +6,7 @@ const options = { discriminatorKey: "question-type" };
 
 const questionSchema: Schema = new Schema(
   {
+    formid: { type: Schema.Types.ObjectId, ref: "Form" },
     question_text: { type: String, required: true },
     description: { type: String },
     //question_type: String This is  made by default by the discriminator key
@@ -53,45 +54,38 @@ export const dropdownQuestion = Question.discriminator(
   dropdownSchema
 );
 
-
 //LINEAR SCALE:
 const linearscaleSchema: Schema = new Schema({
-  lowRating:{type:Number,min:0,max:1},
-  highRating:{type:Number,min:2,max:10},
-  lowRatingLabel:{type:String,default:'Low'},
-  highRatingLabel:{type:String,default:'High'} 
+  lowRating: { type: Number, min: 0, max: 1 },
+  highRating: { type: Number, min: 2, max: 10 },
+  lowRatingLabel: { type: String, default: "Low" },
+  highRatingLabel: { type: String, default: "High" },
 });
 export const linearscaleQuestion = Question.discriminator(
   "linearscale-answer",
-   linearscaleSchema   
+  linearscaleSchema
 );
 //MULTIPLE CHOICE GRID:
-const multiplechoicegridSchema:Schema = new Schema({
-  rowLabel:[String],
-  colLabel:[String],
-})
+const multiplechoicegridSchema: Schema = new Schema({
+  rowLabel: [String],
+  colLabel: [String],
+});
 export const multiplechoicegridQuestion = Question.discriminator(
   "multiplechoicegrid-answer",
   multiplechoicegridSchema
 );
 //CHECKBOXES GRID:
-const checkboxgridSchema:Schema = new Schema({
-  rowLabel:[String],
-  colLabel:[String],
+const checkboxgridSchema: Schema = new Schema({
+  rowLabel: [String],
+  colLabel: [String],
 });
 export const checkboxgridQuestion = Question.discriminator(
   "checkboxgrid-answer",
   checkboxgridSchema
 );
 //DATE:
-const dateSchema:Schema = new Schema({})
-export const dateQuestion = Question.discriminator(
-  "date-answer",
-  dateSchema
-)
+const dateSchema: Schema = new Schema({});
+export const dateQuestion = Question.discriminator("date-answer", dateSchema);
 //TIME:
-const timeSchema:Schema = new Schema({})
-export const timeQuestion = Question.discriminator(
-  "time-answer",
-  timeSchema
-) 
+const timeSchema: Schema = new Schema({});
+export const timeQuestion = Question.discriminator("time-answer", timeSchema);

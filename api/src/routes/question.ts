@@ -43,6 +43,7 @@ export async function addQuestion(req: Request, res: Response) {
   }
 
   const common = {
+    formid: formid,
     question_text: question_text,
     description: description,
     required: required,
@@ -79,10 +80,10 @@ export async function addQuestion(req: Request, res: Response) {
     case "linearscale-answer": {
       newQuestion = new linearscaleQuestion({
         ...common,
-        lowRating: [...lowRating],
-        highRating: [...highRating],
-        lowRatingLabel: [...lowRatingLabel],
-        highRatingLabel: [...highRatingLabel],
+        lowRating: lowRating,
+        highRating: highRating,
+        lowRatingLabel: lowRatingLabel,
+        highRatingLabel: highRatingLabel,
       });
       break;
     }
@@ -90,8 +91,8 @@ export async function addQuestion(req: Request, res: Response) {
     case "multiplechoicegrid-answer": {
       newQuestion = new multiplechoicegridQuestion({
         ...common,
-        rowLabel: [...rowLabel],
-        colLabel: [...colLabel],
+        rowLabel: rowLabel,
+        colLabel: colLabel,
       });
       break;
     }
@@ -99,8 +100,8 @@ export async function addQuestion(req: Request, res: Response) {
     case "checkboxgrid-answer": {
       newQuestion = new checkboxgridQuestion({
         ...common,
-        rowLabel: [...rowLabel],
-        colLabel: [...colLabel],
+        rowLabel: rowLabel,
+        colLabel: colLabel,
       });
       break;
     }
@@ -191,6 +192,13 @@ export async function getQuestion(req: Request, res: Response) {
   const question = await Question.findById(req.params.qid);
 
   res.json(question);
+}
+
+export async function getQuestionsByFormid(req: Request, res: Response) {
+  await mongo.connectMongo();
+
+  const questions = await Question.find({ formid: req.params.formid });
+  res.json(questions);
 }
 
 export async function deleteQuestion(req: Request, res: Response) {
