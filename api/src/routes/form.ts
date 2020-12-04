@@ -67,6 +67,24 @@ export async function addForm(req: Request, res: Response) {
   }
 }
 
+export async function updateForm(req: Request, res: Response) {
+  await mongo.connectMongo();
+
+  let updatedForm;
+  try {
+    updatedForm = await Form.findOneAndUpdate(
+      { _id: req.body._id },
+      {
+        ...req.body,
+      }
+    );
+    res.send(updatedForm);
+  } catch (error) {
+    res.send(error);
+  }
+}
+
+//!DELETE ALL THE QUESTIONS OF THIS FORM AS WELL
 export async function deleteForm(req: Request, res: Response) {
   let deletedForm;
   await mongo.connectMongo();
@@ -74,7 +92,7 @@ export async function deleteForm(req: Request, res: Response) {
     deletedForm = await Form.findOneAndDelete({ _id: req.body.id });
     res.send(deletedForm);
   } catch (error) {
-    res.end(res.send(error));
+    res.send(error);
     console.error(error);
   }
   //   , (err) => {
