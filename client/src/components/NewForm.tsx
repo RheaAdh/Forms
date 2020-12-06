@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 
 import useFormState from "../hooks/useFormState";
 
-const NewForm = () => {
+const NewForm: React.FC = () => {
   const [addedForm, setAddedForm] = useState<any | null>(null);
 
   const history = useHistory();
@@ -14,11 +14,7 @@ const NewForm = () => {
   //COMPLETE THE addedForm IS SET TO THE ADDED FORM, TRIGGERING A RERENDER, SO THAN
   //HISTORY GETS PUSHED
 
-  addedForm && history.push(`/editForm/${addedForm._id}`);
-
-  console.log({ title });
-
-  console.log({ addedForm });
+  //addedForm && history.push(`/editForm/${addedForm._id}`);
 
   const addForm = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

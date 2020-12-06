@@ -7,13 +7,12 @@ import useFormState from "../hooks/useFormState";
 
 //TODO:
 ////MAKE UPDATE FORM ROUTE
-//ADD THE FORM TITLE CHANGE EFFECT
+////ADD THE FORM TITLE CHANGE EFFECT
 //CHANGES THE DELETE FORM ROUTE TO DELETE THOSE QUESTION CORRESPOINDING TO FORM
 //CHANGE THE DELETE FORM THING TO CALL USE EFFECT INSTEAD OF REFRESHING
 //ERROR HANDLING IF YOU FEEL LIKE IT
 
 const EditFormPage: React.FC = () => {
-  console.log("EDIT FORM PAGE RERENDERS");
   const { formid } = useParams();
 
   const [form, setForm] = useState<any>();
@@ -40,7 +39,6 @@ const EditFormPage: React.FC = () => {
         })
 
         .then((data: any) => {
-          console.log(data);
           setQuestions(data);
         });
     }

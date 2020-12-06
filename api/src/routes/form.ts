@@ -1,6 +1,7 @@
 import { Response, Request } from "express";
 import * as mongo from "../config/mongo";
 import { Form } from "../models/form";
+import io from "../../sockets";
 
 export async function getForms(req: Request, res: Response) {
   await mongo.connectMongo();
@@ -60,6 +61,7 @@ export async function addForm(req: Request, res: Response) {
 
   try {
     await newForm.save();
+    io.getIO().emit("forms", { newForm });
     console.log("Form added!");
     res.send(newForm);
   } catch (error) {

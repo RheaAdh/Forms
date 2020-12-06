@@ -2,9 +2,10 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 interface props {
   form: any;
+  setCall: any;
 }
 
-const Form: React.FC<props> = ({ form }) => {
+const Form: React.FC<props> = ({ form, setCall }) => {
   let history = useHistory();
 
   const handleClick = () => {
@@ -25,12 +26,13 @@ const Form: React.FC<props> = ({ form }) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        history.go(0);
+        // history.go(0);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
+
+    setCall((prev: any) => prev + 1);
   };
 
   return (
