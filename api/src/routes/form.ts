@@ -76,7 +76,8 @@ export async function updateForm(req: Request, res: Response) {
       { _id: req.body._id },
       {
         ...req.body,
-      }
+      },
+      { new: true }
     );
     res.send(updatedForm);
   } catch (error) {
