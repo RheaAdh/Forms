@@ -3,9 +3,10 @@ import Form from "../components/Form";
 
 interface props {
   forms: any[];
+  deleteForm: any;
 }
 
-const Forms: React.FC<props> = ({ forms }) => {
+const Forms: React.FC<props> = ({ forms, deleteForm }) => {
   return (
     <div>
       Forms:
@@ -14,7 +15,7 @@ const Forms: React.FC<props> = ({ forms }) => {
       ) : (
         <div>
           {forms.map((form) => (
-            <Form form={form} key={form._id} />
+            <Form deleteForm={deleteForm} form={form} key={form._id} />
           ))}
         </div>
       )}

@@ -2,9 +2,10 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 interface props {
   form: any;
+  deleteForm: any;
 }
 
-const Form: React.FC<props> = ({ form }) => {
+const Form: React.FC<props> = ({ form, deleteForm }) => {
   let history = useHistory();
 
   const handleClick = () => {
@@ -15,6 +16,8 @@ const Form: React.FC<props> = ({ form }) => {
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     event.stopPropagation();
+
+    //!CHANGE ON BACK END
     const body = { id: form._id };
     fetch("http://localhost:7000/api/deleteform", {
       method: "DELETE",
@@ -26,7 +29,8 @@ const Form: React.FC<props> = ({ form }) => {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        history.go(0);
+        //!CHANGE ON FRONT END
+        deleteForm(form._id);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -38,7 +42,6 @@ const Form: React.FC<props> = ({ form }) => {
       <div>
         <h1 style={{ backgroundColor: "paleturquoise", cursor: "pointer" }}>
           {form.title}--{form.color_theme}
-          {/*YOU HAVE TO REFRESH FOR THE DELETE TO WORK */}
           <button onClick={handleDelete}>Delete Form</button>
         </h1>
       </div>

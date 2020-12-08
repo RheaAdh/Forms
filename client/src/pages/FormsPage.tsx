@@ -16,9 +16,13 @@ const FormsPage: React.FC = () => {
         setForms(data);
       });
   }, []);
+
+  const deleteForm = (id: any) => {
+    setForms((prevForms) => prevForms.filter((form) => form._id !== id));
+  };
   return (
     <div>
-      <FormList forms={forms} />
+      <FormList forms={forms} deleteForm={deleteForm} />
       <NewForm />
     </div>
   );
