@@ -1,0 +1,39 @@
+.question-component {
+  padding: 15px;
+  border: 1px solid gray;
+  width: 40%;
+  margin-top: 30px;
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  border-radius: 5px;
+}
+
+.question-meta {
+  width: 100%;
+  display: flex;
+  /* border: 1px solid red; */
+  justify-content: space-between;
+}
+.question-title {
+  width: 100%;
+}
+.question-text {
+  width: 70%;
+  padding: 15px;
+  font-size: 14px;
+}
+
+.question-type {
+  height: 100%;
+  width: 30%;
+  margin: none;
+  margin-right: none;
+}
+
+.question-select {
+  padding: 15px;
+}

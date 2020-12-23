@@ -8,7 +8,7 @@ const NewForm = () => {
 
   const history = useHistory();
 
-  const [title, handleTitle, resetTitle] = useFormState("");
+  const [title, handleTitle] = useFormState("");
 
   //INITALLY addedForm IS NULL SO HISTORY DOESNT PUSH, BUT WHEN THE POST REQUEST IS
   //COMPLETE THE addedForm IS SET TO THE ADDED FORM, TRIGGERING A RERENDER, SO THAN

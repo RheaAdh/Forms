@@ -5,6 +5,8 @@ import QuestionList from "../components/QuestionList";
 
 import useFormState from "../hooks/useFormState";
 
+import "../styles/EditFormPage.css";
+
 //TODO:
 ////MAKE UPDATE FORM ROUTE
 ////ADD THE FORM TITLE CHANGE EFFECT
@@ -46,12 +48,13 @@ const EditFormPage: React.FC = () => {
         })
 
         .then((data: any) => {
+          console.log({ data });
           setQuestions(data);
         });
     }
 
     console.log(questions);
-  }, []);
+  }, [form]);
 
   const handleSubmit = (event: React.FocusEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -79,6 +82,7 @@ const EditFormPage: React.FC = () => {
     setShowEditTitle(true);
   };
 
+  //SHOW AND HIDE EDIT FORM TITLE LOGIC
   useEffect(() => {
     if (showEditTitle) {
       if (null !== inputRef.current) inputRef.current.focus();
@@ -86,7 +90,7 @@ const EditFormPage: React.FC = () => {
   }, [showEditTitle]);
 
   return form ? (
-    <div>
+    <div className="edit-form-page">
       {showEditTitle ? (
         <input
           onBlur={handleSubmit}
@@ -105,7 +109,8 @@ const EditFormPage: React.FC = () => {
       <Link to="/">
         <button>Back</button>
       </Link>
-      <QuestionList />
+
+      <QuestionList questions={questions} formid={form._id} />
     </div>
   ) : (
     <div>loading</div>
