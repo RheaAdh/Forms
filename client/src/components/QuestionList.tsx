@@ -15,26 +15,6 @@ const QuestionList: React.FC<props> = ({ questions, formid }) => {
     if (questions) setList(questions);
   }, [questions]);
 
-  // const addForm = (event: FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   const form = { title: title };
-
-  //   fetch("http://localhost:7000/api/addForm", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify(form),
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       setAddedForm(data);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error:", error);
-  //     });
-  // };
-
   const addQuestion = () => {
     const newQuestion = {
       question_text: "Question",

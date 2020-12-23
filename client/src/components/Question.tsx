@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import useFormState from "../hooks/useFormState";
 
@@ -16,6 +16,22 @@ const Question: React.FC<props> = ({ addQuestion, question }) => {
   const addOption = () => {
     setOptions(() => [...options, options.length]);
   };
+
+  const updateQuestion = () => {
+    fetch("http://localhost:7000/api/updatequestion", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...question, question_text: questionText }),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log({ data }));
+  };
+
+  //CALL UPDATE QUESTION EVERY TIME QUESTIONS TITLE CHANGES
+  useEffect(updateQuestion, [questionText]);
+
   const types = [
     <div>
       <b>Short answer text</b>

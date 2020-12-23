@@ -201,6 +201,24 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
   res.json(questions);
 }
 
+export async function updateQuestion(req: Request, res: Response) {
+  await mongo.connectMongo();
+
+  let updatedQuestion;
+  try {
+    updatedQuestion = await Question.findOneAndUpdate(
+      { _id: req.body._id },
+      {
+        ...req.body,
+      },
+      { new: true }
+    );
+    res.send(updatedQuestion);
+  } catch (error) {
+    res.send(error);
+  }
+}
+
 export async function deleteQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
   try {
