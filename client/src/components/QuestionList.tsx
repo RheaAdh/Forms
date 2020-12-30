@@ -38,13 +38,12 @@ const QuestionList: React.FC<props> = ({ questions, formid }) => {
 
   return (
     <div className="list-container">
-      <button onClick={addQuestion}>Add Question</button>
-
       <div className="list-body">
         {list.map((question) => (
-          <Question addQuestion={addQuestion} question={question} />
+          <Question question={question} />
         ))}
       </div>
+      <button className="add-button" onClick={addQuestion}>Add Question</button>
     </div>
   );
 };

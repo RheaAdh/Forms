@@ -4,12 +4,12 @@ import useFormState from "../hooks/useFormState";
 
 import "../styles/Questions.css";
 interface props {
-  addQuestion: any;
   question?: any;
 }
-const Question: React.FC<props> = ({ addQuestion, question }) => {
+const Question: React.FC<props> = ({ question }) => {
   const [type, setType] = useState<any>(0);
   const [options, setOptions] = useState([0]);
+  const [requiredVal, setRequired] = useState(question?question.required:false);
   const [questionText, handleQuestionText] = useFormState(
     question ? question.question_text : ""
   );
@@ -23,14 +23,14 @@ const Question: React.FC<props> = ({ addQuestion, question }) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...question, question_text: questionText }),
+      body: JSON.stringify({ ...question, question_text: questionText, required: requiredVal }),
     })
       .then((response) => response.json())
       .then((data) => console.log({ data }));
   };
 
   //CALL UPDATE QUESTION EVERY TIME QUESTIONS TITLE CHANGES
-  useEffect(updateQuestion, [questionText]);
+  useEffect(updateQuestion, [questionText,requiredVal]);
 
   const types = [
     <div>
@@ -109,6 +109,9 @@ const Question: React.FC<props> = ({ addQuestion, question }) => {
           value={questionText}
         />
 
+        {/*This is only for testing, you can remove it*/}
+        {requiredVal?"*":""}
+
         {/*<span>Type:</span>*/}
         <select
           className="question-select"
@@ -132,11 +135,10 @@ const Question: React.FC<props> = ({ addQuestion, question }) => {
       </div>
 
       <div className="required">
-        <input type="checkbox" />
+        <input type="checkbox" checked={requiredVal} onChange={(e)=>{const reqVal = e.target.checked; setRequired(reqVal);}} />
         <span>Required</span>
       </div>
       {types[type]}
-      <button onClick={addQuestion}>Add Question</button>
     </div>
   );
 };
