@@ -73,10 +73,71 @@ const Question: React.FC<props> = ({ question }) => {
       <button onClick={addOption}>Add option</button>
     </div>,
     <div>
-      <b>File upload #will add later#</b>
+      <b>File upload</b>
+      <table cellspacing="20">
+    <tr>
+      <td>Allow only specific file types</td>
+      <td><label class="switch">
+          <input type="checkbox" checked>
+          <span class="slider round"></span>
+        </label>
+      </td>
+    </tr>
+    <tr>
+      <td>Maximum number of files</td>
+      <td>
+        <select name="maxNum">
+          <option value="1">1</option>
+          <option value="5">5</option>
+          <option value="10">10</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td>Maximum file size</td>
+      <td>
+        <select name="maxSize">
+          <option value="1MB">1 MB</option>
+          <option value="10MB">10 MB</option>
+          <option value="100MB">100 MB</option>
+          <option value="1GB">1 GB</option>
+          <option value="10GB">10 GB</option>
+        </select>
+      </td>
+    </tr>
+  </table>
     </div>,
     <div>
-      <b>Linear scale #will add later#</b>
+      <b>Linear scale</b>
+      <table cellspacing="10">
+      <tr>
+      <td><select name="minVal">
+        <option value="0">0</option>
+        <option value="1">1</option>
+      </select>
+      </td>
+      <td>to</td>
+      <td>
+        <select name="minVal">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        </select>
+      </td>
+      </tr>
+    </table>
+    <br>
+    <br>
+    <input type="text" name="" placeholder="Label (Optional)">
+    <br>
+    <br>
+    <input type="text" name="" placeholder="Label (Optional)">
     </div>,
     <div>
       <b>Multiple choice grid #will add later#</b>
