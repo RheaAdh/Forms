@@ -74,12 +74,12 @@ const Question: React.FC<props> = ({ question }) => {
     </div>,
     <div>
       <b>File upload</b>
-      <table cellspacing="20">
+      <table cellSpacing="20">
     <tr>
       <td>Allow only specific file types</td>
-      <td><label class="switch">
-          <input type="checkbox" checked>
-          <span class="slider round"></span>
+      <td><label className="switch">
+          <input type="checkbox" />
+          <span className="slider round"></span>
         </label>
       </td>
     </tr>
@@ -109,7 +109,7 @@ const Question: React.FC<props> = ({ question }) => {
     </div>,
     <div>
       <b>Linear scale</b>
-      <table cellspacing="10">
+      <table cellSpacing="10">
       <tr>
       <td><select name="minVal">
         <option value="0">0</option>
@@ -132,12 +132,12 @@ const Question: React.FC<props> = ({ question }) => {
       </td>
       </tr>
     </table>
-    <br>
-    <br>
-    <input type="text" name="" placeholder="Label (Optional)">
-    <br>
-    <br>
-    <input type="text" name="" placeholder="Label (Optional)">
+    <br/>
+    <br/>
+    <input type="text" name="" placeholder="Label (Optional)"/>
+    <br/>
+    <br/>
+    <input type="text" name="" placeholder="Label (Optional)"/>
     </div>,
     <div>
       <b>Multiple choice grid #will add later#</b>
