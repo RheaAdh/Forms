@@ -8,14 +8,21 @@ interface props {
 }
 const Question: React.FC<props> = ({ question }) => {
   const [type, setType] = useState<any>(0);
-  const [options, setOptions] = useState([0]);
   const [requiredVal, setRequired] = useState(question?question.required:false);
   const [questionText, handleQuestionText] = useFormState(
     question ? question.question_text : ""
   );
+
+  //The below code only creates placeholder options. Still need to add functional options and rework types that use options.
+  const [options, setOptions] = useState([0]);
+  const [options2, setOptions2] = useState([0]);
   const addOption = () => {
     setOptions(() => [...options, options.length]);
   };
+  const addOption2 = () => {
+    setOptions2(() => [...options2, options2.length]);
+  };
+  //
 
   const updateQuestion = () => {
     fetch("http://localhost:7000/api/updatequestion", {
@@ -140,10 +147,46 @@ const Question: React.FC<props> = ({ question }) => {
     <input type="text" name="" placeholder="Label (Optional)"/>
     </div>,
     <div>
-      <b>Multiple choice grid #will add later#</b>
+      <b>Multiple choice grid</b>
+      <p>Rows:</p>
+      <ol>
+        {options.map((a) => (
+          <li key={a}>
+            <input type="text" />
+          </li>
+        ))}
+      </ol>
+      <button onClick={addOption}>Add row</button>
+      <p>Columns:</p>
+      <ol>
+        {options2.map((a) => (
+          <li key={a}>
+            <input type="text" />
+          </li>
+        ))}
+      </ol>
+      <button onClick={addOption2}>Add column</button>
     </div>,
     <div>
-      <b>Checkbox grid #will add later#</b>
+      <b>Checkbox grid</b>
+      <p>Rows:</p>
+      <ol>
+        {options.map((a) => (
+          <li key={a}>
+            <input type="text" />
+          </li>
+        ))}
+      </ol>
+      <button onClick={addOption}>Add row</button>
+      <p>Columns:</p>
+      <ol>
+        {options2.map((a) => (
+          <li key={a}>
+            <input type="text" />
+          </li>
+        ))}
+      </ol>
+      <button onClick={addOption2}>Add column</button>
     </div>,
     <div>
       <b>Date [dd:mm:yy]</b>
