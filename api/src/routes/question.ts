@@ -203,13 +203,17 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
 
 export async function updateQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
+  console.log(req.body);
+  const moddedBody = { ...req.body };
+  moddedBody["question-type"] = req.body["question-type"];
+  console.log({ moddedBody });
 
   let updatedQuestion;
   try {
     updatedQuestion = await Question.findOneAndUpdate(
       { _id: req.body._id },
       {
-        ...req.body,
+        ...moddedBody,
       },
       { new: true }
     );

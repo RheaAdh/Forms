@@ -7,8 +7,22 @@ interface props {
   question?: any;
 }
 const Question: React.FC<props> = ({ question }) => {
-  const [type, setType] = useState<any>(0);
-  const [requiredVal, setRequired] = useState(question?question.required:false);
+  const questions_types = [
+    "short-answer",
+    "paragraph-answer",
+    "mcq-answer",
+    "checkbox-answer",
+    "dropdown-answer",
+    "linearscale-answer",
+    "multiplechoicegrid-answer",
+    "checkboxgrid-answer",
+  ];
+  const [type, setType] = useState<any>(
+    question ? questions_types.indexOf(question["question-type"]) : 0
+  );
+  const [requiredVal, setRequired] = useState(
+    question ? question.required : false
+  );
   const [questionText, handleQuestionText] = useFormState(
     question ? question.question_text : ""
   );
@@ -30,14 +44,19 @@ const Question: React.FC<props> = ({ question }) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...question, question_text: questionText, required: requiredVal }),
+      body: JSON.stringify({
+        ...question,
+        question_text: questionText,
+        required: requiredVal,
+        "question-type": questions_types[type],
+      }),
     })
       .then((response) => response.json())
       .then((data) => console.log({ data }));
   };
 
   //CALL UPDATE QUESTION EVERY TIME QUESTIONS TITLE CHANGES
-  useEffect(updateQuestion, [questionText,requiredVal]);
+  useEffect(updateQuestion, [questionText, requiredVal, type]);
 
   const types = [
     <div>
@@ -82,69 +101,71 @@ const Question: React.FC<props> = ({ question }) => {
     <div>
       <b>File upload</b>
       <table cellSpacing="20">
-    <tr>
-      <td>Allow only specific file types</td>
-      <td><label className="switch">
-          <input type="checkbox" />
-          <span className="slider round"></span>
-        </label>
-      </td>
-    </tr>
-    <tr>
-      <td>Maximum number of files</td>
-      <td>
-        <select name="maxNum">
-          <option value="1">1</option>
-          <option value="5">5</option>
-          <option value="10">10</option>
-        </select>
-      </td>
-    </tr>
-    <tr>
-      <td>Maximum file size</td>
-      <td>
-        <select name="maxSize">
-          <option value="1MB">1 MB</option>
-          <option value="10MB">10 MB</option>
-          <option value="100MB">100 MB</option>
-          <option value="1GB">1 GB</option>
-          <option value="10GB">10 GB</option>
-        </select>
-      </td>
-    </tr>
-  </table>
+        <tr>
+          <td>Allow only specific file types</td>
+          <td>
+            <label className="switch">
+              <input type="checkbox" />
+              <span className="slider round"></span>
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td>Maximum number of files</td>
+          <td>
+            <select name="maxNum">
+              <option value="1">1</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Maximum file size</td>
+          <td>
+            <select name="maxSize">
+              <option value="1MB">1 MB</option>
+              <option value="10MB">10 MB</option>
+              <option value="100MB">100 MB</option>
+              <option value="1GB">1 GB</option>
+              <option value="10GB">10 GB</option>
+            </select>
+          </td>
+        </tr>
+      </table>
     </div>,
     <div>
       <b>Linear scale</b>
       <table cellSpacing="10">
-      <tr>
-      <td><select name="minVal">
-        <option value="0">0</option>
-        <option value="1">1</option>
-      </select>
-      </td>
-      <td>to</td>
-      <td>
-        <select name="minVal">
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
-        </select>
-      </td>
-      </tr>
-    </table>
-    <br/>
-    <br/>
-    <input type="text" name="" placeholder="Label (Optional)"/>
-    <br/>
-    <br/>
-    <input type="text" name="" placeholder="Label (Optional)"/>
+        <tr>
+          <td>
+            <select name="minVal">
+              <option value="0">0</option>
+              <option value="1">1</option>
+            </select>
+          </td>
+          <td>to</td>
+          <td>
+            <select name="minVal">
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+      <br />
+      <br />
+      <input type="text" name="" placeholder="Label (Optional)" />
+      <br />
+      <br />
+      <input type="text" name="" placeholder="Label (Optional)" />
     </div>,
     <div>
       <b>Multiple choice grid</b>
@@ -196,12 +217,6 @@ const Question: React.FC<props> = ({ question }) => {
     </div>,
   ];
 
-  const questions_types = [
-    "short-answer",
-    "paragraph-answer",
-    "mcq-answer",
-    "checkbox-answer",
-  ];
   return (
     <div className="question-component">
       <div className="question-meta">
@@ -214,7 +229,7 @@ const Question: React.FC<props> = ({ question }) => {
         />
 
         {/*This is only for testing, you can remove it*/}
-        {requiredVal?"*":""}
+        {requiredVal ? "*" : ""}
 
         {/*<span>Type:</span>*/}
         <select
@@ -223,6 +238,7 @@ const Question: React.FC<props> = ({ question }) => {
             const selectedType = e.target.value;
             setType(selectedType);
           }}
+          value={type}
         >
           <option value={0}>Short text</option>
           <option value={1}>Paragraph</option>
@@ -239,7 +255,14 @@ const Question: React.FC<props> = ({ question }) => {
       </div>
 
       <div className="required">
-        <input type="checkbox" checked={requiredVal} onChange={(e)=>{const reqVal = e.target.checked; setRequired(reqVal);}} />
+        <input
+          type="checkbox"
+          checked={requiredVal}
+          onChange={(e) => {
+            const reqVal = e.target.checked;
+            setRequired(reqVal);
+          }}
+        />
         <span>Required</span>
       </div>
       {types[type]}
