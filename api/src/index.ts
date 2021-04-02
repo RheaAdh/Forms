@@ -1,18 +1,31 @@
 import path from "path";
 require("dotenv").config({ path: path.join(".env") });
-
 const cors = require("cors");
 import express, { Request, Response } from "express";
-import bodyParser from "body-parser";
 import router from "./routes";
-
+import { SessionDetails,RegisterUser,LoginUser } from "./routes/user";
+import {store} from "./config/mongo"
+const port: Number = 7000;
+const session =require("express-session")
+const bodyParser=require("body-parser")
 const app = express();
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-
-const port: Number = 7000;
+app.use(session({
+    secret:'Keep it secret',
+    resave: true,
+    name:'uniqueSessionID',
+    saveUninitialized:true,
+    store:store
+}))
 
 app.use("/api", router);
+
+app.get('/',SessionDetails)
+app.post("/register",RegisterUser)
+app.post("/login",LoginUser)
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
