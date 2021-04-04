@@ -1,8 +1,12 @@
 import {Document} from "mongoose"
-import { Response, Request } from "express";
+import { Response, Request, NextFunction } from "express";
 import * as mongo from "../config/mongo";
 import { User } from "../models/User";
-
+declare module "express-session" {
+    interface Session {
+      isAuth: boolean;
+    }
+  }
 const bcrypt= require("bcryptjs")
 
 export function SessionDetails(req:Request,res:Response){
@@ -57,12 +61,19 @@ export async function LoginUser(req: Request, res: Response) {
     if(!validCred){
         return res.send("INVALID CREDENTIALS")
     }
-    
-    
-    // req.session.isValidUser=true
-    // (TODO-make middleware to insert in requests)
-    
+    req.session.isAuth=true    
     //redirect to all forms page
     return res.send("User credentials valid: "+ user) 
 
 }
+
+export async function isValidUser(req: Request, res: Response,next:NextFunction){
+    await mongo.connectMongo();
+    if(req.session.isAuth){
+      next()
+    }
+    else{
+      //redirect to login
+      return res.send("you are not logged in ")
+    }
+  }

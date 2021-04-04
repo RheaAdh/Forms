@@ -10,26 +10,26 @@ import {
   updateQuestion,
 } from "./question";
 import { addResponse, deleteResponse } from "./response";
-
+import { isValidUser } from "./user";
 const router = express.Router();
-router.get("/helloworld", helloWorld);
-router.get("/db", dbTesting);
+router.get("/helloworld",isValidUser, helloWorld);
+router.get("/db",isValidUser, dbTesting);
 
-router.get("/getforms", getForms);
-router.get("/getform/:formid", getForm);
-router.post("/addform", addForm);
-router.put("/updateform", updateForm);
-router.delete("/deleteform", deleteForm);
+router.get("/getforms",isValidUser, getForms);
+router.get("/getform/:formid",isValidUser, getForm);
+router.post("/addform",isValidUser, addForm);
+router.put("/updateform",isValidUser, updateForm);
+router.delete("/deleteform",isValidUser, deleteForm);
 
-router.get("/getquestions", getQuestions);
-router.get("/getquestion/:qid", getQuestion);
-router.get("/getquestionsbyformid/:formid", getQuestionsByFormid);
-router.post("/addquestion", addQuestion);
-router.put("/updatequestion", updateQuestion);
-router.delete("/deletequestion", deleteQuestion);
+router.get("/getquestions",isValidUser, getQuestions);
+router.get("/getquestion/:qid",isValidUser, getQuestion);
+router.get("/getquestionsbyformid/:formid",isValidUser, getQuestionsByFormid);
+router.post("/addquestion",isValidUser, addQuestion);
+router.put("/updatequestion",isValidUser, updateQuestion);
+router.delete("/deletequestion",isValidUser, deleteQuestion);
 
-router.post("/addresponse", addResponse);
-router.delete("/deleteresponse/:answer_id", deleteResponse);
+router.post("/addresponse",isValidUser, addResponse);
+router.delete("/deleteresponse/:answer_id",isValidUser, deleteResponse);
 
 
 export default router;
