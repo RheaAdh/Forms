@@ -5,6 +5,7 @@ import { User } from "../models/User";
 declare module "express-session" {
     interface Session {
       isAuth: boolean;
+      userId: Object;
     }
   }
 const bcrypt= require("bcryptjs")
@@ -23,7 +24,7 @@ export async function RegisterUser(req: Request, res: Response) {
     const hashpwd=await bcrypt.hash(req.body.password,10)
     if(user){
         //REDIRECT TO LOGIN IF ALREADY A REGISTERED USER
-        return res.send("User already exists") 
+        return res.send("User exists with same details,try again with a new password if not registered") 
     }
     //USER NOT CREATED
     user= new User({
@@ -44,7 +45,7 @@ export async function RegisterUser(req: Request, res: Response) {
 export async function LoginUser(req: Request, res: Response) {
     await mongo.connectMongo();
     console.log("POST REQUEST WAS MADE");
-    const {email,password}=req.body;
+    const {username,email,password}=req.body;
     let user:any;
     try {
         user = await User.findOne({email});
@@ -61,7 +62,8 @@ export async function LoginUser(req: Request, res: Response) {
     if(!validCred){
         return res.send("INVALID CREDENTIALS")
     }
-    req.session.isAuth=true    
+    req.session.isAuth=true  
+    req.session.userId=user  
     //redirect to all forms page
     return res.send("User credentials valid: "+ user) 
 

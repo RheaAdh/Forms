@@ -21,6 +21,7 @@ app.use(session({
     store:store
 }))
 
+//ONLY ADMIN USERS CAN ACCESS
 app.use("/api", router);
 
 app.get('/',SessionDetails)

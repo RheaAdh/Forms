@@ -1,3 +1,5 @@
+TODO
+
 Fix issues
 
 Delete question
@@ -8,4 +10,10 @@ Protect frontend routes as well
 Render form (as user views it) from db
 (Wont have add/remove/etc)
 
+
+------------------------------------------------------------
 Implement new features
+-search for form by title
+-background colour
+-responses to csv
+-make dashboard for users and their corresponding forms will be there
