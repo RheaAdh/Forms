@@ -9,7 +9,7 @@ import {
   getQuestionsByFormid,
   updateQuestion,
 } from "./question";
-import { addResponse, deleteResponse } from "./response";
+// import { viewResponses } from "./response";
 import { isValidUser } from "./user";
 const router = express.Router();
 router.get("/helloworld",isValidUser, helloWorld);
@@ -28,8 +28,8 @@ router.post("/addquestion",isValidUser, addQuestion);
 router.put("/updatequestion",isValidUser, updateQuestion);
 router.delete("/deletequestion",isValidUser, deleteQuestion);
 
-router.post("/addresponse",isValidUser, addResponse);
-router.delete("/deleteresponse/:answer_id",isValidUser, deleteResponse);
+// router.get("/viewresponses",isValidUser,viewResponses);
+
 
 
 export default router;

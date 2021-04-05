@@ -77,3 +77,17 @@ export async function isValidUser(req: Request, res: Response,next:NextFunction)
       return res.send("you are not logged in ")
     }
   }
+
+  export async function LogoutUser(req: Request, res: Response,next:NextFunction){
+    await mongo.connectMongo();
+    //redirect to signup
+    req.session.destroy(function(err){
+      if(err){
+         console.log(err);
+      }else{
+        //session deleted
+        return res.send("LOGGED OUT USER")
+      }
+   });
+  }
+

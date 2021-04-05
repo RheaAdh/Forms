@@ -1,62 +1,11 @@
-FORM SCHEMA:
-- Title
-- Description
-- bg image
-- theme
-- Questions (array of question ids)
-- Answer (array of answer ids):have put it just in case
+Fix issues
 
-QUESTION BASE SCHEMA:
-- Question text
-- Question Description
-- Question type
-- Answer id
-- Required
+Delete question
+Create auth routes
+Make responses schema
+Protect frontend routes as well
 
-QUESTION TYPE AND ANSWER TYPE SCHEMAS:
+Render form (as user views it) from db
+(Wont have add/remove/etc)
 
-SHORT ANSWER:done
-
-PARAGRAPH:done
-
-MULTIPLE CHOICE:done
-
-CHECKBOXES:done
-
-DROPDOWN:done
-
-LINEAR SCALE:
-
-MULTIPLE CHOICE GRID:
-
-TICK BOX GRID:
-
-
-
-ANSWER BASE SHEMA:
-
-- Question
-- Answer Type
-
-
-
-Get routes:
-
-- Show forms page
-- Edit form page
-
-Post routes:
-
-- Add Form
-- Delete Form
-
-- Add Question
-- Edit Question
-- Delete Question
-
-- Get Response
-
-
-
-
-
+Implement new features
