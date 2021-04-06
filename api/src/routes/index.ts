@@ -9,7 +9,6 @@ import {
   getQuestionsByFormid,
   updateQuestion,
 } from "./question";
-// import { viewResponses } from "./response";
 import { isValidUser } from "./user";
 const router = express.Router();
 router.get("/helloworld",isValidUser, helloWorld);
@@ -27,9 +26,6 @@ router.get("/getquestionsbyformid/:formid",isValidUser, getQuestionsByFormid);
 router.post("/addquestion",isValidUser, addQuestion);
 router.put("/updatequestion",isValidUser, updateQuestion);
 router.delete("/deletequestion",isValidUser, deleteQuestion);
-
-// router.get("/viewresponses",isValidUser,viewResponses);
-
 
 
 export default router;

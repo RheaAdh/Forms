@@ -4,7 +4,6 @@ Fix issues
 
 Delete question
 Create auth routes
-Make responses schema
 Protect frontend routes as well
 
 Render form (as user views it) from db

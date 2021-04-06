@@ -1,11 +1,16 @@
-import {Document} from "mongoose"
+  //TO ADD ROLES
+  //   role:{
+  //     type:String,
+  //     default:"User"
+  // },
+import {Document,Schema} from "mongoose"
 import { Response, Request, NextFunction } from "express";
 import * as mongo from "../config/mongo";
-import { User } from "../models/User";
+import { User } from "../models/user";
 declare module "express-session" {
     interface Session {
       isAuth: boolean;
-      userId: String;
+      userId: Schema.Types.ObjectId;
     }
   }
 const bcrypt= require("bcryptjs")
@@ -32,6 +37,7 @@ export async function RegisterUser(req: Request, res: Response) {
         password:hashpwd,
         email
     });
+
     try {
         await user.save();
         console.log("New user created!");
