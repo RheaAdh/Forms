@@ -5,7 +5,7 @@ import { User } from "../models/User";
 declare module "express-session" {
     interface Session {
       isAuth: boolean;
-      userId: Object;
+      userId: String;
     }
   }
 const bcrypt= require("bcryptjs")
@@ -63,7 +63,7 @@ export async function LoginUser(req: Request, res: Response) {
         return res.send("INVALID CREDENTIALS")
     }
     req.session.isAuth=true  
-    req.session.userId=user  
+    req.session.userId=user._id  
     //redirect to all forms page
     return res.send("User credentials valid: "+ user) 
 

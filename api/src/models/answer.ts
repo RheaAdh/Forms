@@ -5,6 +5,8 @@ import { Question } from "./question";
 const options = { discriminatorKey: "answer-type" };
 
 const answerSchema: Schema = new Schema({
+  userId:{type:Schema.Types.ObjectId,ref:"User"},
+  formid:{type: Schema.Types.ObjectId, ref: "Form"},
   question: { type: Schema.Types.ObjectId, ref: "Question" },
   options,
 });
