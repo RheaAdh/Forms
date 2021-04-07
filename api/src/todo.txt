@@ -3,11 +3,13 @@ TODO
 Fix issues
 
 Delete question
-Create auth routes
 Protect frontend routes as well
 
 Render form (as user views it) from db
 (Wont have add/remove/etc)
+
+frontend dashboard for admin and superadmin pending
+Response routes pending 
 
 
 ------------------------------------------------------------
