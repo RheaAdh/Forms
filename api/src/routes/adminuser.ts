@@ -6,6 +6,7 @@ declare module "express-session" {
     interface Session {
       isAuth: boolean,
       userId: Schema.Types.ObjectId;
+      role:String;
     }
   }
 const bcrypt= require("bcryptjs")
@@ -13,7 +14,8 @@ const bcrypt= require("bcryptjs")
 export function SessionDetails(req:Request,res:Response){
     // console.log(JSON.stringify(req.session));
     console.log('SessionID : ', req.sessionID)
-    console.log('Session: ', req.session)  
+    console.log('Session: ', req.session)
+    res.send(req.session)  
 }
 
 //FOR ADMINS
@@ -23,12 +25,17 @@ export async function RegisterUser(req: Request, res: Response) {
     console.log("POST REQUEST WAS MADE");
     const {username,password,email}=req.body;
     let user=await(User.findOne({email}))
-    const hashpwd=await bcrypt.hash(req.body.password,10)
     if(user){
         //REDIRECT TO LOGIN IF ALREADY A REGISTERED USER
         return res.send("User exists with same details,try again with a new password if not registered") 
     }
     //USER NOT CREATED
+    if(password.length<7)
+    {
+      //REDIRECT TO LOGIN WHEN PASSWORD IS LESS THAN 6 CHARS
+      return res.send("Password must be atleast 6 characters long")
+    }
+    const hashpwd=await bcrypt.hash(req.body.password,10)
     user= new User({
         username,
         password:hashpwd,
@@ -39,7 +46,7 @@ export async function RegisterUser(req: Request, res: Response) {
     try {
         await user.save();
         console.log("New admin created!");
-        //REDIRECT TO ALL FORMS PAGE
+        //REDIRECT TO LOGIN PAGE
         return res.send(user);
     } catch (error) {
         return res.send(error);
@@ -68,12 +75,26 @@ export async function LoginUser(req: Request, res: Response) {
     }
     req.session.isAuth=true  
     req.session.userId=user._id  
+    req.session.role=user.role
     //redirect to all forms page
-    return res.send("User credentials valid: "+ user) 
+    if(user.role=='superadmin')
+    {
+      //redirect to superadmin-dashborad
+      //  return res.send("Access:Superadmin Dashboard") 
+      return res.redirect('http://localhost:7000/superadmin/dashboard')
+    }
+    else if(user.role=='admin')
+    {
+      //redirect to admin dashboard
+      // return res.send("Access: Admin Dashboard")
+      return res.redirect('http://localhost:7000/admin/dashboard')
+    }
+    // return res.send("User credentials valid: "+ user) 
 
 }
 
-export async function isValidUser(req: Request, res: Response,next:NextFunction){
+//Middleware to check admin
+export async function isValidAdmin(req: Request, res: Response,next:NextFunction){
     await mongo.connectMongo();
     if(req.session.isAuth){
       next()
@@ -83,6 +104,31 @@ export async function isValidUser(req: Request, res: Response,next:NextFunction)
       return res.send("you are not logged in ")
     }
   }
+
+//NOTE: For Now Superadmin can access both admin and superadmin routes
+
+
+  //Middleware to check superadmin
+export async function isValidSuperAdmin(req: Request, res: Response,next:NextFunction) {
+ await mongo.connectMongo();
+ if(req.session.isAuth)
+ {
+   if(req.session.role=='superadmin')
+   {
+      next()
+   }
+   else
+   {
+     //redirect to login page
+     return res.send("Superadmin access required")
+   }
+ }
+ else
+ {
+   //redirect to login page
+   return res.send("Login Required")
+ } 
+}
 
   export async function LogoutUser(req: Request, res: Response,next:NextFunction){
     await mongo.connectMongo();

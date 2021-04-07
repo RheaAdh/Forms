@@ -78,7 +78,7 @@ Router.get('/auth/google/callback',
   function(req, res) {
     // Successful authentication, redirect home.
     console.log("inside call back")
-
+    req.session.role='user'
     //Redirect to Homepage
     res.redirect('http://localhost:7000/');
   });

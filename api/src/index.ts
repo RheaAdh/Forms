@@ -3,7 +3,7 @@ require("dotenv").config({ path: path.join(".env") });
 const cors = require("cors");
 import express, { Request, Response } from "express";
 import router from "./routes";
-import { SessionDetails,RegisterUser,LoginUser,LogoutUser } from "./routes/adminuser";
+import { SessionDetails,RegisterUser,LoginUser,LogoutUser,isValidAdmin, isValidSuperAdmin } from "./routes/adminuser";
 import {store} from "./config/mongo"
 const port: Number = 7000;
 const session =require("express-session")
@@ -14,6 +14,8 @@ const app = express();
 import Router from './routes/user'
 import {checkAuthentication, userLogout,getUser} from './routes/user'
 import passport from 'passport'
+
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -46,6 +48,8 @@ app.use("/user",Router)
 app.use("/user/logout",userLogout)
 app.use("/user/getuser",getUser)
 
+//<-----------------------ROUTES BELOW ARE FOR TESTING PURPOSE---------------------------------------------------->
+
 //TEST WELCOME PAGE
 app.get("/",(req,res)=>{
     res.send("Welcome to home page")
@@ -56,7 +60,13 @@ app.get("/test",checkAuthentication,(req,res)=>{
     res.send("Inside Protected Route")
   })
 
-
+app.get("/admin/dashboard",isValidAdmin,(req,res)=>{
+    res.send("Inside Admin dashboard")
+})
+app.get("/superadmin/dashboard",isValidSuperAdmin,(req,res)=>{
+    res.send("Inside super-admin dashboard")
+})
+app.get("/sessiondetail",SessionDetails)
   
 
 

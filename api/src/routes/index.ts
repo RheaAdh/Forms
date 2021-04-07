@@ -9,28 +9,28 @@ import {
   getQuestionsByFormid,
   updateQuestion,
 } from "./question";
-import { isValidUser } from "./adminuser";
+import { isValidAdmin } from "./adminuser";
 const router = express.Router();
 
 
 
 router.get("/helloworld", helloWorld);
-router.get("/db",isValidUser, dbTesting);
+router.get("/db",isValidAdmin, dbTesting);
 
 
 //ADMIN LEVEL PROTECTED ROUTES
-router.get("/getforms",isValidUser, getForms);
-router.get("/getform/:formid",isValidUser, getForm);
-router.post("/addform",isValidUser, addForm);
-router.put("/updateform",isValidUser, updateForm);
-router.delete("/deleteform",isValidUser, deleteForm);
+router.get("/getforms",isValidAdmin, getForms);
+router.get("/getform/:formid",isValidAdmin, getForm);
+router.post("/addform",isValidAdmin, addForm);
+router.put("/updateform",isValidAdmin, updateForm);
+router.delete("/deleteform",isValidAdmin, deleteForm);
 
-router.get("/getquestions",isValidUser, getQuestions);
-router.get("/getquestion/:qid",isValidUser, getQuestion);
-router.get("/getquestionsbyformid/:formid",isValidUser, getQuestionsByFormid);
-router.post("/addquestion",isValidUser, addQuestion);
-router.put("/updatequestion",isValidUser, updateQuestion);
-router.delete("/deletequestion",isValidUser, deleteQuestion);
+router.get("/getquestions",isValidAdmin, getQuestions);
+router.get("/getquestion/:qid",isValidAdmin, getQuestion);
+router.get("/getquestionsbyformid/:formid",isValidAdmin, getQuestionsByFormid);
+router.post("/addquestion",isValidAdmin, addQuestion);
+router.put("/updatequestion",isValidAdmin, updateQuestion);
+router.delete("/deletequestion",isValidAdmin, deleteQuestion);
 
 
 export default router;
