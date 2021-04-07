@@ -9,11 +9,16 @@ import {
   getQuestionsByFormid,
   updateQuestion,
 } from "./question";
-import { isValidUser } from "./user";
+import { isValidUser } from "./adminuser";
 const router = express.Router();
-router.get("/helloworld",isValidUser, helloWorld);
+
+
+
+router.get("/helloworld", helloWorld);
 router.get("/db",isValidUser, dbTesting);
 
+
+//ADMIN LEVEL PROTECTED ROUTES
 router.get("/getforms",isValidUser, getForms);
 router.get("/getform/:formid",isValidUser, getForm);
 router.post("/addform",isValidUser, addForm);
