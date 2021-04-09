@@ -22,7 +22,7 @@ const NewForm = () => {
 
   const addForm = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const form = { title: title };
+    const form = { title: title, color_theme: "#ffffff" };
 
     fetch("http://localhost:7000/api/addForm", {
       method: "POST",

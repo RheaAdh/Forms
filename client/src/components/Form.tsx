@@ -40,7 +40,7 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
   return (
     <div onClick={handleClick}>
       <div>
-        <h1 style={{ backgroundColor: "paleturquoise", cursor: "pointer" }}>
+        <h1 style={{ backgroundColor: form.color_theme, cursor: "pointer" }}>
           {form.title}--{form.color_theme}
           <button onClick={handleDelete}>Delete Form</button>
         </h1>
