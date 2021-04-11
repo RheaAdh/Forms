@@ -204,21 +204,117 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
 export async function updateQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
   console.log(req.body);
-  const moddedBody = { ...req.body };
-  moddedBody["question-type"] = req.body["question-type"];
-  console.log({ moddedBody });
-
+  let moddedBody = {...req.body}
+  moddedBody["question-type"] = req.body["question-type"]
   let updatedQuestion;
   try {
+    // Update by finding Question, so that question type can be changed
     updatedQuestion = await Question.findOneAndUpdate(
-      { _id: req.body._id },
+      {_id : req.body._id},
       {
-        ...moddedBody,
+        "question-type" : req.body["question-type"]
       },
-      { new: true }
-    );
+      {new : true}
+    )
+    // Update by finding exact question type, else options won't get updated
+    switch(moddedBody["question-type"]){
+      case "short-answer":
+        updatedQuestion = await shortQuestion.findOneAndUpdate(
+          {_id : req.body._id},
+          {
+            ...moddedBody
+          } ,
+          {new : true}
+        )
+        break;
+        case "paragraph-answer":
+          updatedQuestion = await paragraphQuestion.findOneAndUpdate(
+            {_id : req.body._id},
+            {
+              ...moddedBody
+            } ,
+            {new : true}
+          )
+          break;
+      case "mcq-answer":
+        updatedQuestion = await mcqQuestion.findOneAndUpdate(
+          {_id : req.body._id},
+          {
+            ...moddedBody
+          } ,
+          {new : true}
+        )
+        break;
+      case "checkbox-answer":
+        updatedQuestion = await checkboxQuestion.findOneAndUpdate(
+          {_id : req.body._id},
+          {
+            ...moddedBody
+          } ,
+          {new : true}
+        )
+        break;
+      case "dropdown-answer":
+        updatedQuestion = await dropdownQuestion.findOneAndUpdate(
+          {_id : req.body._id},
+          {
+            ...moddedBody
+          } ,
+          {new : true}
+        )
+        break;
+      case "linearscale-answer":
+        updatedQuestion = await linearscaleQuestion.findOneAndUpdate(
+          {_id : req.body._id},
+          {
+            ...moddedBody
+          } ,
+          {new : true}
+        )
+        break;
+      case "multiplechoicegrid-answer":
+        updatedQuestion = await multiplechoicegridQuestion.findOneAndUpdate(
+          {_id : req.body._id},
+          {
+            ...moddedBody
+          } ,
+          {new : true}
+        )
+        break;   
+      case "checkboxgrid-answer":  
+        updatedQuestion = await checkboxgridQuestion.findOneAndUpdate(
+          {_id : req.body._id},
+          {
+            ...moddedBody
+          } ,
+          {new : true}
+        )
+        break;
+      case "date-answer":
+        updatedQuestion = await dateQuestion.findOneAndUpdate(
+          {_id : req.body._id},
+          {
+            ...moddedBody
+          } ,
+          {new : true}
+        )
+        break;
+      case "time-answer":
+        updatedQuestion = await timeQuestion.findOneAndUpdate(
+          {_id : req.body._id},
+          {
+            ...moddedBody
+          } ,
+          {new : true}
+        )
+        break;
+      default:
+        updatedQuestion = {data:{msg : "Something went wrong"}}
+    }
+    console.log(updatedQuestion)
     res.send(updatedQuestion);
-  } catch (error) {
+    }
+   catch (error) {
     res.send(error);
   }
 }
@@ -227,6 +323,7 @@ export async function deleteQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
   try {
     await Question.findByIdAndDelete(req.body.id);
+    await Form.findByIdAndUpdate(req.body.formid, {$pull : {questions : req.body.id}})
     res.send("Deleted successfully");
   } catch (error) {
     res.end("You messed up.... again");

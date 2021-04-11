@@ -8,9 +8,9 @@ interface props {
 
 const Forms: React.FC<props> = ({ forms, deleteForm }) => {
   return (
-    <div>
+    <div>  
       Forms:
-      {!forms ? (
+      {!forms ? (   
         "Loading..."
       ) : (
         <div>

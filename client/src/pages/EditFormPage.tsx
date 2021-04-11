@@ -15,7 +15,7 @@ import "../styles/EditFormPage.css";
 //ERROR HANDLING IF YOU FEEL LIKE IT
 
 const EditFormPage: React.FC = () => {
-  const { formid } = useParams();
+  const {formid} : any  = useParams();
 
   const [form, setForm] = useState<any>();
   const [questions, setQuestions] = useState<any[]>();
@@ -103,6 +103,7 @@ const EditFormPage: React.FC = () => {
     setShowEditTitle(true);
   };
 
+  
   //SHOW AND HIDE EDIT FORM TITLE LOGIC
   useEffect(() => {
     if (showEditTitle) {
@@ -137,7 +138,7 @@ const EditFormPage: React.FC = () => {
       <input type="color" onChange={handleColour} value={colour}></input>
       <h3>{form.color_theme}</h3>
 
-      <QuestionList questions={questions} formid={form._id} />
+      <QuestionList questions={questions} formid={form._id}  />
     </div>
   ) : (
     <div>loading</div>

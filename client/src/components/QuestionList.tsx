@@ -7,7 +7,7 @@ interface props {
   questions?: any[];
   formid: any;
 }
-const QuestionList: React.FC<props> = ({ questions, formid }) => {
+const QuestionList: React.FC<props> = ({questions, formid}) => {
   const [list, setList] = useState<any[]>([]);
 
   useEffect(() => {
@@ -36,12 +36,17 @@ const QuestionList: React.FC<props> = ({ questions, formid }) => {
     // setList(() => [...list, question]);
   };
 
+  const deleteQuestion = (id : any) =>{
+    setList((prevList:any)=> prevList.filter((question:any)=> question._id != id) )
+    console.log(id)
+  }
+
   return (
     <div className="list-container">
       <div className="list-body">
         {list.map((question) => (
-          <Question question={question} />
-        ))}
+          <Question question={question} deleteQuestion={deleteQuestion}/>
+        ))}    
       </div>
       <button className="add-button" onClick={addQuestion}>Add Question</button>
     </div>

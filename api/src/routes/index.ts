@@ -4,7 +4,7 @@ import { deleteForm, addForm, getForms, getForm, updateForm } from "./form";
 import {
   addQuestion,
   deleteQuestion,
-  getQuestions,
+  getQuestions,      
   getQuestion,
   getQuestionsByFormid,
   updateQuestion,
@@ -17,7 +17,7 @@ router.get("/db", dbTesting);
 
 router.get("/getforms", getForms);
 router.get("/getform/:formid", getForm);
-router.post("/addform", addForm);
+router.post("/addform", addForm);  
 router.put("/updateform", updateForm);
 router.delete("/deleteform", deleteForm);
 

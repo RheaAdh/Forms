@@ -35,7 +35,7 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
       .catch((error) => {
         console.error("Error:", error);
       });
-  };
+  };   
 
   return (
     <div onClick={handleClick}>

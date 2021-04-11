@@ -11,7 +11,6 @@ export async function getForms(req: Request, res: Response) {
 
 export async function getForm(req: Request, res: Response) {
   await mongo.connectMongo();
-
   const form = await Form.findById(req.params.formid);
 
   res.json(form);
@@ -24,7 +23,7 @@ export async function addForm(req: Request, res: Response) {
 
   console.log(req.body);
 
-  // let title = req.body.title;
+  // let title = req.body.title;   
   // let description = req.body.description;
   // let bgimg = req.body.bg_img;
   // let file = req.body.file;

@@ -34,12 +34,12 @@ export const paragraphQuestion = Question.discriminator(
 // MULTIPLE CHOICE:
 const mcqSchema: Schema = new Schema({
   //array of text
-  options: [{ text: String }],
+  options: [{type : String}]
 });
 export const mcqQuestion = Question.discriminator("mcq-answer", mcqSchema);
 // CHECKBOXES:
 const checkboxSchema: Schema = new Schema({
-  options: [{ text: String }],
+  options: [{ type: String }],
 });
 export const checkboxQuestion = Question.discriminator(
   "checkbox-answer",
@@ -47,7 +47,7 @@ export const checkboxQuestion = Question.discriminator(
 );
 // DROPDOWN:
 const dropdownSchema: Schema = new Schema({
-  options: [{ text: String }],
+  options: [{ type: String }],
 });
 export const dropdownQuestion = Question.discriminator(
   "dropdown-answer",
