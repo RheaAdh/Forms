@@ -23,15 +23,21 @@ export async function addForm(req: Request, res: Response) {
   console.log("POST REQUEST WAS MADE");
 
   console.log(req.body);
-
   const newForm = new Form(req.body);
-
-  try {
-    await newForm.save();
-    console.log("Form added!");
-    res.send(newForm);
-  } catch (error) {
-    res.send(error);
+  //Only Admins with makeForm true can make forms
+  if(req.session.makeForm)
+  {
+    try {
+      await newForm.save();
+      console.log("Form added!");
+      res.send(newForm);
+    } catch (error) {
+      res.send(error);
+    }
+  }
+  else
+  {
+    res.send("You dont have rights to make form")
   }
 }
 

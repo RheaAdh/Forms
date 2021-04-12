@@ -21,6 +21,10 @@ const userSchema: Schema = new Schema({
         enum:['user','admin','superadmin'],
         default:'user'
   },
+  makeForm:{
+      type:Boolean,
+      default:false
+  }
 },
 {
     timestamps:true,

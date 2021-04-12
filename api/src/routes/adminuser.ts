@@ -7,6 +7,7 @@ declare module "express-session" {
       isAuth: boolean,
       userId: Schema.Types.ObjectId;
       role:String;
+      makeForm:Boolean
     }
   }
 const bcrypt= require("bcryptjs")
@@ -76,6 +77,7 @@ export async function LoginUser(req: Request, res: Response) {
     req.session.isAuth=true  
     req.session.userId=user._id  
     req.session.role=user.role
+    req.session.makeForm=user.makeForm
     //redirect to all forms page
     if(user.role=='superadmin')
     {

@@ -60,12 +60,14 @@ function(accessToken:any, refreshToken:any, profile:any, cb:any) {
 }));
 
 passport.serializeUser((user:any,done:any)=>{
+    console.log("serialize")
     return done(null,user._id)
   })
 
 passport.deserializeUser((id: string, done: any) => {
     User.findById(id, (err: Error, doc: any) => {
       // Whatever we return goes to the client and binds to the req.user property
+    console.log("de-serialize")
       return done(null, doc);
     })
 })
