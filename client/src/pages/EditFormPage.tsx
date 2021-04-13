@@ -111,7 +111,7 @@ const EditFormPage: React.FC = () => {
     }
   }, [showEditTitle]);
 
-  useEffect(updateColour, colour);
+  useEffect(updateColour, [colour]);
 
 
   return form ? (

@@ -12,6 +12,7 @@ import {
   checkboxgridQuestion,
   dateQuestion,
   timeQuestion,
+  emailQuestion,
 } from "../models/question";
 import { Form } from "../models/form";
 
@@ -54,6 +55,11 @@ export async function addQuestion(req: Request, res: Response) {
   switch (question_type) {
     case "short-answer": {
       newQuestion = new shortQuestion({ ...common });
+      break;
+    }
+
+    case "email-answer":{
+      newQuestion = new emailQuestion({...common});
       break;
     }
 
@@ -216,6 +222,7 @@ export async function updateQuestion(req: Request, res: Response) {
       },
       {new : true}
     )
+    console.log("First update", updatedQuestion)
     // Update by finding exact question type, else options won't get updated
     switch(moddedBody["question-type"]){
       case "short-answer":
@@ -233,6 +240,15 @@ export async function updateQuestion(req: Request, res: Response) {
             {
               ...moddedBody
             } ,
+            {new : true}
+          )
+          break;
+      case "email-answer":
+          updatedQuestion = await emailQuestion.findOneAndUpdate(
+            {_id : req.body._id},
+            {
+              ...moddedBody
+            },
             {new : true}
           )
           break;

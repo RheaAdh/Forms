@@ -17,6 +17,7 @@ const Question: React.FC<props> = ({ question, deleteQuestion }) => {
     "linearscale-answer",
     "multiplechoicegrid-answer",
     "checkboxgrid-answer",
+    "email-answer"
   ];
   const [type, setType] = useState<any>(
     question ? questions_types.indexOf(question["question-type"]) : 0
@@ -270,6 +271,10 @@ const Question: React.FC<props> = ({ question, deleteQuestion }) => {
       <button onClick={addCols}>Add column</button>
     </div>,
 
+    <div>
+      <b>Email</b>
+    </div>,
+
      <div>
       <b>File upload</b>
       <table cellSpacing="20">
@@ -348,9 +353,10 @@ const Question: React.FC<props> = ({ question, deleteQuestion }) => {
           <option value={5}>Linear scale</option>
           <option value={6}>Multiple choice grid</option>
           <option value={7}>Checkbox grid</option>
-          <option value={8}>File upload</option>
-          <option value={9}>Date</option>
-          <option value={10}>Time</option>
+          <option value={8}>Email</option>
+          <option value={9}>File upload</option>
+          <option value={10}>Date</option>
+          <option value={11}>Time</option>
         </select>
       </div>
 

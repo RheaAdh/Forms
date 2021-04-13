@@ -31,6 +31,12 @@ export const paragraphQuestion = Question.discriminator(
   "paragraph-answer",
   paragraphSchema
 );
+// EMAIL
+const emailSchema: Schema = new Schema({});
+export const emailQuestion = Question.discriminator(
+  "email-answer",
+  emailSchema
+)
 // MULTIPLE CHOICE:
 const mcqSchema: Schema = new Schema({
   //array of text

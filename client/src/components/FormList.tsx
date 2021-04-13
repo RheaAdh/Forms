@@ -3,12 +3,12 @@ import Form from "../components/Form";
 
 interface props {
   forms: any[];
-  deleteForm: any;
+  deleteForm?: any;
 }
 
 const Forms: React.FC<props> = ({ forms, deleteForm }) => {
   return (
-    <div>  
+    <div className="form-list">  
       Forms:
       {!forms ? (   
         "Loading..."
