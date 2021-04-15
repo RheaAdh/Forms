@@ -22,10 +22,8 @@ export async function addForm(req: Request, res: Response) {
   console.log("POST REQUEST WAS MADE");
 
   console.log(req.body);
-<<<<<<< HEAD
-=======
 
-  // let title = req.body.title;   
+  // let title = req.body.title;
   // let description = req.body.description;
   // let bgimg = req.body.bg_img;
   // let file = req.body.file;
@@ -57,11 +55,9 @@ export async function addForm(req: Request, res: Response) {
   //   }
   // }
 
->>>>>>> schemas-and-routes
   const newForm = new Form(req.body);
   //Only Admins with makeForm true can make forms
-  if(req.session.makeForm)
-  {
+  if (req.session.makeForm) {
     try {
       await newForm.save();
       console.log("Form added!");
@@ -69,10 +65,8 @@ export async function addForm(req: Request, res: Response) {
     } catch (error) {
       res.send(error);
     }
-  }
-  else
-  {
-    res.send("You dont have rights to make form")
+  } else {
+    res.send("You dont have rights to make form");
   }
 }
 
