@@ -1,34 +1,35 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-//USER SCHEMA 
-const userSchema: Schema = new Schema({
-    username:{
-        type:String,
-        required:true,
-        unique:true
+//USER SCHEMA
+const userSchema: Schema = new Schema(
+    {
+        username: {
+            type: String,
+            required: true,
+            unique: true,
+        },
+        password: {
+            type: String,
+            // required:true,
+        },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+        },
+        role: {
+            type: String,
+            enum: ["user", "admin", "superadmin"],
+            default: "user",
+        },
+        makeForm: {
+            type: Boolean,
+            default: false,
+        },
     },
-    password:{
-        type:String,
-        // required:true,
-    },
-    email:{
-        type:String,
-        required:true,
-        unique:true
-    },
-      role:{
-        type:String,
-        enum:['user','admin','superadmin'],
-        default:'user'
-  },
-  makeForm:{
-      type:Boolean,
-      default:false
-  }
-},
-{
-    timestamps:true,
-}
+    {
+        timestamps: true,
+    }
 );
 
 //COMPILE USER MODEL

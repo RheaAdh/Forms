@@ -3,17 +3,17 @@ import { Question } from "./question";
 import { Answer } from "./answer";
 
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
-const form: Schema = new Schema({
-  title: { type: String, required: true },
-  description: String,
-  color_theme: String,
-  //array of question ids
-  questions: [{ type: Schema.Types.ObjectId, ref: "Question" }],
-  // answers: [{ type: Schema.Types.ObjectId, ref: "Answer" }],
-}, 
-  {
-    timestamps:true,
-  }
+const form: Schema = new Schema(
+    {
+        title: { type: String, required: true },
+        color_theme: String,
+        //array of question ids
+        questions: [{ type: Schema.Types.ObjectId, ref: "Question" }],
+        // answers: [{ type: Schema.Types.ObjectId, ref: "Answer" }],
+    },
+    {
+        timestamps: true,
+    }
 );
 
 //?COMPILE FORM MODEL
