@@ -15,7 +15,7 @@ import "../styles/EditFormPage.css";
 //ERROR HANDLING IF YOU FEEL LIKE IT
 
 const EditFormPage: React.FC = () => {
-  const { formid } = useParams();
+  const {formid} : any  = useParams();
 
   const [form, setForm] = useState<any>();
   const [questions, setQuestions] = useState<any[]>();
@@ -23,6 +23,8 @@ const EditFormPage: React.FC = () => {
   const [showEditTitle, setShowEditTitle] = useState<boolean>(false);
 
   const [title, handleTitle, resetTitle, setTitle] = useFormState("");
+
+  const [colour, handleColour, resetColour, setColour] = useFormState("#FFFFFF");
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -36,6 +38,7 @@ const EditFormPage: React.FC = () => {
       .then((data: any) => {
         setForm(data);
         setTitle(data.title);
+        setColour(data.color_theme);
       });
   }, []);
 
@@ -64,7 +67,7 @@ const EditFormPage: React.FC = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...form, title: title }),
+      body: JSON.stringify({ ...form, title: title}),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -78,10 +81,29 @@ const EditFormPage: React.FC = () => {
       });
   };
 
+  const updateColour = () => {
+    fetch("http://localhost:7000/api/updateform", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...form, color_theme: colour }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setForm(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
   const handleTitleClick = () => {
     setShowEditTitle(true);
   };
 
+  
   //SHOW AND HIDE EDIT FORM TITLE LOGIC
   useEffect(() => {
     if (showEditTitle) {
@@ -89,8 +111,15 @@ const EditFormPage: React.FC = () => {
     }
   }, [showEditTitle]);
 
+  useEffect(updateColour, [colour]);
+
+
   return form ? (
-    <div className="edit-form-page">
+    <div className="edit-form-page"  style={{backgroundColor: colour}}>
+
+      <Link to="/">
+        <button>Back</button>
+      </Link>
       {showEditTitle ? (
         <input
           onBlur={handleSubmit}
@@ -105,12 +134,11 @@ const EditFormPage: React.FC = () => {
         </div>
       )}
 
-      <h2>{form.color_theme}</h2>
-      <Link to="/">
-        <button>Back</button>
-      </Link>
+      <h2>Colour theme: </h2>
+      <input type="color" onChange={handleColour} value={colour}></input>
+      <h3>{form.color_theme}</h3>
 
-      <QuestionList questions={questions} formid={form._id} />
+      <QuestionList questions={questions} formid={form._id}  />
     </div>
   ) : (
     <div>loading</div>

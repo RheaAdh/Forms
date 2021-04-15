@@ -8,7 +8,7 @@ export function connectMongo() {
     console.log("haha");
     mongoose.connect(
         mongouri,
-        {
+        {  
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex:true

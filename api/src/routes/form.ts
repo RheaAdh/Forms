@@ -11,7 +11,6 @@ export async function getForms(req: Request, res: Response) {
 
 export async function getForm(req: Request, res: Response) {
   await mongo.connectMongo();
-
   const form = await Form.findById(req.params.formid);
 
   res.json(form);
@@ -23,6 +22,42 @@ export async function addForm(req: Request, res: Response) {
   console.log("POST REQUEST WAS MADE");
 
   console.log(req.body);
+<<<<<<< HEAD
+=======
+
+  // let title = req.body.title;   
+  // let description = req.body.description;
+  // let bgimg = req.body.bg_img;
+  // let file = req.body.file;
+  // let colorTheme = req.body.color_theme;
+
+  // if(!formid) {
+  //   return {"status":"false", message: "invalid form_id"}
+  // }
+  // if (!bgimg) {
+  //   return { status: "false", message: "invalid bg_img" }; // I DIDN'T EXACTLY UNDERSTAND WHY WE RETURN
+  // }
+  // if (!file) {
+  //   return { status: "false", message: "invalid file" }; //WHAT DO WE NEED A FILE FOR?
+  // }
+
+  //   if (file && formid && bgimg) {
+  //     const newForm = new Form({
+  //       form_id: formid,
+  //       bg_img: bgimg,
+  //       file: file,
+  //     });
+  //     await newForm.save((err) => {
+  //       if (err) throw err;
+  //       res.json({
+  //         success: true,
+  //       });
+  //     });
+  //     res.send("Form added");
+  //   }
+  // }
+
+>>>>>>> schemas-and-routes
   const newForm = new Form(req.body);
   //Only Admins with makeForm true can make forms
   if(req.session.makeForm)

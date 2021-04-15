@@ -12,7 +12,7 @@ const NewForm = () => {
 
   //INITALLY addedForm IS NULL SO HISTORY DOESNT PUSH, BUT WHEN THE POST REQUEST IS
   //COMPLETE THE addedForm IS SET TO THE ADDED FORM, TRIGGERING A RERENDER, SO THAN
-  //HISTORY GETS PUSHED
+  //HISTORY GETS PUSHED    
 
   addedForm && history.push(`/editForm/${addedForm._id}`);
 
@@ -22,7 +22,7 @@ const NewForm = () => {
 
   const addForm = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const form = { title: title };
+    const form = { title: title, color_theme: "#ffffff" };
 
     fetch("http://localhost:7000/api/addForm", {
       method: "POST",
