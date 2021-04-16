@@ -20,7 +20,7 @@ export function connectMongo() {
     );
 }
 
-// export const store=new MongoDBSession({
-//     uri:`mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@localhost:27017/forms`,
-//     collection:"AllSessions"
-// })
+export const store=new MongoDBSession({
+    uri:`mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@localhost:27017/forms`,
+    collection:"AllSessions"
+})

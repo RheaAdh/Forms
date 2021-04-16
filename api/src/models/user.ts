@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
 //USER SCHEMA
 const userSchema: Schema = new Schema(
@@ -10,6 +10,7 @@ const userSchema: Schema = new Schema(
         },
         password: {
             type: String,
+            default: null,
             // required:true,
         },
         email: {
@@ -19,12 +20,8 @@ const userSchema: Schema = new Schema(
         },
         role: {
             type: String,
-            enum: ["user", "admin", "superadmin"],
-            default: "user",
-        },
-        makeForm: {
-            type: Boolean,
-            default: false,
+            enum: ['user', 'admin', 'superadmin'],
+            default: 'user',
         },
     },
     {
@@ -34,4 +31,4 @@ const userSchema: Schema = new Schema(
 
 //COMPILE USER MODEL
 
-export const User = mongoose.model("User", userSchema);
+export const User = mongoose.model('User', userSchema);
