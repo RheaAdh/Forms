@@ -1,6 +1,4 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { Question } from './question';
-import { Answer } from './answer';
 
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
 const form: Schema = new Schema(

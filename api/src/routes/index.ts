@@ -47,8 +47,6 @@ router.post("/addquestion", addQuestion);
 router.put("/updatequestion", updateQuestion);
 router.delete("/deletequestion", deleteQuestion);
 
-//RHEA TESTING
-
 router.post("/sendAnswer", sendAnswer);
 
 export default router;

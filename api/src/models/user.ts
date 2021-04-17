@@ -3,15 +3,10 @@ import mongoose, { Schema, Document } from 'mongoose';
 //USER SCHEMA
 const userSchema: Schema = new Schema(
     {
-        username: {
-            type: String,
-            required: true,
-            unique: true,
-        },
         password: {
             type: String,
             default: null,
-            // required:true,
+            required:true,
         },
         email: {
             type: String,
@@ -22,6 +17,7 @@ const userSchema: Schema = new Schema(
             type: String,
             enum: ['user', 'admin', 'superadmin'],
             default: 'user',
+            required:true
         },
     },
     {

@@ -1,6 +1,4 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { Question } from "./question";
-import { Answer } from "./answer";
 
 const response: Schema = new Schema(
     {

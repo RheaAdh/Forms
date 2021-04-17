@@ -2,6 +2,7 @@ import { Document, Schema } from 'mongoose';
 import { Response, Request, NextFunction } from 'express';
 import * as mongo from '../config/mongo';
 import { User } from '../models/user';
+
 declare module 'express-session' {
     interface Session {
         isAuth: boolean;
@@ -16,7 +17,7 @@ const bcrypt = require('bcryptjs');
 export async function adminRegister(req: Request, res: Response) {
     await mongo.connectMongo();
     console.log('POST REQUEST WAS MADE');
-    const { username, password, confirm_pass, email } = req.body;
+    const { username, password, confirmPassword, email } = req.body;
 
     //CHECKING FOR CORRECT EMAIL TYPE
     if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
@@ -45,7 +46,7 @@ export async function adminRegister(req: Request, res: Response) {
     }
 
     //MATCHING CONFIRM PASSWORD AND PASSWORD
-    if (confirm_pass != password) {
+    if (confirmPassword != password) {
         return res.send({
             success: false,
             data: 'Password and Confirm Password does not match',
@@ -75,7 +76,7 @@ export async function adminRegister(req: Request, res: Response) {
 
 export async function adminLogin(req: Request, res: Response) {
     await mongo.connectMongo();
-    console.log('POST REQUEST WAS MADE');
+    console.log(' adminLogin POST REQUEST WAS MADE');
     const { email, password } = req.body;
     let user: any;
     try {
@@ -169,6 +170,7 @@ export async function adminLogout(
         }
     });
 }
+
 //FOR CHECKING CURRENT SESSION DETAILS
 export function sessionDetails(req: Request, res: Response) {
     console.log('SessionID : ', req.sessionID);
