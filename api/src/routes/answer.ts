@@ -1,6 +1,6 @@
-import { Response, Request } from "express";
-import * as mongo from "../config/mongo";
-import { Form } from "../models/form";
+import { Response, Request } from 'express';
+import * as mongo from '../config/mongo';
+import { Form } from '../models/form';
 
 import {
     Answer,
@@ -15,7 +15,7 @@ import {
     checkboxgridAnswer,
     dateAnswer,
     timeAnswer,
-} from "../models/answer";
+} from '../models/answer';
 
 export async function sendAnswer(req: Request, res: Response) {
     await mongo.connectMongo();
@@ -28,118 +28,133 @@ export async function sendAnswer(req: Request, res: Response) {
     try {
         form = await Form.findById(formId);
         console.log(form);
+        console.log('Form found');
     } catch (error) {
-        console.log("cannot");
+        console.log('cannot');
     }
 
     const common = {
-        formid: formId,
+        formId: formId,
         answer_text: answer_text,
         answer_type: answer_type,
         questionId: questionId,
     };
+    
 
     let newAnswer;
 
     switch (answer_type) {
-        case "short-answer": {
-            // newAnswer = new shortAnswer({ ...common });
-            // break;
+        case 'shortanswer': {
+            console.log('Inside');
+            newAnswer = new shortAnswer({ ...common });
+            break;
         }
 
-        case "paragraph-answer": {
-            // newAnswer = new paragraphAnswer({ ...common });
-            // break;
+        case 'paragraphanswer': {
+            newAnswer = new paragraphAnswer({ ...common });
+            break;
         }
 
-        case "email-answer": {
-            // newAnswer = new emailAnswer({ ...common });
-            // break;
+        case 'emailanswer': {
+            newAnswer = new emailAnswer({ ...common });
+            break;
         }
 
-        case "mcq-answer": {
-            // newAnswer = new mcqAnswer({ ...common, options: [...options] });
-            // break;
+        case 'mcqanswer': {
+            newAnswer = new mcqAnswer({
+                ...common,
+                selectedOption:req.body.option
+            });
+            break;
         }
 
-        case "checkbox-answer": {
-            // newAnswer = new checkboxAnswer({
-            //     ...common,
-            //     options: [...options],
-            // });
-            // break;
+        case 'checkboxanswer': {
+            const options = req.body.options
+            newAnswer = new checkboxAnswer({
+                ...common,
+                ...options
+            });
+            break;
         }
 
-        case "dropdown-answer": {
-            // newAnswer = new dropdownAnswer({
-            //     ...common,
-            //     options: [...options],
-            // });
-            // break;
+        case 'dropdownanswer': {
+            newAnswer = new dropdownAnswer({
+                ...common,
+                selectedOption:req.body.option
+            });
+            break;
         }
 
-        case "linearscale-answer": {
-            // newAnswer = new linearscaleAnswer({
-            //     ...common,
-            //     lowRating: lowRating,
-            //     highRating: highRating,
-            //     lowRatingLabel: lowRatingLabel,
-            //     highRatingLabel: highRatingLabel,
-            // });
-            // break;
+        case 'linearscaleanswer': {
+            newAnswer = new linearscaleAnswer({
+                ...common,
+                selectedOption:req.body.option
+                //     lowRating: lowRating,
+                //     highRating: highRating,
+                //     lowRatingLabel: lowRatingLabel,
+                //     highRatingLabel: highRatingLabel,
+            });
+            break;
         }
 
-        case "multiplechoicegrid-answer": {
-            // newAnswer = new multiplechoicegridAnswer({
-            //     ...common,
-            //     rowLabel: rowLabel,
-            //     colLabel: colLabel,
-            // });
-            // break;
+        case 'multiplechoicegridanswer': {
+            const options = req.body.options
+            newAnswer = new multiplechoicegridAnswer({
+                ...common,
+                ...options
+                // rowLabel: rowLabel,
+                //     colLabel: colLabel,
+            });
+            break;
         }
 
-        case "checkboxgrid-answer": {
-            // newAnswer = new checkboxgridAnswer({
-            //     ...common,
-            //     rowLabel: rowLabel,
-            //     colLabel: colLabel,
-            // });
-            // break;
+        case 'checkboxgridanswer': {
+            const options = req.body.options
+            newAnswer = new checkboxgridAnswer({
+                ...common,
+                ...options,
+                // rowLabel: rowLabel,
+                // colLabel: colLabel,
+            });
+            break;
         }
 
-        case "date-answer": {
-            // newAnswer = new dateAnswer({ ...common });
-            // break;
+        case 'dateanswer': {
+            newAnswer = new dateAnswer({ ...common });
+            break;
         }
 
-        case "time-answer": {
-            // newAnswer = new timeAnswer({ ...common });
-            // break;
+        case 'timeanswer': {
+            newAnswer = new timeAnswer({
+                 ...common,
+                 timeHours:req.body.timeHours,
+                 timeMinutes:req.body.timeMinutes
+             });
+            break;
         }
 
         default:
-        // newAnswer = new Answer({ ...common });
+            newAnswer = new Answer({ ...common });
     }
+
     console.log(newAnswer);
-    console.log(questionId);
 
-    // try {
-    //     await newAnswer.save();
-    //     console.log("Answer saved!!");
-    // } catch (error) {
-    //     console.log("Couldnt save Answer :(");
-    // }
+    try {
+        await newAnswer.save();
+        console.log('Answer saved!!');
+    } catch (error) {
+        console.log('Couldnt save Answer :(');
+    }
 
-    // form.Answers.push(newAnswer);
+    form.answers.push(newAnswer);
+    try {
+        await form.save();
+        console.log('Form saved!!');
+    } catch (error) {
+        console.log('Couldnt save form');
+    }
 
-    // try {
-    //     await form.save();
-    //     console.log("Form saved!!");
-    // } catch (error) {
-    //     console.log("Couldnt save form");
-    // }
-
-    // res.json(newAnswer);
+    res.send({success:true,data:"Answered Stored"});
 }
 // export async function updateAnswer(req: Request, res: Response) {
 //     await mongo.connectMongo();

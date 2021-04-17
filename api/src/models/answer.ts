@@ -1,36 +1,38 @@
-import mongoose, { Schema, Document } from "mongoose";
-import { Question } from "./question";
+import mongoose, { Schema, Document } from 'mongoose';
+import { Question } from './question';
 
-//!BASE ANSWER SCHEMA WITH THE SAME QUESTION-TYPE DISCRIMINATOR
-const options = { discriminatorKey: "answer-type" };
+//!BASE ANSWER SCHEMA WITH THE SAME ANSWER-TYPE DISCRIMINATOR
+const options = { discriminatorKey: 'answer-type' };
 
-const answerSchema: Schema = new Schema({
-    answerText: { type: String },
-    // userId: { type: Schema.Types.ObjectId, ref: "User" },
-    formId: { type: Schema.Types.ObjectId, ref: "Form" },
-    questionId: { type: Schema.Types.ObjectId, ref: "Question" },
-    options,
-});
+const answerSchema: Schema = new Schema(
+    {
+        answerText: { type: String },
+        // userId: { type: Schema.Types.ObjectId, ref: "User" },
+        formId: { type: Schema.Types.ObjectId, ref: 'Form' },
+        questionId: { type: Schema.Types.ObjectId, ref: 'Question' },
+    },
+    options
+);
 
 //?COMPILE ANSWER MODEL
-export const Answer = mongoose.model("answer", answerSchema);
+export const Answer = mongoose.model('answer', answerSchema);
 
-// SHORT ANSWER:short-answer is a answer-type
+//SHORT ANSWER:shortanswer is a answer-type
 const shortAnswerSchema: Schema = new Schema({
     shortText: { type: String, max: 100, min: 1 },
 });
 export const shortAnswer = Answer.discriminator(
-    "short-answer",
+    'shortanswer',
     shortAnswerSchema
 );
 
-// PARAGRAPH:paragraph-answer is answer-type
+// PARAGRAPH:paragraphanswer is answer-type
 const paragraphAnswerSchema: Schema = new Schema({
     paragraphText: { type: String, max: 500, min: 50 },
 });
 export const paragraphAnswer = Answer.discriminator(
-    "paragraph-answer",
-    shortAnswerSchema
+    'paragraphanswer',
+    paragraphAnswerSchema
 );
 
 //Email
@@ -38,72 +40,72 @@ const emailAnswerSchema: Schema = new Schema({
     emailText: { type: String },
 });
 export const emailAnswer = Answer.discriminator(
-    "email-answer",
+    'emailanswer',
     emailAnswerSchema
 );
 
-// MULTIPLE CHOICE:mcq-answer is answer-type
+// MULTIPLE CHOICE:mcqanswer is answer-type
 const mcqAnswerSchema: Schema = new Schema({
     selectedOption: String,
 });
-export const mcqAnswer = Answer.discriminator("mcq-answer", mcqAnswerSchema);
+export const mcqAnswer = Answer.discriminator('mcqanswer', mcqAnswerSchema);
 
-// CHECKBOXES:checkbox-answer is answer type
+// CHECKBOXES:checkboxanswer is answer type
 //!other_selected:String {have to add this as well not sure how}
 
 const checkboxAnswerSchema: Schema = new Schema({
     multipleSelected: [String],
 });
 export const checkboxAnswer = Answer.discriminator(
-    "checkbox-answer",
+    'checkboxanswer',
     checkboxAnswerSchema
 );
 
-// DROPDOWN:dropdown-answer is answer type
+// DROPDOWN:dropdownanswer is answer type
 const dropdownAnswerSchema: Schema = new Schema({
     selectedOption: String,
 });
 export const dropdownAnswer = Answer.discriminator(
-    "dropdown-answer",
+    'dropdownanswer',
     dropdownAnswerSchema
 );
 
-//LINEAR SCALE: linearscale-answer is answer type
+//LINEAR SCALE: linearscaleanswer is answer type
 const linearscaleAnswerSchema: Schema = new Schema({
     selectedOption: Number,
 });
 export const linearscaleAnswer = Answer.discriminator(
-    "linearscale-answer",
+    'linearscaleanswer',
     linearscaleAnswerSchema
 );
 
-//MULTIPLE CHOICE GRID: multiplechoicegrid-answer is answer type
+//MULTIPLE CHOICE GRID: multiplechoicegridanswer is answer type
 const multiplechoicegridAnswerSchema: Schema = new Schema({
-    selectedOption: [String],
+    multipleSelected: [String],
 });
 export const multiplechoicegridAnswer = Answer.discriminator(
-    "multiplechoicegrid-answer",
+    'multiplechoicegridanswer',
     multiplechoicegridAnswerSchema
 );
 
-//CHECKBOXES GRID: checkboxgrid-answer is answer type
+//CHECKBOXES GRID: checkboxgridanswer is answer type
 const checkboxgridAnswerSchema: Schema = new Schema({
-    selectedOption: [[String]],
+    multipleSelected: [[String]],
 });
 export const checkboxgridAnswer = Answer.discriminator(
-    "checkboxgrid-answer",
+    'checkboxgridanswer',
     checkboxgridAnswerSchema
 );
 
-//DATE: date-answer is answer type
+//DATE: dateanswer is answer type
 const dateAnswerSchema: Schema = new Schema({
     selectedDate: Date,
 });
-export const dateAnswer = Answer.discriminator("date-answer", dateAnswerSchema);
+export const dateAnswer = Answer.discriminator('dateanswer', dateAnswerSchema);
 
-//TIME: time-answer is answer type
+//TIME: timeanswer is answer type
 const timeAnswerSchema: Schema = new Schema({
     timeHours: { type: Number, min: 1, max: 23 }, // Time is in 24 hrs Clock format
     timeMinutes: { type: Number, min: 0, max: 59 },
 });
-export const timeAnswer = Answer.discriminator("time-answer", timeAnswerSchema);
+export const timeAnswer = Answer.discriminator('timeanswer', timeAnswerSchema);

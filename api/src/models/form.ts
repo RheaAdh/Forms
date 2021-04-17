@@ -9,7 +9,7 @@ const form: Schema = new Schema(
         color_theme: String,
         //array of question ids
         questions: [{ type: Schema.Types.ObjectId, ref: "Question" }],
-        // answers: [{ type: Schema.Types.ObjectId, ref: "Answer" }],
+        answers: [{ type: Schema.Types.ObjectId, ref: "Answer" }],
     },
     {
         timestamps: true,
