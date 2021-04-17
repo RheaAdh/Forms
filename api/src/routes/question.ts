@@ -21,7 +21,7 @@ export async function addQuestion(req: Request, res: Response) {
 console.log(req.body);
 
     let {
-        formid,
+        formId,
         question_type,
         question_text,
         required,
@@ -38,14 +38,17 @@ console.log(req.body);
 
     let form: any;
     try {
-        form = await Form.findById(formid);
+        form = await Form.findById(formId);
+        console.log(form);
+        console.log('Form found');
     } catch (error) {
         console.error(error);
     }
 
     const common = {
-        formid: formid,
+        formid: formId,
         question_text: question_text,
+        question_type:question_type,
         required: false,
     };
 
@@ -135,6 +138,7 @@ console.log(req.body);
         await newQuestion.save();
         console.log("Question saved!!");
     } catch (error) {
+        console.log(error)
         console.log("Couldnt save question :(");
     }
 

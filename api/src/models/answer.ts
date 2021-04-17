@@ -6,7 +6,6 @@ const options = { discriminatorKey: 'answer-type' };
 
 const answerSchema: Schema = new Schema(
     {
-        answerText: { type: String },
         // userId: { type: Schema.Types.ObjectId, ref: "User" },
         formId: { type: Schema.Types.ObjectId, ref: 'Form' },
         questionId: { type: Schema.Types.ObjectId, ref: 'Question' },

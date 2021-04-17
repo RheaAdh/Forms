@@ -20,7 +20,7 @@ import {
 export async function sendAnswer(req: Request, res: Response) {
     await mongo.connectMongo();
 
-    let { formId, questionId, answer_type, answer_text } = req.body;
+    let { formId, questionId, answer_type } = req.body;
 
     //?FIND FORM
 
@@ -35,44 +35,51 @@ export async function sendAnswer(req: Request, res: Response) {
 
     const common = {
         formId: formId,
-        answer_text: answer_text,
         answer_type: answer_type,
         questionId: questionId,
     };
-    
 
     let newAnswer;
 
     switch (answer_type) {
         case 'shortanswer': {
             console.log('Inside');
-            newAnswer = new shortAnswer({ ...common });
+            newAnswer = new shortAnswer({
+                ...common,
+                shortText: req.body.answer_text,
+            });
             break;
         }
 
         case 'paragraphanswer': {
-            newAnswer = new paragraphAnswer({ ...common });
+            newAnswer = new paragraphAnswer({
+                ...common,
+                paragraphText: req.body.answer_text,
+            });
             break;
         }
 
         case 'emailanswer': {
-            newAnswer = new emailAnswer({ ...common });
+            newAnswer = new emailAnswer({
+                ...common,
+                emailText: req.body.answer_text,
+            });
             break;
         }
 
         case 'mcqanswer': {
             newAnswer = new mcqAnswer({
                 ...common,
-                selectedOption:req.body.option
+                selectedOption: req.body.option,
             });
             break;
         }
 
         case 'checkboxanswer': {
-            const options = req.body.options
+            const options = req.body.options;
             newAnswer = new checkboxAnswer({
                 ...common,
-                ...options
+                multipleSelected: [...options],
             });
             break;
         }
@@ -80,7 +87,7 @@ export async function sendAnswer(req: Request, res: Response) {
         case 'dropdownanswer': {
             newAnswer = new dropdownAnswer({
                 ...common,
-                selectedOption:req.body.option
+                selectedOption: req.body.option,
             });
             break;
         }
@@ -88,33 +95,25 @@ export async function sendAnswer(req: Request, res: Response) {
         case 'linearscaleanswer': {
             newAnswer = new linearscaleAnswer({
                 ...common,
-                selectedOption:req.body.option
-                //     lowRating: lowRating,
-                //     highRating: highRating,
-                //     lowRatingLabel: lowRatingLabel,
-                //     highRatingLabel: highRatingLabel,
+                selectedOption: req.body.option,
             });
             break;
         }
 
         case 'multiplechoicegridanswer': {
-            const options = req.body.options
+            const options = req.body.options;
             newAnswer = new multiplechoicegridAnswer({
                 ...common,
-                ...options
-                // rowLabel: rowLabel,
-                //     colLabel: colLabel,
+                multipleSelected: [...options],
             });
             break;
         }
 
         case 'checkboxgridanswer': {
-            const options = req.body.options
+            const options = req.body.options;
             newAnswer = new checkboxgridAnswer({
                 ...common,
-                ...options,
-                // rowLabel: rowLabel,
-                // colLabel: colLabel,
+                multipleSelected: req.body.options,
             });
             break;
         }
@@ -126,10 +125,10 @@ export async function sendAnswer(req: Request, res: Response) {
 
         case 'timeanswer': {
             newAnswer = new timeAnswer({
-                 ...common,
-                 timeHours:req.body.timeHours,
-                 timeMinutes:req.body.timeMinutes
-             });
+                ...common,
+                timeHours: req.body.timeHours,
+                timeMinutes: req.body.timeMinutes,
+            });
             break;
         }
 
@@ -143,6 +142,7 @@ export async function sendAnswer(req: Request, res: Response) {
         await newAnswer.save();
         console.log('Answer saved!!');
     } catch (error) {
+        console.log(error);
         console.log('Couldnt save Answer :(');
     }
 
@@ -154,26 +154,5 @@ export async function sendAnswer(req: Request, res: Response) {
         console.log('Couldnt save form');
     }
 
-    res.send({success:true,data:"Answered Stored"});
+    res.send({ success: true, data: 'Answered Stored' });
 }
-// export async function updateAnswer(req: Request, res: Response) {
-//     await mongo.connectMongo();
-//     console.log(req.body);
-//     const moddedBody = { ...req.body };
-//     moddedBody["answer-type"] = req.body["answer-type"];
-//     console.log({ moddedBody });
-
-//     let updatedAnswer;
-//     try {
-//         updatedAnswer = await Answer.findOneAndUpdate(
-//             { _id: req.body._id },
-//             {
-//                 ...moddedBody,
-//             },
-//             { new: true }
-//         );
-//         res.send(updatedAnswer);
-//     } catch (error) {
-//         res.send(error);
-//     }
-// }
