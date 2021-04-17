@@ -1,14 +1,12 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { Question } from "./question";
-import { Answer } from "./answer";
 
-const response: Schema = new Schema({
-    userid:{type: String, required: true},
-    answers:[{type: Schema.Types.ObjectId,ref: "Answer"}],
-    questions:[{type: Schema.Types.ObjectId,ref: "Questions"}]
-  }, 
+const response: Schema = new Schema(
     {
-      timestamps:true,
+        questionId:{type: Schema.Types.ObjectId, ref: "Question"},
+        userId:{type: Schema.Types.ObjectId, ref: "User"},
+        answerId:{type: Schema.Types.ObjectId, ref: "Answer"},
+        formId:{type: Schema.Types.ObjectId, ref: "Form"}
+        
     }
 );
 

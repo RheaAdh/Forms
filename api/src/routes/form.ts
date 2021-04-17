@@ -22,6 +22,9 @@ export async function addForm(req: any, res: Response) {
   console.log("POST REQUEST WAS MADE");
 
   console.log(req.body);
+  const newForm = new Form(req.body);
+
+  console.log(req.body);
 
   // let title = req.body.title;
   // let description = req.body.description;
@@ -55,7 +58,6 @@ export async function addForm(req: any, res: Response) {
   //   }
   // }
 
-  const newForm = new Form(req.body);
   //Only Admins with makeForm true can make forms
   if (req.session.makeForm) {
     try {

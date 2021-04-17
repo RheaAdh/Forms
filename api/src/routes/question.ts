@@ -1,9 +1,11 @@
 import { Response, Request } from "express";
 import * as mongo from "../config/mongo";
+import { Form } from "../models/form";
 import {
   Question,
   shortQuestion,
   paragraphQuestion,
+  emailQuestion,
   mcqQuestion,
   checkboxQuestion,
   dropdownQuestion,
@@ -12,18 +14,16 @@ import {
   checkboxgridQuestion,
   dateQuestion,
   timeQuestion,
-  emailQuestion,
 } from "../models/question";
-import { Form } from "../models/form";
 
 export async function addQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
+  console.log(req.body);
 
   let {
-    formid,
+    formId,
     question_type,
     question_text,
-    description,
     required,
     options,
     lowRating,
@@ -38,16 +38,18 @@ export async function addQuestion(req: Request, res: Response) {
 
   let form: any;
   try {
-    form = await Form.findById(formid);
+    form = await Form.findById(formId);
+    console.log(form);
+    console.log("Form found");
   } catch (error) {
     console.error(error);
   }
 
   const common = {
-    formid: formid,
+    formid: formId,
     question_text: question_text,
-    description: description,
-    required: required,
+    question_type: question_type,
+    required: false,
   };
 
   let newQuestion;
@@ -58,13 +60,13 @@ export async function addQuestion(req: Request, res: Response) {
       break;
     }
 
-    case "email-answer":{
-      newQuestion = new emailQuestion({...common});
+    case "paragraph-answer": {
+      newQuestion = new paragraphQuestion({ ...common });
       break;
     }
 
-    case "paragraph-answer": {
-      newQuestion = new paragraphQuestion({ ...common });
+    case "email-answer": {
+      newQuestion = new emailQuestion({ ...common });
       break;
     }
 
@@ -74,12 +76,18 @@ export async function addQuestion(req: Request, res: Response) {
     }
 
     case "checkbox-answer": {
-      newQuestion = new checkboxQuestion({ ...common, options: [...options] });
+      newQuestion = new checkboxQuestion({
+        ...common,
+        options: [...options],
+      });
       break;
     }
 
     case "dropdown-answer": {
-      newQuestion = new dropdownQuestion({ ...common, options: [...options] });
+      newQuestion = new dropdownQuestion({
+        ...common,
+        options: [...options],
+      });
       break;
     }
 
@@ -128,9 +136,10 @@ export async function addQuestion(req: Request, res: Response) {
 
   try {
     await newQuestion.save();
-    console.log("Questoin saved!!");
+    console.log("Question saved!!");
   } catch (error) {
-    console.log("Couldnt save question");
+    console.log(error);
+    console.log("Couldnt save question :(");
   }
 
   form.questions.push(newQuestion);
@@ -143,46 +152,6 @@ export async function addQuestion(req: Request, res: Response) {
   }
 
   res.json(newQuestion);
-
-  // let formid=req.body.form_id;
-  // let qid=req.body.q_id;
-  // let qtype=req.body.q_type;
-  // let answeroptions=req.body.answerOptions;
-  // let answercolumns=req.body.answerColumns;
-
-  // if(!formid) {
-  //   return {"status":"false", message: "invalid formid"}
-  // }
-  // if(!qid) {
-  //   return {"status":"false", message: "invalid q_id"}
-  // }
-  // if(!qtype) {
-  //   return {"status":"false", message: "invalid q_type"}
-  // }
-  // if(!answeroptions) {
-  //   return {"status":"false", message: "invalid answerOptions"}
-  // }
-  // if(!answercolumns) {
-  //   return {"status":"false", message: "invalid answerColumns"}
-  // }
-
-  // if(qid&&formid&&qtype&&answercolumns&&answeroptions){
-  //   const newQuestion =new form({
-  //     form_id:formid,
-  //     q_id:qid,
-  //     q_type:qtype,
-  //     answerOptions:answeroptions,
-  //     answerColumns:answercolumns
-  // })
-
-  //   await newQuestion.save((err)=>{
-  //     if(err) throw err;
-  //     res.json({
-  //       success:true
-  //     })
-  //   });
-  //   res.send("Question added");
-  // }
 }
 
 export async function getQuestions(req: Request, res: Response) {
@@ -210,127 +179,21 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
 export async function updateQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
   console.log(req.body);
-  let moddedBody = {...req.body}
-  moddedBody["question-type"] = req.body["question-type"]
+  const moddedBody = { ...req.body };
+  moddedBody["question-type"] = req.body["question-type"];
+  console.log({ moddedBody });
+
   let updatedQuestion;
   try {
-    // Update by finding Question, so that question type can be changed
     updatedQuestion = await Question.findOneAndUpdate(
-      {_id : req.body._id},
+      { _id: req.body._id },
       {
-        "question-type" : req.body["question-type"]
+        ...moddedBody,
       },
-      {new : true}
-    )
-    console.log("First update", updatedQuestion)
-    // Update by finding exact question type, else options won't get updated
-    switch(moddedBody["question-type"]){
-      case "short-answer":
-        updatedQuestion = await shortQuestion.findOneAndUpdate(
-          {_id : req.body._id},
-          {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
-        break;
-        case "paragraph-answer":
-          updatedQuestion = await paragraphQuestion.findOneAndUpdate(
-            {_id : req.body._id},
-            {
-              ...moddedBody
-            } ,
-            {new : true}
-          )
-          break;
-      case "email-answer":
-          updatedQuestion = await emailQuestion.findOneAndUpdate(
-            {_id : req.body._id},
-            {
-              ...moddedBody
-            },
-            {new : true}
-          )
-          break;
-      case "mcq-answer":
-        updatedQuestion = await mcqQuestion.findOneAndUpdate(
-          {_id : req.body._id},
-          {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
-        break;
-      case "checkbox-answer":
-        updatedQuestion = await checkboxQuestion.findOneAndUpdate(
-          {_id : req.body._id},
-          {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
-        break;
-      case "dropdown-answer":
-        updatedQuestion = await dropdownQuestion.findOneAndUpdate(
-          {_id : req.body._id},
-          {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
-        break;
-      case "linearscale-answer":
-        updatedQuestion = await linearscaleQuestion.findOneAndUpdate(
-          {_id : req.body._id},
-          {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
-        break;
-      case "multiplechoicegrid-answer":
-        updatedQuestion = await multiplechoicegridQuestion.findOneAndUpdate(
-          {_id : req.body._id},
-          {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
-        break;   
-      case "checkboxgrid-answer":  
-        updatedQuestion = await checkboxgridQuestion.findOneAndUpdate(
-          {_id : req.body._id},
-          {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
-        break;
-      case "date-answer":
-        updatedQuestion = await dateQuestion.findOneAndUpdate(
-          {_id : req.body._id},
-          {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
-        break;
-      case "time-answer":
-        updatedQuestion = await timeQuestion.findOneAndUpdate(
-          {_id : req.body._id},
-          {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
-        break;
-      default:
-        updatedQuestion = {data:{msg : "Something went wrong"}}
-    }
-    console.log(updatedQuestion)
+      { new: true }
+    );
     res.send(updatedQuestion);
-    }
-   catch (error) {
+  } catch (error) {
     res.send(error);
   }
 }
@@ -339,16 +202,22 @@ export async function deleteQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
   try {
     await Question.findByIdAndDelete(req.body.id);
-    await Form.findByIdAndUpdate(req.body.formid, {$pull : {questions : req.body.id}})
-    res.send("Deleted successfully");
+
+    console.log("Deleted successfully");
   } catch (error) {
-    res.end("You messed up.... again");
-    console.error(error);
+    console.log("Coudnt delete :(");
   }
-  //   , (err) => {
-  //   if (err) throw err;
-  //   res.json({
-  //     success: true,
-  //   });
-  // });
 }
+
+//CHANGE TO:
+// export async function deleteQuestion(req: Request, res: Response) {
+//     await mongo.connectMongo();
+//     try {
+//       await Question.findByIdAndDelete(req.body.id);
+//       await Form.findByIdAndUpdate(req.body.formid, {$pull : {questions : req.body.id}})
+//       res.send("Deleted successfully");
+//     } catch (error) {
+//       res.end("You messed up.... again");
+//       console.error(error);
+//     }
+//   }
