@@ -1,6 +1,5 @@
 import React from "react";
 import Form from "../components/Form";
-
 interface props {
   forms: any[];
   deleteForm?: any;
@@ -8,9 +7,9 @@ interface props {
 
 const Forms: React.FC<props> = ({ forms, deleteForm }) => {
   return (
-    <div className="form-list">  
+    <div className="form-list">
       Forms:
-      {!forms ? (   
+      {!forms ? (
         "Loading..."
       ) : (
         <div>

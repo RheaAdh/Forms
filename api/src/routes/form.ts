@@ -6,7 +6,7 @@ export async function getForms(req: Request, res: Response) {
   await mongo.connectMongo();
 
   const forms = await Form.find().exec();
-  res.json(forms);
+  res.json({ success: true, forms: forms });
 }
 
 export async function getForm(req: Request, res: Response) {
@@ -16,7 +16,7 @@ export async function getForm(req: Request, res: Response) {
   res.json(form);
 }
 
-export async function addForm(req: Request, res: Response) {
+export async function addForm(req: any, res: Response) {
   await mongo.connectMongo();
 
   console.log("POST REQUEST WAS MADE");
