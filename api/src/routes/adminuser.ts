@@ -56,7 +56,6 @@ export async function adminRegister(req: Request, res: Response) {
   //STORING USER IN DB
   const hashpwd = await bcrypt.hash(req.body.password, 10);
   user = new User({
-    username,
     password: hashpwd,
     email,
     role: "admin",
@@ -106,11 +105,13 @@ export async function adminLogin(req: Request, res: Response) {
     return res.send({
       success: true,
       data: "Successfully LoggedIn, Redirect SuperAdmin Dashboard",
+      user: user,
     });
   } else if (user.role == "admin") {
     return res.send({
       success: true,
       data: "Successfully LoggedIn, Redirect Admin Dashboard",
+      user: { role: user.role, email: user.email },
     });
   }
 }

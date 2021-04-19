@@ -21,7 +21,7 @@ const FormsPage: React.FC = () => {
 
       .then((data: any) => {
         console.log({ data });
-        if (data.success == true) {
+        if (data.success === true) {
           setForms(data.forms);
         } else {
           console.log("There is an imposter among us!!");
