@@ -9,6 +9,7 @@ import {
   getQuestionsByFormid,
   updateQuestion,
 } from "./question";
+import { isValidAdmin } from "./adminuser";
 import { sendAnswer } from "./answer";
 // import { isValidAdmin } from "./adminuser";
 const router = express.Router();
@@ -34,7 +35,7 @@ router.get("/helloworld", helloWorld);
 router.get("/helloworld", helloWorld);
 router.get("/db", dbTesting);
 
-router.get("/getforms", getForms);
+router.get("/getforms", isValidAdmin, getForms);
 router.get("/getform/:formid", getForm);
 router.post("/addform", addForm);
 router.put("/updateform", updateForm);

@@ -338,9 +338,9 @@ export async function deleteQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
   try {
     await Question.findByIdAndDelete(req.body.id);
-    await Form.findByIdAndUpdate(req.body.formid, {
-      $pull: { questions: req.body.id },
-    });
+    // await Form.findByIdAndUpdate(req.body.formid, {
+    //   $pull: { questions: req.body.id },
+    // });
     res.send("Deleted successfully");
   } catch (error) {
     res.end("You messed up.... again");
