@@ -1,5 +1,6 @@
 import { Response, Request } from "express";
 import * as mongo from "../config/mongo";
+import { Form } from "../models/form";
 import {
   Question,
   shortQuestion,
@@ -14,7 +15,6 @@ import {
   timeQuestion,
   emailQuestion,
 } from "../models/question";
-import { Form } from "../models/form";
 
 export async function addQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
@@ -58,8 +58,8 @@ export async function addQuestion(req: Request, res: Response) {
       break;
     }
 
-    case "email-answer":{
-      newQuestion = new emailQuestion({...common});
+    case "email-answer": {
+      newQuestion = new emailQuestion({ ...common });
       break;
     }
 
@@ -210,127 +210,126 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
 export async function updateQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
   console.log(req.body);
-  let moddedBody = {...req.body}
-  moddedBody["question-type"] = req.body["question-type"]
+  let moddedBody = { ...req.body };
+  moddedBody["question-type"] = req.body["question-type"];
   let updatedQuestion;
   try {
     // Update by finding Question, so that question type can be changed
     updatedQuestion = await Question.findOneAndUpdate(
-      {_id : req.body._id},
+      { _id: req.body._id },
       {
-        "question-type" : req.body["question-type"]
+        "question-type": req.body["question-type"],
       },
-      {new : true}
-    )
-    console.log("First update", updatedQuestion)
+      { new: true }
+    );
+    console.log("First update", updatedQuestion);
     // Update by finding exact question type, else options won't get updated
-    switch(moddedBody["question-type"]){
+    switch (moddedBody["question-type"]) {
       case "short-answer":
         updatedQuestion = await shortQuestion.findOneAndUpdate(
-          {_id : req.body._id},
+          { _id: req.body._id },
           {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
+            ...moddedBody,
+          },
+          { new: true }
+        );
         break;
-        case "paragraph-answer":
-          updatedQuestion = await paragraphQuestion.findOneAndUpdate(
-            {_id : req.body._id},
-            {
-              ...moddedBody
-            } ,
-            {new : true}
-          )
-          break;
+      case "paragraph-answer":
+        updatedQuestion = await paragraphQuestion.findOneAndUpdate(
+          { _id: req.body._id },
+          {
+            ...moddedBody,
+          },
+          { new: true }
+        );
+        break;
       case "email-answer":
-          updatedQuestion = await emailQuestion.findOneAndUpdate(
-            {_id : req.body._id},
-            {
-              ...moddedBody
-            },
-            {new : true}
-          )
-          break;
+        updatedQuestion = await emailQuestion.findOneAndUpdate(
+          { _id: req.body._id },
+          {
+            ...moddedBody,
+          },
+          { new: true }
+        );
+        break;
       case "mcq-answer":
         updatedQuestion = await mcqQuestion.findOneAndUpdate(
-          {_id : req.body._id},
+          { _id: req.body._id },
           {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
+            ...moddedBody,
+          },
+          { new: true }
+        );
         break;
       case "checkbox-answer":
         updatedQuestion = await checkboxQuestion.findOneAndUpdate(
-          {_id : req.body._id},
+          { _id: req.body._id },
           {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
+            ...moddedBody,
+          },
+          { new: true }
+        );
         break;
       case "dropdown-answer":
         updatedQuestion = await dropdownQuestion.findOneAndUpdate(
-          {_id : req.body._id},
+          { _id: req.body._id },
           {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
+            ...moddedBody,
+          },
+          { new: true }
+        );
         break;
       case "linearscale-answer":
         updatedQuestion = await linearscaleQuestion.findOneAndUpdate(
-          {_id : req.body._id},
+          { _id: req.body._id },
           {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
+            ...moddedBody,
+          },
+          { new: true }
+        );
         break;
       case "multiplechoicegrid-answer":
         updatedQuestion = await multiplechoicegridQuestion.findOneAndUpdate(
-          {_id : req.body._id},
+          { _id: req.body._id },
           {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
-        break;   
-      case "checkboxgrid-answer":  
+            ...moddedBody,
+          },
+          { new: true }
+        );
+        break;
+      case "checkboxgrid-answer":
         updatedQuestion = await checkboxgridQuestion.findOneAndUpdate(
-          {_id : req.body._id},
+          { _id: req.body._id },
           {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
+            ...moddedBody,
+          },
+          { new: true }
+        );
         break;
       case "date-answer":
         updatedQuestion = await dateQuestion.findOneAndUpdate(
-          {_id : req.body._id},
+          { _id: req.body._id },
           {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
+            ...moddedBody,
+          },
+          { new: true }
+        );
         break;
       case "time-answer":
         updatedQuestion = await timeQuestion.findOneAndUpdate(
-          {_id : req.body._id},
+          { _id: req.body._id },
           {
-            ...moddedBody
-          } ,
-          {new : true}
-        )
+            ...moddedBody,
+          },
+          { new: true }
+        );
         break;
       default:
-        updatedQuestion = {data:{msg : "Something went wrong"}}
+        updatedQuestion = { data: { msg: "Something went wrong" } };
     }
-    console.log(updatedQuestion)
+    console.log(updatedQuestion);
     res.send(updatedQuestion);
-    }
-   catch (error) {
+  } catch (error) {
     res.send(error);
   }
 }
@@ -339,7 +338,9 @@ export async function deleteQuestion(req: Request, res: Response) {
   await mongo.connectMongo();
   try {
     await Question.findByIdAndDelete(req.body.id);
-    await Form.findByIdAndUpdate(req.body.formid, {$pull : {questions : req.body.id}})
+    await Form.findByIdAndUpdate(req.body.formid, {
+      $pull: { questions: req.body.id },
+    });
     res.send("Deleted successfully");
   } catch (error) {
     res.end("You messed up.... again");
@@ -352,3 +353,16 @@ export async function deleteQuestion(req: Request, res: Response) {
   //   });
   // });
 }
+
+//CHANGE TO:
+// export async function deleteQuestion(req: Request, res: Response) {
+//     await mongo.connectMongo();
+//     try {
+//       await Question.findByIdAndDelete(req.body.id);
+//       await Form.findByIdAndUpdate(req.body.formid, {$pull : {questions : req.body.id}})
+//       res.send("Deleted successfully");
+//     } catch (error) {
+//       res.end("You messed up.... again");
+//       console.error(error);
+//     }
+//   }

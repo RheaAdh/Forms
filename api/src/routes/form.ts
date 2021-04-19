@@ -22,6 +22,9 @@ export async function addForm(req: any, res: Response) {
   console.log("POST REQUEST WAS MADE");
 
   console.log(req.body);
+  const newForm = new Form(req.body);
+
+  console.log(req.body);
 
   // let title = req.body.title;
   // let description = req.body.description;
@@ -55,18 +58,14 @@ export async function addForm(req: any, res: Response) {
   //   }
   // }
 
-  const newForm = new Form(req.body);
+  // const newForm = new Form(req.body);
   //Only Admins with makeForm true can make forms
-  if (req.session.makeForm) {
-    try {
-      await newForm.save();
-      console.log("Form added!");
-      res.send(newForm);
-    } catch (error) {
-      res.send(error);
-    }
-  } else {
-    res.send("You dont have rights to make form");
+  try {
+    await newForm.save();
+    console.log("Form added!");
+    res.send(newForm);
+  } catch (error) {
+    res.send(error);
   }
 }
 

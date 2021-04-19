@@ -15,7 +15,7 @@ export function connectMongo() {
     },
     (err: any) => {
       if (err) console.log(err);
-      else console.log("Connected to DB");
+      else console.log("Connected to DB!!!");
     }
   );
 }
