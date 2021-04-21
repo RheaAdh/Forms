@@ -6,14 +6,15 @@ const cors = require("cors");
 import express, { Request, Response } from "express";
 import router from "./routes";
 import {
-  sessionDetails,
-  adminRegister,
-  adminLogin,
-  adminLogout,
-  isValidAdmin,
-  isValidSuperAdmin,
+    sessionDetails,
+    adminRegister,
+    adminLogin,
+    adminLogout,
+    isValidAdmin,
+    isValidSuperAdmin,
+    adminForgotPassword,
+    adminResetPassword,
 } from "./routes/adminuser";
-import { checkUserExists } from "./routes/adminforgotpass";
 import { store } from "./config/mongo";
 
 const port: Number = 7000;
@@ -30,32 +31,28 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(
-  session({
-    secret: "Keep it secret",
-    resave: true,
-    name: "uniqueSessionID",
-    saveUninitialized: true,
-    store: store,
-    //?? Cookie part is creating problem in creating passport session
-    // cookie: {
-    //     maxAge: Number(process.env.SESS_EXPIRY),
-    //     sameSite: true,
-    // },
-  })
+    session({
+        secret: "Keep it secret",
+        resave: true,
+        name: "uniqueSessionID",
+        saveUninitialized: true,
+        store: store,
+        //?? Cookie part is creating problem in creating passport session
+        // cookie: {
+        //     maxAge: Number(process.env.SESS_EXPIRY),
+        //     sameSite: true,
+        // },
+    })
 );
 
-app.get("/forgotPassword", (req, res) => {
-  res.send("In forgotPassword page");
+app.post("/forgotPassword", adminForgotPassword);
+app.get("/resetpassword/:token", (req, res) => {
+  return res.send({
+    success: true,
+    data: "Password and Confirm Password needs to be filled here",
 });
-app.get("/resetPassword", (req, res) => {
-  res.send("enter email page");
 });
-app.post("/resetPassword", checkUserExists);
-// app.get("/resetpassword/:email/:token", (req, res, next) => {
-//     let { email, token } = req.params;
-//     res.send(req.params);
-//     console.log("reset done");
-// });
+app.post("/resetpassword/:token", adminResetPassword);
 
 // PASSPORT CONFIG --> FOR USER LEVEL AUTH
 app.use(passport.initialize());
@@ -69,9 +66,9 @@ app.use("/api", router);
 
 //ADMIN LOGIN,REGISTER,LOGOUT ROUTES
 app.get("/admin", sessionDetails);
-// app.post("/admin/register", RegisterUser);
-// app.post("/admin/login", LoginUser);
-// app.get("/admin/logout", LogoutUser);
+app.post("/admin/register", adminRegister);
+app.post("/admin/login", adminLogin);
+app.get("/admin/logout", adminLogout);
 
 //USER ROUTES
 app.use("/user", Router);
@@ -82,19 +79,19 @@ app.use("/user/getuser", getUser);
 
 //TEST WELCOME PAGE
 app.get("/", (req, res) => {
-  res.send("Welcome to home page");
+    res.send("Welcome to home page");
 });
 
 //TEST USER LEVEL PROTECTION ROUTE
 app.get("/test", checkAuthentication, (req, res) => {
-  res.send("Inside Protected Route");
+    res.send("Inside Protected Route");
 });
 
 app.get("/admin/dashboard", isValidAdmin, (req, res) => {
-  res.send("Inside Admin dashboard");
+    res.send("Inside Admin dashboard");
 });
 app.get("/superadmin/dashboard", isValidSuperAdmin, (req, res) => {
-  res.send("Inside super-admin dashboard");
+    res.send("Inside super-admin dashboard");
 });
 app.get("/sessiondetail", sessionDetails);
 app.get("/admin", sessionDetails);
@@ -103,17 +100,17 @@ app.post("/admin/login", adminLogin);
 app.get("/admin/logout", adminLogout);
 
 app.get("/", (req, res) => {
-  res.send("Welcome to home page");
+    res.send("Welcome to home page");
 });
 //TEST USER LEVEL PROTECTION ROUTE
 app.get("/test", checkAuthentication, (req, res) => {
-  res.send("Inside Protected Route");
+    res.send("Inside Protected Route");
 });
 app.get("/admin/dashboard", isValidAdmin, (req, res) => {
-  res.send("Inside Admin dashboard");
+    res.send("Inside Admin dashboard");
 });
 app.get("/superadmin/dashboard", isValidSuperAdmin, (req, res) => {
-  res.send("Inside super-admin dashboard");
+    res.send("Inside super-admin dashboard");
 });
 app.get("/sessiondetail", sessionDetails);
 
