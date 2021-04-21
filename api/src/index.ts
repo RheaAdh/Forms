@@ -1,8 +1,6 @@
 import path from "path";
 require("dotenv").config({ path: path.join(".env") });
-
 const cors = require("cors");
-
 import express, { Request, Response } from "express";
 import router from "./routes";
 import {
@@ -18,7 +16,6 @@ import {
 import { store } from "./config/mongo";
 
 const port: Number = 7000;
-
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const app = express();
@@ -37,22 +34,22 @@ app.use(
         name: "uniqueSessionID",
         saveUninitialized: true,
         store: store,
-        //?? Cookie part is creating problem in creating passport session
-        // cookie: {
-        //     maxAge: Number(process.env.SESS_EXPIRY),
-        //     sameSite: true,
-        // },
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24,
+        },
     })
 );
 
+// FORGOT AND RESET PASSWORD
 app.post("/forgotPassword", adminForgotPassword);
 app.get("/resetpassword/:token", (req, res) => {
-  return res.send({
-    success: true,
-    data: "Password and Confirm Password needs to be filled here",
-});
+    return res.send({
+        success: true,
+        data: "Password and Confirm Password needs to be filled here",
+    });
 });
 app.post("/resetpassword/:token", adminResetPassword);
+
 
 // PASSPORT CONFIG --> FOR USER LEVEL AUTH
 app.use(passport.initialize());
@@ -61,8 +58,10 @@ app.use("/user", Router);
 app.use("/user/logout", userLogout);
 app.use("/user/getuser", getUser);
 
+
 //ADMIN
 app.use("/api", router);
+
 
 //ADMIN LOGIN,REGISTER,LOGOUT ROUTES
 app.get("/admin", sessionDetails);
@@ -70,12 +69,12 @@ app.post("/admin/register", adminRegister);
 app.post("/admin/login", adminLogin);
 app.get("/admin/logout", adminLogout);
 
+
 //USER ROUTES
 app.use("/user", Router);
 app.use("/user/logout", userLogout);
 app.use("/user/getuser", getUser);
 
-//<-----------------------ROUTES BELOW ARE FOR TESTING PURPOSE---------------------------------------------------->
 
 //TEST WELCOME PAGE
 app.get("/", (req, res) => {
@@ -93,25 +92,9 @@ app.get("/admin/dashboard", isValidAdmin, (req, res) => {
 app.get("/superadmin/dashboard", isValidSuperAdmin, (req, res) => {
     res.send("Inside super-admin dashboard");
 });
+
 app.get("/sessiondetail", sessionDetails);
 app.get("/admin", sessionDetails);
-app.post("/admin/register", adminRegister);
-app.post("/admin/login", adminLogin);
-app.get("/admin/logout", adminLogout);
 
-app.get("/", (req, res) => {
-    res.send("Welcome to home page");
-});
-//TEST USER LEVEL PROTECTION ROUTE
-app.get("/test", checkAuthentication, (req, res) => {
-    res.send("Inside Protected Route");
-});
-app.get("/admin/dashboard", isValidAdmin, (req, res) => {
-    res.send("Inside Admin dashboard");
-});
-app.get("/superadmin/dashboard", isValidSuperAdmin, (req, res) => {
-    res.send("Inside super-admin dashboard");
-});
-app.get("/sessiondetail", sessionDetails);
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
