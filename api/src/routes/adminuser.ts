@@ -176,13 +176,6 @@ export async function adminLogout(
     });
 }
 
-//FOR CHECKING CURRENT SESSION DETAILS
-export function sessionDetails(req: Request, res: Response) {
-    console.log("SessionID : ", req.sessionID);
-    console.log("Session: ", req.session);
-    res.send(req.session);
-}
-
 export async function adminForgotPassword(
     req: Request,
     res: Response,
@@ -236,10 +229,15 @@ export async function adminResetPassword(
 
     if (newPassword === newConfirmPassword) {
         const hashpwd = await bcrypt.hash(newPassword, 10);
-        User.updateOne({ token: compareToken }, { $set: { token: uuidv4() } });
-        User.updateOne(
+        //updating newpassword by using old token
+        user = await User.updateOne(
             { token: compareToken },
             { $set: { password: hashpwd } }
+        );
+        //generate new token
+        user = await User.updateOne(
+            { token: compareToken },
+            { $set: { token: uuidv4() } }
         );
         return res.send({
             success: true,
@@ -248,8 +246,8 @@ export async function adminResetPassword(
     }
 }
 
-// export function sessionDetails(req: Request, res: Response) {
-//   console.log("SessionID : ", req.sessionID);
-//   console.log("Session: ", req.session);
-//   res.send(req.session);
-// }
+export function sessionDetails(req: Request, res: Response) {
+  console.log("SessionID : ", req.sessionID);
+  console.log("Session: ", req.session);
+  res.send(req.session);
+}
