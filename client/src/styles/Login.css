@@ -17,7 +17,7 @@ body {
     perspective: 1000px; 
 } 
 .form-container form{ 
-    height:450px; 
+    height:500px; 
     width:350px; 
     background: rgba(255,255,255,.1); 
     text-align: center;
@@ -57,14 +57,18 @@ body {
     margin: 15px 0;
     letter-spacing: 1px;
     border-radius: 15px;
-} 
+}
+
+.error-message{
+    color : white;
+}
 /*Login*/
 .form-container form input[type="submit"] 
 { 
     width:90%; 
     cursor: pointer; 
     background:linear-gradient(90deg, deeppink, blueviolet); 
-    margin-top: 30px; 
+    margin-top: 25px; 
     border-radius: 50px; 
 } 
 .form-container form input[type="submit"]:hover

@@ -16,10 +16,6 @@ const NewForm = () => {
 
   addedForm && history.push(`/editForm/${addedForm._id}`);
 
-  console.log({ title });
-
-  console.log({ addedForm });
-
   const addForm = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = { title: title, color_theme: "#ffffff" };

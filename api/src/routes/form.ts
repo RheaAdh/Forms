@@ -14,6 +14,7 @@ export async function getForm(req: Request, res: Response) {
   const form = await Form.findById(req.params.formid);
 
   res.json(form);
+  
 }
 
 export async function addForm(req: any, res: Response) {

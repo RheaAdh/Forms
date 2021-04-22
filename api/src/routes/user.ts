@@ -75,7 +75,7 @@ passport.deserializeUser((id: string, done: any) => {
 });
 
 Router.get(
-    '/auth/google',
+    '/google',
     passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 

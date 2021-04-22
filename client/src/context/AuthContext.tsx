@@ -1,90 +1,114 @@
-import React, { useState, useContext, ReactElement } from "react";
-
-export type Nullable<T> = T | null;
+import React, { useState, useContext, ReactElement } from 'react'
+export type Nullable<T> = T | null
 
 export interface IUser {
-  username: string;
-  role: string;
+    email: string
+    role: string
 }
 
 interface Props {
-  children: ReactElement;
+    children: ReactElement
 }
 
 export interface Value {
-  currentUser: Nullable<IUser>;
-  setCurrentUser: any;
-  register: (email: string, password: string) => Promise<any>;
-  login: (email: string, password: string) => Promise<any>;
-  logout: () => Promise<any>;
+    currentUser: Nullable<IUser>
+    setCurrentUser: any
+    register: (
+        email: string,
+        password: string,
+        confirmPassword: string
+    ) => Promise<any>
+    login: (email: string, password: string) => Promise<any>
+    logout: () => Promise<any>
+    getCurrentUser: any
 }
 
-const AuthContext = React.createContext<Nullable<Value>>(null);
+const AuthContext = React.createContext<Nullable<Value>>(null)
 
 export const useAuth = () => {
-  return useContext(AuthContext);
-};
+    return useContext(AuthContext)
+}
 
 export default function AuthProvider({ children }: Props): ReactElement {
-  const [currentUser, setCurrentUser] = useState<Nullable<IUser>>(null);
+    const [currentUser, setCurrentUser] = useState<IUser | null>(null)
 
-  const register = async (email: string, password: string) => {};
-
-  const login = async (email: string, password: string) => {
-    const response = await fetch("http://localhost:7000/admin/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: email, password: password }),
-      credentials: "include",
-    });
-
-    const data = await response.json();
-    if (data.success === true) {
-      setCurrentUser(data.user);
-      return data;
+    const register = async (
+        email: string,
+        password: string,
+        confirmPassword: string
+    ) => {
+        const response = await fetch('http://localhost:7000/admin/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password,
+                confirmPassword: confirmPassword,
+            }),
+            credentials: 'include',
+        })
+        const data = await response.json()
+        return data
     }
-    return data;
-    //   .then((response: any) => {
-    //     console.log(response.cookies);
-    //     return response.json();
-    //   })
-    //   //   .catch((e) => console.log(e))
-    //   .then((data) => {
-    //     console.log("Success:", data);
-    //     console.log({ data });
 
-    //     //UPDATING ON FRONT END
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error:", error);
-    //   });
-  };
+    const login = async (email: string, password: string) => {
+        const response = await fetch('http://localhost:7000/admin/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email, password: password }),
+            credentials: 'include',
+        })
 
-  const logout = async () => {
-    const response = await fetch("http://localhost:7000/admin/logout", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
+        const data = await response.json()
+        if (data.success === true) {
+            setCurrentUser(data.user)
+            localStorage.setItem('user', JSON.stringify(data.user))
+            return data
+        }
+        return data
+    }
 
-    const data = await response.json();
+    const logout = async () => {
+        const response = await fetch('http://localhost:7000/admin/logout', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+        })
 
-    setCurrentUser(null);
+        const data = await response.json()
+        setCurrentUser(null)
 
-    return data;
-  };
+        return data
+    }
 
-  const value: Value = {
-    currentUser,
-    setCurrentUser,
-    register,
-    login,
-    logout,
-  };
+    const getCurrentUser = async () => {
+        const res = await fetch('http://localhost:7000/sessiondetail', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+        })
+        const data = await res.json()
+        const user = { email: data.email, role: data.role }
+        if (user.email) setCurrentUser(user)
+        else setCurrentUser(null)
+    }
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    const value: Value = {
+        currentUser,
+        setCurrentUser,
+        register,
+        login,
+        logout,
+        getCurrentUser,
+    }
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

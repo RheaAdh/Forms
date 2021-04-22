@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Redirect, useParams } from "react-router-dom";
 
 import QuestionList from "../components/QuestionList";
 
 import useFormState from "../hooks/useFormState";
+
+import {useAuth} from "../context/AuthContext"
 
 import "../styles/EditFormPage.css";
 
@@ -28,8 +30,12 @@ const EditFormPage: React.FC = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const value = useAuth();
+
   //?TO GET THE FORM
   useEffect(() => {
+    if(value?.currentUser === null)
+        value.getCurrentUser()
     fetch(`http://localhost:7000/api/getform/${formid}`)
       .then((resp: any) => {
         return resp.json();
@@ -113,8 +119,9 @@ const EditFormPage: React.FC = () => {
 
   useEffect(updateColour, [colour]);
 
-
-  return form ? (
+  return form ?
+  value?.currentUser && ( value?.currentUser.role === "admin" || value?.currentUser.role === "superadmin" )?
+  (
     <div className="edit-form-page"  style={{backgroundColor: colour}}>
 
       <Link to="/">
@@ -140,7 +147,10 @@ const EditFormPage: React.FC = () => {
 
       <QuestionList questions={questions} formid={form._id}  />
     </div>
-  ) : (
+  )
+  :
+  <Redirect to="/login"/>
+  : (
     <div>loading</div>
   );
 };

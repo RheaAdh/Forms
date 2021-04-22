@@ -13,6 +13,7 @@ import {
   isValidAdmin,
   isValidSuperAdmin,
 } from "./routes/adminuser";
+import user from "./routes/user"
 import { checkUserExists } from "./routes/adminforgotpass";
 import { store } from "./config/mongo";
 
@@ -46,7 +47,7 @@ app.use(
 
 app.get("/forgotPassword", (req, res) => {
   res.send("In forgotPassword page");
-});
+});   
 app.get("/resetPassword", (req, res) => {
   res.send("enter email page");
 });
@@ -116,5 +117,6 @@ app.get("/superadmin/dashboard", isValidSuperAdmin, (req, res) => {
   res.send("Inside super-admin dashboard");
 });
 app.get("/sessiondetail", sessionDetails);
+app.use("/auth", user);
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

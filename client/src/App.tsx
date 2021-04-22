@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import EditFormPage from "./pages/EditFormPage";
-import FormsPage from "./pages/FormsPage";
 import DashboardPage from "./pages/DashboardPage";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./pages/LoginPage"
+import AdminLoginPage from "./pages/AdminLoginPage";
+import RegisterPage from "./pages/RegisterPage"
 import { Route } from "react-router-dom";
 
 function App() {
@@ -14,7 +15,9 @@ function App() {
       <Route path="/" exact render={() => <DashboardPage />} />
       <Route path="/editform/:formid" render={() => <EditFormPage />} />
       <Route path="/dashboard" render={() => <DashboardPage />} />
-      <Route path="/login" render={() => <LoginPage />} />
+      <Route path="/adminlogin" render={() => <AdminLoginPage />} />
+      <Route path="/login" render={()=><LoginPage/>}/>
+      <Route path="/register" render={()=> <RegisterPage/>}/>
     </div>
   );
 }
