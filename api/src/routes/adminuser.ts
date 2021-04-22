@@ -1,14 +1,17 @@
-import { Document, Schema } from 'mongoose'
-import { Response, Request, NextFunction } from 'express'
-import * as mongo from '../config/mongo'
-import { User } from '../models/user'
+import { Document, Schema } from "mongoose";
+import { Response, Request, NextFunction } from "express";
+import * as mongo from "../config/mongo";
+import { User } from "../models/user";
+import { v4 as uuidv4 } from "uuid";
+import { hash } from "bcryptjs";
+uuidv4();
 
-declare module 'express-session' {
+declare module "express-session" {
     interface Session {
-        isAuth: boolean
-        userId: Schema.Types.ObjectId
-        role: String
-        email: String
+        isAuth: boolean;
+        userId: Schema.Types.ObjectId;
+        role: String;
+        email: String;
     }
 }
 const bcrypt = require('bcryptjs')
@@ -16,21 +19,20 @@ const bcrypt = require('bcryptjs')
 //FOR ADMINS
 
 export async function adminRegister(req: Request, res: Response) {
-    await mongo.connectMongo()
-    console.log('POST REQUEST WAS MADE')
-    const { username, password, confirmPassword, email } = req.body
+    await mongo.connectMongo();
+    console.log("POST REQUEST WAS MADE");
+    const { password, confirmPassword, email } = req.body;
 
     //CHECKING FOR CORRECT EMAIL TYPE
-    console.log(req.body)
     if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
         return res.send({
             success: false,
-            data: 'Please enter a valid email type',
-        })
+            data: "Please enter a valid email type",
+        });
     }
 
     //CHECKING FOR EXISTING USER
-    let user = await User.findOne({ email })
+    let user = await User.findOne({ email });
     if (user) {
         return res.send({
             success: false,
@@ -38,84 +40,83 @@ export async function adminRegister(req: Request, res: Response) {
                 'User exists with same details,try again with a new password if not registered',
         })
     }
-
     //USER NOT CREATED
-    if (password.length < 8) {
+    if (password.length < 9) {
         return res.send({
             success: false,
-            data: 'Password must be atleast 8 characters long',
-        })
+            data: "Password must be atleast 8 characters long",
+        });
     }
 
     //MATCHING CONFIRM PASSWORD AND PASSWORD
     if (confirmPassword != password) {
         return res.send({
             success: false,
-            data: 'Password and Confirm Password does not match',
-        })
+            data: "Password and Confirm Password does not match",
+        });
     }
 
     //STORING USER IN DB
-    const hashpwd = await bcrypt.hash(req.body.password, 10)
+    const hashpwd = await bcrypt.hash(req.body.password, 10);
     user = new User({
         password: hashpwd,
         email,
-        role: 'admin',
-    })
+        role: "admin",
+        token: uuidv4(),
+    });
 
     try {
-        await user.save()
-        console.log('New admin created!')
+        await user.save();
+        console.log("New admin created!");
         return res.send({
             success: true,
-            data: 'Successfully registered a new admin',
-        })
+            data: "Successfully registered a new admin",
+        });
     } catch (error) {
-        return res.send({ success: false, data: error })
+        return res.send({ success: false, data: error });
     }
 }
 
 export async function adminLogin(req: Request, res: Response) {
-    await mongo.connectMongo()
-    console.log(' adminLogin POST REQUEST WAS MADE')
-    const { email, password } = req.body
-    let user: any
+    await mongo.connectMongo();
+    console.log(" adminLogin POST REQUEST WAS MADE");
+    const { email, password } = req.body;
+    let user: any;
     try {
-        user = await User.findOne({ email })
+        user = await User.findOne({ email });
     } catch (error) {
-        console.error('error')
+        console.error("error");
     }
     if (!user) {
         return res.send({
             success: false,
-            data: 'User doesnt exist, Please register to Login',
-        })
+            data: "User doesnt exist, Please register to Login",
+        });
     }
 
-    const validCred = await bcrypt.compare(password, user.password)
+    const validCred = await bcrypt.compare(password, user.password);
     if (!validCred) {
         return res.send({
             success: false,
-            data: 'Invalid Credentials, Please try again',
-        })
+            data: "Invalid Credentials, Please try again",
+        });
     }
-    req.session.isAuth = true
-    req.session.userId = user._id
-    req.session.role = user.role
-    req.session.email = email
+    req.session.isAuth = true;
+    req.session.userId = user._id;
+    req.session.role = user.role;
 
-    if (user.role == 'superadmin') {
+    if (user.role == "superadmin") {
         return res.send({
             success: true,
-            data: 'Successfully LoggedIn, Redirect SuperAdmin Dashboard',
+            data: "Successfully LoggedIn, Redirect SuperAdmin Dashboard",
             user: user,
-        })
-    } else if (user.role == 'admin') {
+        });
+    } else if (user.role == "admin") {
         return res.send({
             success: true,
-            data: 'Successfully LoggedIn, Redirect Admin Dashboard',
+            data: "Successfully LoggedIn, Redirect Admin Dashboard",
             user: { role: user.role, email: user.email },
-        })
+        });
     }
 }
 
@@ -125,14 +126,14 @@ export async function isValidAdmin(
     res: Response,
     next: NextFunction
 ) {
-    await mongo.connectMongo()
+    await mongo.connectMongo();
     if (req.session.isAuth) {
-        next()
+        next();
     } else {
         return res.send({
             success: false,
-            data: 'You are not LoggedIn, Please Login to view',
-        })
+            data: "You are not LoggedIn, Please Login to view",
+        });
     }
 }
 
@@ -144,18 +145,18 @@ export async function isValidSuperAdmin(
     res: Response,
     next: NextFunction
 ) {
-    await mongo.connectMongo()
+    await mongo.connectMongo();
     if (req.session.isAuth) {
-        if (req.session.role == 'superadmin') {
-            next()
+        if (req.session.role == "superadmin") {
+            next();
         } else {
             return res.send({
                 success: false,
-                data: 'Superadmin access required',
-            })
+                data: "Superadmin access required",
+            });
         }
     } else {
-        return res.send({ success: false, data: 'Please Login to view' })
+        return res.send({ success: false, data: "Please Login to view" });
     }
 }
 
@@ -164,18 +165,87 @@ export async function adminLogout(
     res: Response,
     next: NextFunction
 ) {
-    await mongo.connectMongo()
+    await mongo.connectMongo();
     req.session.destroy(function (err) {
         if (err) {
-            console.log(err)
+            console.log(err);
         } else {
             //session deleted
-            return res.send({ success: true, data: 'Successfully LoggedOut' })
+            return res.send({ success: true, data: "Successfully LoggedOut" });
         }
-    })
+    });
 }
 
-//FOR CHECKING CURRENT SESSION DETAILS
+export async function adminForgotPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    await mongo.connectMongo();
+    console.log("adminForgotPassword POST REQUEST WAS MADE");
+    let { email } = req.body;
+    let user: any;
+    try {
+        user = await User.findOne({ email });
+    } catch (error) {
+        console.error("error");
+    }
+
+    if (!user) {
+        return res.send({
+            success: false,
+            data: "User doesnt exist",
+        });
+    }
+
+    let usertoken = user.token;
+    let link = `http://localhost:7000/resetpassword/${usertoken}`;
+
+    //send email with this link
+    return res.send({
+        success: true,
+        data: link,
+    });
+}
+
+export async function adminResetPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    await mongo.connectMongo();
+    console.log("adminResetPassword POST REQUEST WAS MADE");
+    const compareToken = req.params.token;
+    console.log(compareToken);
+
+    let { newPassword, newConfirmPassword } = req.body;
+
+    let user: any;
+    try {
+        user = await User.findOne({ token: compareToken });
+    } catch (error) {
+        console.error("error");
+    }
+
+    if (newPassword === newConfirmPassword) {
+        const hashpwd = await bcrypt.hash(newPassword, 10);
+        //updating newpassword by using old token
+        user = await User.updateOne(
+            { token: compareToken },
+            { $set: { password: hashpwd } }
+        );
+        //generate new token
+        user = await User.updateOne(
+            { token: compareToken },
+            { $set: { token: uuidv4() } }
+        );
+        return res.send({
+            success: true,
+            data: "Successfully created new password",
+        });
+    }
+}
+
 export function sessionDetails(req: Request, res: Response) {
     console.log('SessionID : ', req.sessionID)
     console.log('Session: ', req.session)

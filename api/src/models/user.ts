@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose'
 
 //USER SCHEMA
 const userSchema: Schema = new Schema(
@@ -19,6 +19,9 @@ const userSchema: Schema = new Schema(
             default: 'user',
             required:true
         },
+        token:{
+            type:String
+        }
     },
     {
         timestamps: true,
