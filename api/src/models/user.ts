@@ -6,7 +6,6 @@ const userSchema: Schema = new Schema(
         password: {
             type: String,
             default: null,
-            required:true,
         },
         email: {
             type: String,
@@ -17,10 +16,10 @@ const userSchema: Schema = new Schema(
             type: String,
             enum: ['user', 'admin', 'superadmin'],   
             default: 'user',
-            required:true
         },
         token:{
-            type:String
+            type:String,
+            default:null,
         }
     },
     {
