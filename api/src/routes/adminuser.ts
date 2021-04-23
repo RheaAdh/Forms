@@ -104,6 +104,7 @@ export async function adminLogin(req: Request, res: Response) {
     req.session.isAuth = true;
     req.session.userId = user._id;
     req.session.role = user.role;
+    req.session.email = email;
 
     if (user.role == "superadmin") {
         return res.send({

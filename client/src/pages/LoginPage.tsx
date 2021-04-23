@@ -37,10 +37,10 @@ const LoginPage: React.FC = () => {
             <button
             style={{padding : "10px", borderRadius : "15px", background : "red", color : "white",
                     cursor : "pointer", width : "auto", border : "none"
-            }}
-            onClick={e => handleClick}
-            >
+            }}>
+              <a href="http://localhost:7000/user/auth/google" style={{textDecoration : "none", color : "white"}}>
                 Login With Google
+              </a>
             </button>
         </div>
       </form>

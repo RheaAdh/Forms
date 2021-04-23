@@ -73,15 +73,27 @@ export default function AuthProvider({ children }: Props): ReactElement {
     }
 
     const logout = async () => {
-        const response = await fetch('http://localhost:7000/admin/logout', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
+        let response;
+        if(currentUser?.role==='user'){
+            response = await fetch('http://localhost:7000/user/logout', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include', 
+            })
+        }
+        else{
+            response = await fetch('http://localhost:7000/admin/logout', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
         })
-
+        }
         const data = await response.json()
+
         setCurrentUser(null)
 
         return data
@@ -99,6 +111,7 @@ export default function AuthProvider({ children }: Props): ReactElement {
         const user = { email: data.email, role: data.role }
         if (user.email) setCurrentUser(user)
         else setCurrentUser(null)
+ 
     }
 
     const value: Value = {

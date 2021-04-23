@@ -89,7 +89,9 @@ Router.get(
         // Successful authentication, redirect home.
         console.log("inside call back");
         req.session.role = "user";
-        res.send({ success: true, data: "Succesfully LoggedIn" });
+        let user = req?.user;
+        req.session.email = (user as any).email;
+        res.redirect("http://localhost:3000/")
     }
 );
 
