@@ -34,9 +34,9 @@ app.use(
         name: "uniqueSessionID",
         saveUninitialized: true,
         store: store,
-        // cookie: {
-        //     maxAge: 1000 * 60 * 60 * 24,
-        // },
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24,
+        },
     })
 );
 

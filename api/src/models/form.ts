@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
 const form: Schema = new Schema(
@@ -6,8 +6,9 @@ const form: Schema = new Schema(
         title: { type: String, required: true },
         color_theme: String,
         //array of question ids
-        questions: [{ type: Schema.Types.ObjectId, ref: 'Question' }],
-        answers: [{ type: Schema.Types.ObjectId, ref: 'Answer' }],
+        questions: [{ type: Schema.Types.ObjectId, ref: "Question" }],
+        answers: [{ type: Schema.Types.ObjectId, ref: "Answer" }],
+        owner: { type: Schema.Types.ObjectId, ref: "User" },
     },
     {
         timestamps: true,
@@ -16,4 +17,4 @@ const form: Schema = new Schema(
 
 //?COMPILE FORM MODEL
 
-export const Form = mongoose.model('form', form);
+export const Form = mongoose.model("form", form);

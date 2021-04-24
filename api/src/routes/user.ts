@@ -2,7 +2,6 @@ import express from "express";
 const Router = express.Router();
 import mongoose from "mongoose";
 // import cors from 'cors';
-import session from "express-session";
 import passport from "passport";
 import { User } from "../models/user";
 
@@ -54,6 +53,7 @@ passport.use(
                     } else {
                         //User Already exists
                         console.log("User is already registered");
+                        //check 
                         cb(null, doc);
                     }
                 }
@@ -91,7 +91,10 @@ Router.get(
         req.session.role = "user";
         let user = req?.user;
         req.session.email = (user as any).email;
-        res.redirect("http://localhost:3000/")
+        res.send(
+            "User form should be seen with submit button which takes u to a thanku page which has logout for user  /user/logout"
+        );
+        // res.redirect("http://localhost:3000/")
     }
 );
 

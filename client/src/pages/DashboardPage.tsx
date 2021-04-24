@@ -35,7 +35,7 @@ const DashboardPage: React.FC = () => {
                     style={{ color: 'red' }}
                     onClick={(e) => handleChange(e)}
                 >
-                    Forms
+                    Superadmin Dashboard (BOARD)
                 </p>
                 <p
                     className="btn"
@@ -45,7 +45,7 @@ const DashboardPage: React.FC = () => {
                     Responses
                 </p>
                 <p className="btn" id="users" onClick={(e) => handleChange(e)}>
-                    Users
+                    Registered Admins (Mancomm)
                 </p>
                 {value?.currentUser === null ? (
                     <p
