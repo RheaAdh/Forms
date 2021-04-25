@@ -2,6 +2,7 @@ import React, { useState, useContext, ReactElement } from 'react'
 export type Nullable<T> = T | null
 
 export interface IUser {
+    username:string
     email: string
     role: string
 }
@@ -14,6 +15,7 @@ export interface Value {
     currentUser: Nullable<IUser>
     setCurrentUser: any
     register: (
+        username:string,
         email: string,
         password: string,
         confirmPassword: string
@@ -33,6 +35,7 @@ export default function AuthProvider({ children }: Props): ReactElement {
     const [currentUser, setCurrentUser] = useState<IUser | null>(null)
 
     const register = async (
+        username:string,
         email: string,
         password: string,
         confirmPassword: string
@@ -43,6 +46,7 @@ export default function AuthProvider({ children }: Props): ReactElement {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                username:username,
                 email: email,
                 password: password,
                 confirmPassword: confirmPassword,
@@ -108,7 +112,7 @@ export default function AuthProvider({ children }: Props): ReactElement {
             credentials: 'include',
         })
         const data = await res.json()
-        const user = { email: data.email, role: data.role }
+        const user = { username:data.username, email: data.email, role: data.role }
         if (user.email) setCurrentUser(user)
         else setCurrentUser(null)
  

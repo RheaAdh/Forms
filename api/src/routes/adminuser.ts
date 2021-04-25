@@ -12,16 +12,17 @@ declare module "express-session" {
         userId: Schema.Types.ObjectId;
         role: String;
         email: String;
+        username: String;
     }
 }
-const bcrypt = require('bcryptjs')
+const bcrypt = require("bcryptjs");
 
 //FOR ADMINS
 
 export async function adminRegister(req: Request, res: Response) {
     await mongo.connectMongo();
     console.log("POST REQUEST WAS MADE");
-    const { password, confirmPassword, email } = req.body;
+    const { username, password, confirmPassword, email } = req.body;
 
     //CHECKING FOR CORRECT EMAIL TYPE
     if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
@@ -37,8 +38,15 @@ export async function adminRegister(req: Request, res: Response) {
         return res.send({
             success: false,
             data:
-                'User exists with same details,try again with a new password if not registered',
-        })
+                "User exists with same details,try again with a new password if not registered",
+        });
+    }
+    let usernameExists = await User.findOne({ username });
+    if (usernameExists) {
+        return res.send({
+            success: false,
+            data: "Username already exists",
+        });
     }
     //USER NOT CREATED
     if (password.length < 9) {
@@ -59,6 +67,7 @@ export async function adminRegister(req: Request, res: Response) {
     //STORING USER IN DB
     const hashpwd = await bcrypt.hash(req.body.password, 10);
     user = new User({
+        username,
         password: hashpwd,
         email,
         role: "admin",
@@ -105,6 +114,7 @@ export async function adminLogin(req: Request, res: Response) {
     req.session.userId = user._id;
     req.session.role = user.role;
     req.session.email = email;
+    req.session.username = user.username;
 
     if (user.role == "superadmin") {
         return res.send({
@@ -248,7 +258,7 @@ export async function adminResetPassword(
 }
 
 export function sessionDetails(req: Request, res: Response) {
-    console.log('SessionID : ', req.sessionID)
-    console.log('Session: ', req.session)
-    res.send(req.session)
+    console.log("SessionID : ", req.sessionID);
+    console.log("Session: ", req.session);
+    res.send(req.session);
 }

@@ -102,6 +102,7 @@ const AdminLoginPage: React.FC = () => {
           </h4>
         </div>
         <input type="submit" value="login" />
+        
         <button style={{border : "none", color : "white", cursor : "pointer", background : "none"}}>
           Forgot password
         </button>

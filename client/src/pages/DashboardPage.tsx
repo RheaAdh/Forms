@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import '../styles/DashboardPage.css'
 import FormsPage from './FormsPage'
-
 import { useAuth } from '../context/AuthContext'
 import AdminLoginPage from './AdminLoginPage'
 import { useHistory } from 'react-router'
@@ -35,17 +34,17 @@ const DashboardPage: React.FC = () => {
                     style={{ color: 'red' }}
                     onClick={(e) => handleChange(e)}
                 >
-                    Superadmin Dashboard (BOARD)
+                    All Forms
                 </p>
                 <p
                     className="btn"
                     id="responses"
                     onClick={(e) => handleChange(e)}
                 >
-                    Responses
+                    Admin Form Responses
                 </p>
                 <p className="btn" id="users" onClick={(e) => handleChange(e)}>
-                    Registered Admins (Mancomm)
+                    Board Form responses
                 </p>
                 {value?.currentUser === null ? (
                     <p

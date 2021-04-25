@@ -5,6 +5,7 @@ import { Redirect, useHistory } from "react-router"
 import { useAuth} from "../context/AuthContext";
 
 const RegisterPage: React.FC = () => {
+  const [username, handleUsername]=useFormState("");
   const [email, handleEmail] = useFormState("");
   const [password, handlePassword] = useFormState("");
   const [confirmPassword, handleConfirmPassword] = useFormState("");
@@ -15,7 +16,7 @@ const RegisterPage: React.FC = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const response = await value?.register(email, password, confirmPassword);
+    const response = await value?.register(username, email, password, confirmPassword);
     console.log({ response });
     if(response.success === true){
         history.push("/adminlogin")
@@ -39,6 +40,17 @@ const RegisterPage: React.FC = () => {
     <div className="form-container">
       <form id="form" onSubmit={handleFormSubmit}  style={{height : "550px"}}>
         <h3>Register</h3>
+        <div className="container">
+          <span className="icon">
+            <i className="fas fa-at"></i>
+          </span>
+          <input
+            value={username}
+            onChange={handleUsername}
+            type="text"
+            placeholder="username"
+          />
+        </div>
         <div className="container">
           <span className="icon">
             <i className="fas fa-at"></i>
@@ -76,11 +88,11 @@ const RegisterPage: React.FC = () => {
           <span className="icon">
             <i className="fas fa-lock"></i>
           </span>
-          <h4 className="error-message">
+          <h5 className="error-message">
             {errorMessage}
-          </h4>
+          </h5>
         </div>
-        <input type="submit" value="login" />
+        <input type="submit" value="register" />
       </form>
     </div>
   );

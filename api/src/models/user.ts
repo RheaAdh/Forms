@@ -3,6 +3,11 @@ import mongoose, { Schema, Document } from 'mongoose'
 //USER SCHEMA
 const userSchema: Schema = new Schema(
     {
+        username:{
+            type:String,
+            unique:true,
+            default:null,
+        },
         password: {
             type: String,
             default: null,

@@ -30,12 +30,13 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(
     session({
         secret: "Keep it secret",
-        resave: true,
+        resave: false,
         name: "uniqueSessionID",
-        saveUninitialized: true,
+        saveUninitialized: false,
         store: store,
         cookie: {
             maxAge: 1000 * 60 * 60 * 24,
+            secure: false,
         },
     })
 );
@@ -50,7 +51,6 @@ app.get("/resetpassword/:token", (req, res) => {
 });
 app.post("/resetpassword/:token", adminResetPassword);
 
-
 // PASSPORT CONFIG --> FOR USER LEVEL AUTH
 app.use(passport.initialize());
 app.use(passport.session());
@@ -58,10 +58,8 @@ app.use("/user", Router);
 app.use("/user/logout", userLogout);
 app.use("/user/getuser", getUser);
 
-
 //ADMIN
 app.use("/api", router);
-
 
 //ADMIN LOGIN,REGISTER,LOGOUT ROUTES
 app.get("/admin", sessionDetails);
@@ -69,12 +67,10 @@ app.post("/admin/register", adminRegister);
 app.post("/admin/login", adminLogin);
 app.get("/admin/logout", adminLogout);
 
-
 //USER ROUTES
 app.use("/user", Router);
 app.use("/user/logout", userLogout);
 app.use("/user/getuser", getUser);
-
 
 //TEST WELCOME PAGE
 app.get("/", (req, res) => {
@@ -95,6 +91,5 @@ app.get("/superadmin/dashboard", isValidSuperAdmin, (req, res) => {
 
 app.get("/sessiondetail", sessionDetails);
 app.get("/admin", sessionDetails);
-
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
