@@ -1,8 +1,9 @@
 import { Response, Request } from "express"
+import { Schema } from "mongoose"
 import * as mongo from "../config/mongo"
 import FormResponse from "../models/response"
 
-const submitResponse = async (req: Request, res: Response) => {
+export const submitResponse = async (req: Request, res: Response) => {
     await mongo.connectMongo()
     console.log("POST REQUEST WAS MADE for submit response")
     const formResponse = new FormResponse(req.body)
@@ -16,4 +17,16 @@ const submitResponse = async (req: Request, res: Response) => {
     }
 }
 
-export default submitResponse
+export const getResponsesByForm = async (req: Request, res: Response) => {
+    await mongo.connectMongo()
+    //WILL DO
+    // try {
+    //     let formResponse = await FormResponse.findOne({
+    //         formId: req.params.formid,
+    //     })
+    //     return res.send(formResponse)
+    // } catch (error) {
+    //     res.send(error)
+    //     console.error(error)
+    // }
+}
