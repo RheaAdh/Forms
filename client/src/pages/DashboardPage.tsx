@@ -1,28 +1,26 @@
-import React, { useEffect, useState } from 'react'
-import '../styles/DashboardPage.css'
-import FormsPage from './FormsPage'
-import { useAuth } from '../context/AuthContext'
-import AdminLoginPage from './AdminLoginPage'
-import { useHistory } from 'react-router'
+import React, { useEffect, useState } from "react"
+import "../styles/DashboardPage.css"
+import FormsPage from "./FormsPage"
+import { useAuth } from "../context/AuthContext"
+import AdminLoginPage from "./AdminLoginPage"
+import { useHistory } from "react-router"
 
 const DashboardPage: React.FC = () => {
-    const [current, setCurrent] = useState<string>('forms')
+    const auth = useAuth()
+    const [current, setCurrent] = useState<string>("forms")
     const handleChange = (e: any) => {
         let element = document.getElementById(current)
-        element?.setAttribute('style', 'color : black;')
-        e.target.style.color = 'red'
+        element?.setAttribute("style", "color : black;")
+        e.target.style.color = "red"
         setCurrent(e.target.id)
     }
-    const value = useAuth()
     const history = useHistory()
-
     useEffect(() => {
-        value?.getCurrentUser()
+        auth?.getCurrentUser()
     }, [])
     const handleLogout = async () => {
-        value
-            ?.logout()
-            .then((res) => history.push('/adminlogin'))
+        auth?.logout()
+            .then((res) => history.push("/adminlogin"))
             .catch((err) => console.log(err))
     }
     return (
@@ -31,7 +29,7 @@ const DashboardPage: React.FC = () => {
                 <p
                     className="btn"
                     id="forms"
-                    style={{ color: 'red' }}
+                    style={{ color: "red" }}
                     onClick={(e) => handleChange(e)}
                 >
                     All Forms
@@ -46,12 +44,12 @@ const DashboardPage: React.FC = () => {
                 <p className="btn" id="users" onClick={(e) => handleChange(e)}>
                     Board Form responses
                 </p>
-                {value?.currentUser === null ? (
+                {auth?.currentUser === null ? (
                     <p
                         className="btn"
                         id="admin-login"
                         onClick={(e) => {
-                            history.push('/adminlogin')
+                            history.push("/adminlogin")
                         }}
                     >
                         Login
@@ -63,13 +61,13 @@ const DashboardPage: React.FC = () => {
                 )}
             </div>
             <div className="main-column">
-                {current === 'forms' ? (
+                {current === "forms" ? (
                     <FormsPage />
-                ) : current === 'responses' ? (
+                ) : current === "responses" ? (
                     <h3>Nothing to see here</h3>
-                ) : current === 'users' ? (
+                ) : current === "users" ? (
                     <h3>Nothing to see here</h3>
-                ) : current === 'admin-login' ? (
+                ) : current === "admin-login" ? (
                     <AdminLoginPage />
                 ) : (
                     <p>lmao</p>

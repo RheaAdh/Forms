@@ -1,8 +1,8 @@
-import React, { useState, useContext, ReactElement } from 'react'
+import React, { useState, useContext, ReactElement } from "react"
 export type Nullable<T> = T | null
 
 export interface IUser {
-    username:string
+    username: string
     email: string
     role: string
 }
@@ -15,7 +15,7 @@ export interface Value {
     currentUser: Nullable<IUser>
     setCurrentUser: any
     register: (
-        username:string,
+        username: string,
         email: string,
         password: string,
         confirmPassword: string
@@ -35,87 +35,88 @@ export default function AuthProvider({ children }: Props): ReactElement {
     const [currentUser, setCurrentUser] = useState<IUser | null>(null)
 
     const register = async (
-        username:string,
+        username: string,
         email: string,
         password: string,
         confirmPassword: string
     ) => {
-        const response = await fetch('http://localhost:7000/admin/register', {
-            method: 'POST',
+        const response = await fetch("http://localhost:7000/admin/register", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                username:username,
+                username: username,
                 email: email,
                 password: password,
                 confirmPassword: confirmPassword,
             }),
-            credentials: 'include',
+            credentials: "include",
         })
         const data = await response.json()
         return data
     }
 
     const login = async (email: string, password: string) => {
-        const response = await fetch('http://localhost:7000/admin/login', {
-            method: 'POST',
+        const response = await fetch("http://localhost:7000/admin/login", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({ email: email, password: password }),
-            credentials: 'include',
+            credentials: "include",
         })
 
         const data = await response.json()
         if (data.success === true) {
             setCurrentUser(data.user)
-            localStorage.setItem('user', JSON.stringify(data.user))
+            localStorage.setItem("user", JSON.stringify(data.user))
             return data
         }
         return data
     }
 
     const logout = async () => {
-        let response;
-        if(currentUser?.role==='user'){
-            response = await fetch('http://localhost:7000/user/logout', {
-                method: 'GET',
+        let response
+        if (currentUser?.role === "user") {
+            response = await fetch("http://localhost:7000/user/logout", {
+                method: "GET",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
-                credentials: 'include', 
+                credentials: "include",
             })
-        }
-        else{
-            response = await fetch('http://localhost:7000/admin/logout', {
-                method: 'GET',
+        } else {
+            response = await fetch("http://localhost:7000/admin/logout", {
+                method: "GET",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
-                credentials: 'include',
-        })
+                credentials: "include",
+            })
         }
         const data = await response.json()
 
         setCurrentUser(null)
-
         return data
     }
 
     const getCurrentUser = async () => {
-        const res = await fetch('http://localhost:7000/sessiondetail', {
-            method: 'GET',
+        const res = await fetch("http://localhost:7000/sessiondetail", {
+            method: "GET",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
-            credentials: 'include',
+            credentials: "include",
         })
         const data = await res.json()
-        const user = { username:data.username, email: data.email, role: data.role }
+        const user = {
+            username: data.username,
+            email: data.email,
+            role: data.role,
+        }
         if (user.email) setCurrentUser(user)
         else setCurrentUser(null)
- 
     }
 
     const value: Value = {

@@ -1,21 +1,21 @@
-import express from "express";
-const Router = express.Router();
-import mongoose from "mongoose";
+import express from "express"
+const Router = express.Router()
+import mongoose from "mongoose"
 // import cors from 'cors';
-import passport from "passport";
-import { User } from "../models/user";
+import passport from "passport"
+import { User } from "../models/user"
 
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const GoogleStrategy = require("passport-google-oauth20").Strategy
 
 mongoose.connect(
     `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@localhost:27017/forms`,
     { useNewUrlParser: true, useUnifiedTopology: true },
     async () => {
-        await console.log("Connected to DB");
+        await console.log("Connected to DB")
     }
-);
+)
 
-Router.use(express.json());
+Router.use(express.json())
 // app.use(cors({ origin: "https://localhost:3000", credentials: true }))
 // app.set("trust proxy", 1);
 
@@ -30,54 +30,54 @@ passport.use(
 
         function (accessToken: any, refreshToken: any, profile: any, cb: any) {
             //Called on Succcessful Auth!
-            console.log("Inside function");
+            console.log("Inside function")
 
             User.findOne(
                 { email: profile.emails[0].value },
                 async (err: Error, doc: any) => {
                     if (err) {
                         //Error
-                        return cb(err, null);
+                        return cb(err, null)
                     }
                     if (!doc) {
                         //Inserting New User to DB
-                        console.log("Inserting new user");
+                        console.log("Inserting new user")
                         const newUser = new User({
                             username: profile.displayName,
                             email: profile.emails[0].value,
                             role: "user",
-                        });
-                        await newUser.save();
-                        console.log("New User saved in database");
-                        cb(null, newUser);
+                        })
+                        await newUser.save()
+                        console.log("New User saved in database")
+                        cb(null, newUser)
                     } else {
                         //User Already exists
-                        console.log("User is already registered");
-                        //check 
-                        cb(null, doc);
+                        console.log("User is already registered")
+                        //check
+                        cb(null, doc)
                     }
                 }
-            );
+            )
         }
     )
-);
+)
 
 passport.serializeUser((user: any, done: any) => {
-    console.log("serialize");
-    return done(null, user._id);
-});
+    console.log("serialize")
+    return done(null, user._id)
+})
 
 passport.deserializeUser((id: string, done: any) => {
     User.findById(id, (err: Error, doc: any) => {
-        console.log("de-serialize");
-        return done(null, doc);
-    });
-});
+        console.log("de-serialize")
+        return done(null, doc)
+    })
+})
 
 Router.get(
     "/auth/google",
     passport.authenticate("google", { scope: ["profile", "email"] })
-);
+)
 
 Router.get(
     "/auth/google/callback",
@@ -87,53 +87,54 @@ Router.get(
     }),
     function (req, res) {
         // Successful authentication, redirect home.
-        console.log("inside call back");
-        req.session.role = "user";
-        let user = req?.user;
-        req.session.email = (user as any).email;
+        console.log("inside call back")
+        req.session.role = "user"
+        let user = req?.user
+        req.session.email = (user as any).email
+        req.session.username = (user as any).username
         res.send(
             "User form should be seen with submit button which takes u to a thanku page which has logout for user  /user/logout"
-        );
+        )
         // res.redirect("http://localhost:3000/")
     }
-);
+)
 
 //USER LOGOUT
 export async function userLogout(req: any, res: any) {
-    console.log("Inside logout");
+    console.log("Inside logout")
     if (req.user) {
-        req.logOut();
+        req.logOut()
         req.session.destroy(function (err: Error) {
             if (err) {
-                console.log(err);
+                console.log(err)
             } else {
                 //session deleted
                 return res.send({
                     success: true,
                     data: "Successfully LoggedOut",
-                });
+                })
             }
-        });
+        })
     } else {
-        return res.send({ success: false, data: "Login Required" });
+        return res.send({ success: false, data: "Login Required" })
     }
 }
 
 //TO VIEW LOGGED-IN USER
 export async function getUser(req: any, res: any) {
-    console.log(req.user);
-    return res.send(req.user);
+    console.log(req.user)
+    return res.send(req.user)
 }
 
 //MIDDLEWARE FOR CHECKING USER LOGIN
 export async function checkAuthentication(req: any, res: any, next: any) {
     if (req.isAuthenticated()) {
-        console.log("Allowed to access");
-        next();
+        console.log("Allowed to access")
+        next()
     } else {
-        console.log("Login to access");
-        res.send({ success: false, data: "Please Login to view" });
+        console.log("Login to access")
+        res.send({ success: false, data: "Please Login to view" })
     }
 }
 
-export default Router;
+export default Router

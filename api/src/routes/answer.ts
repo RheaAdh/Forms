@@ -1,6 +1,6 @@
-import { Response, Request } from 'express';
-import * as mongo from '../config/mongo';
-import { Form } from '../models/form';
+import { Response, Request } from "express"
+import * as mongo from "../config/mongo"
+import { Form } from "../models/form"
 
 import {
     Answer,
@@ -15,144 +15,144 @@ import {
     checkboxgridAnswer,
     dateAnswer,
     timeAnswer,
-} from '../models/answer';
+} from "../models/answer"
 
 export async function sendAnswer(req: Request, res: Response) {
-    await mongo.connectMongo();
+    await mongo.connectMongo()
 
-    let { formId, questionId, answer_type } = req.body;
+    let { formId, questionId, answer_type } = req.body
 
     //?FIND FORM
 
-    let form: any;
+    let form: any
     try {
-        form = await Form.findById(formId);
-        console.log(form);
-        console.log('Form found');
+        form = await Form.findById(formId)
+        console.log(form)
+        console.log("Form found")
     } catch (error) {
-        console.log('cannot');
+        console.log("cannot")
     }
 
     const common = {
         formId: formId,
         answer_type: answer_type,
         questionId: questionId,
-    };
+    }
 
-    let newAnswer;
+    let newAnswer
 
     switch (answer_type) {
-        case 'shortanswer': {
-            console.log('Inside');
+        case "shortanswer": {
+            console.log("Inside")
             newAnswer = new shortAnswer({
                 ...common,
                 shortText: req.body.answer_text,
-            });
-            break;
+            })
+            break
         }
 
-        case 'paragraphanswer': {
+        case "paragraphanswer": {
             newAnswer = new paragraphAnswer({
                 ...common,
                 paragraphText: req.body.answer_text,
-            });
-            break;
+            })
+            break
         }
 
-        case 'emailanswer': {
+        case "emailanswer": {
             newAnswer = new emailAnswer({
                 ...common,
                 emailText: req.body.answer_text,
-            });
-            break;
+            })
+            break
         }
 
-        case 'mcqanswer': {
+        case "mcqanswer": {
             newAnswer = new mcqAnswer({
                 ...common,
                 selectedOption: req.body.option,
-            });
-            break;
+            })
+            break
         }
 
-        case 'checkboxanswer': {
-            const options = req.body.options;
+        case "checkboxanswer": {
+            const options = req.body.options
             newAnswer = new checkboxAnswer({
                 ...common,
                 multipleSelected: [...options],
-            });
-            break;
+            })
+            break
         }
 
-        case 'dropdownanswer': {
+        case "dropdownanswer": {
             newAnswer = new dropdownAnswer({
                 ...common,
                 selectedOption: req.body.option,
-            });
-            break;
+            })
+            break
         }
 
-        case 'linearscaleanswer': {
+        case "linearscaleanswer": {
             newAnswer = new linearscaleAnswer({
                 ...common,
                 selectedOption: req.body.option,
-            });
-            break;
+            })
+            break
         }
 
-        case 'multiplechoicegridanswer': {
-            const options = req.body.options;
+        case "multiplechoicegridanswer": {
+            const options = req.body.options
             newAnswer = new multiplechoicegridAnswer({
                 ...common,
                 multipleSelected: [...options],
-            });
-            break;
+            })
+            break
         }
 
-        case 'checkboxgridanswer': {
-            const options = req.body.options;
+        case "checkboxgridanswer": {
+            const options = req.body.options
             newAnswer = new checkboxgridAnswer({
                 ...common,
                 multipleSelected: req.body.options,
-            });
-            break;
+            })
+            break
         }
 
-        case 'dateanswer': {
-            newAnswer = new dateAnswer({ ...common });
-            break;
+        case "dateanswer": {
+            newAnswer = new dateAnswer({ ...common })
+            break
         }
 
-        case 'timeanswer': {
+        case "timeanswer": {
             newAnswer = new timeAnswer({
                 ...common,
                 timeHours: req.body.timeHours,
                 timeMinutes: req.body.timeMinutes,
-            });
-            break;
+            })
+            break
         }
 
         default:
-            newAnswer = new Answer({ ...common });
+            newAnswer = new Answer({ ...common })
     }
 
-    console.log(newAnswer);
+    console.log(newAnswer)
 
     try {
-        await newAnswer.save();
-        console.log('Answer saved!!');
+        await newAnswer.save()
+        console.log("Answer saved!!")
     } catch (error) {
-        console.log(error);
-        console.log('Couldnt save Answer :(');
+        console.log(error)
+        console.log("Couldnt save Answer :(")
     }
 
-    form.answers.push(newAnswer);
+    form.answers.push(newAnswer)
     try {
-        await form.save();
-        console.log('Form saved!!');
+        await form.save()
+        console.log("Form saved!!")
     } catch (error) {
-        console.log('Couldnt save form');
+        console.log("Couldnt save form")
     }
 
-    res.send({ success: true, data: 'Answered Stored' });
+    res.send({ success: true, data: "Answered Stored" })
 }

@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, Redirect, useParams } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react"
+import { Link, Redirect, useParams } from "react-router-dom"
 
-import QuestionList from "../components/QuestionList";
+import QuestionList from "../components/QuestionList"
 
-import useFormState from "../hooks/useFormState";
+import useFormState from "../hooks/useFormState"
 
-import {useAuth} from "../context/AuthContext"
+import { useAuth } from "../context/AuthContext"
 
-import "../styles/EditFormPage.css";
+import "../styles/EditFormPage.css"
 
 //TODO:
 ////MAKE UPDATE FORM ROUTE
@@ -17,143 +17,148 @@ import "../styles/EditFormPage.css";
 //ERROR HANDLING IF YOU FEEL LIKE IT
 
 const EditFormPage: React.FC = () => {
-  const {formid} : any  = useParams();
+    const { formid }: any = useParams()
 
-  const [form, setForm] = useState<any>();
-  const [questions, setQuestions] = useState<any[]>();
+    const [form, setForm] = useState<any>()
+    const [questions, setQuestions] = useState<any[]>()
 
-  const [showEditTitle, setShowEditTitle] = useState<boolean>(false);
+    const [showEditTitle, setShowEditTitle] = useState<boolean>(false)
 
-  const [title, handleTitle, resetTitle, setTitle] = useFormState("");
+    const [title, handleTitle, resetTitle, setTitle] = useFormState("")
 
-  const [colour, handleColour, resetColour, setColour] = useFormState("#FFFFFF");
+    const [colour, handleColour, resetColour, setColour] = useFormState(
+        "#FFFFFF"
+    )
 
-  const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null)
 
-  const value = useAuth();
+    const value = useAuth()
 
-  //?TO GET THE FORM
-  useEffect(() => {
-    if(value?.currentUser === null)
-        value.getCurrentUser()
-    fetch(`http://localhost:7000/api/getform/${formid}`)
-      .then((resp: any) => {
-        return resp.json();
-      })
+    //?TO GET THE FORM
+    useEffect(() => {
+        if (value?.currentUser === null) value.getCurrentUser()
+        fetch(`http://localhost:7000/api/getform/${formid}`)
+            .then((resp: any) => {
+                return resp.json()
+            })
 
-      .then((data: any) => {
-        setForm(data);
-        setTitle(data.title);
-        setColour(data.color_theme);
-      });
-  }, []);
+            .then((data: any) => {
+                console.log(data)
+                setForm(data)
+                setTitle(data.title)
+                setColour(data.color_theme)
+            })
+    }, [])
 
-  //?TO GET THE QUESTIONS OF THAT FORM
-  useEffect(() => {
-    if (form) {
-      fetch(`http://localhost:7000/api/getquestionsbyformid/${formid}`)
-        .then((resp: any) => {
-          return resp.json();
+    //?TO GET THE QUESTIONS OF THAT FORM
+    useEffect(() => {
+        if (form) {
+            fetch(`http://localhost:7000/api/getquestionsbyformid/${formid}`)
+                .then((resp: any) => {
+                    return resp.json()
+                })
+
+                .then((data: any) => {
+                    console.log({ data })
+                    setQuestions(data)
+                })
+        }
+
+        console.log(questions)
+    }, [form])
+
+    const handleSubmit = (event: React.FocusEvent<HTMLInputElement>) => {
+        event.preventDefault()
+        //UPDATING ON BACK END
+        fetch("http://localhost:7000/api/updateform", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ ...form, title: title }),
         })
-
-        .then((data: any) => {
-          console.log({ data });
-          setQuestions(data);
-        });
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("Success:", data)
+                //UPDATING ON FRONT END
+                setForm(data)
+                setShowEditTitle(false)
+            })
+            .catch((error) => {
+                console.error("Error:", error)
+            })
     }
 
-    console.log(questions);
-  }, [form]);
-
-  const handleSubmit = (event: React.FocusEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    //UPDATING ON BACK END
-    fetch("http://localhost:7000/api/updateform", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ...form, title: title}),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Success:", data);
-        //UPDATING ON FRONT END
-        setForm(data);
-        setShowEditTitle(false);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-
-  const updateColour = () => {
-    fetch("http://localhost:7000/api/updateform", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ...form, color_theme: colour }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        setForm(data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-
-  const handleTitleClick = () => {
-    setShowEditTitle(true);
-  };
-
-  
-  //SHOW AND HIDE EDIT FORM TITLE LOGIC
-  useEffect(() => {
-    if (showEditTitle) {
-      if (null !== inputRef.current) inputRef.current.focus();
+    const updateColour = () => {
+        fetch("http://localhost:7000/api/updateform", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ ...form, color_theme: colour }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data)
+                setForm(data)
+            })
+            .catch((error) => {
+                console.error("Error:", error)
+            })
     }
-  }, [showEditTitle]);
 
-  useEffect(updateColour, [colour]);
+    const handleTitleClick = () => {
+        setShowEditTitle(true)
+    }
 
-  return form ?
-  value?.currentUser && ( value?.currentUser.role === "admin" || value?.currentUser.role === "superadmin" )?
-  (
-    <div className="edit-form-page"  style={{backgroundColor: colour}}>
+    //SHOW AND HIDE EDIT FORM TITLE LOGIC
+    useEffect(() => {
+        if (showEditTitle) {
+            if (null !== inputRef.current) inputRef.current.focus()
+        }
+    }, [showEditTitle])
 
-      <Link to="/">
-        <button>Back</button>
-      </Link>
-      {showEditTitle ? (
-        <input
-          onBlur={handleSubmit}
-          type="text"
-          value={title}
-          onChange={handleTitle}
-          ref={inputRef}
-        ></input>
-      ) : (
-        <div onClick={handleTitleClick}>
-          <h1>{form.title}</h1>
-        </div>
-      )}
+    useEffect(updateColour, [colour])
 
-      <h2>Colour theme: </h2>
-      <input type="color" onChange={handleColour} value={colour}></input>
-      <h3>{form.color_theme}</h3>
+    return form ? (
+        value?.currentUser &&
+        (value?.currentUser.role === "admin" ||
+            value?.currentUser.role === "superadmin") ? (
+            <div className="edit-form-page" style={{ backgroundColor: colour }}>
+                <Link to="/">
+                    <button>Back</button>
+                </Link>
+                {showEditTitle ? (
+                    <input
+                        onBlur={handleSubmit}
+                        type="text"
+                        value={title}
+                        onChange={handleTitle}
+                        ref={inputRef}
+                    ></input>
+                ) : (
+                    <div onClick={handleTitleClick}>
+                        <h1>{form.title}</h1>
+                    </div>
+                )}
 
-      <QuestionList questions={questions} formid={form._id}  />
-    </div>
-  )
-  :
-  <Redirect to="/login"/>
-  : (
-    <div>loading</div>
-  );
-};
+                <h2>Colour theme: </h2>
+                <input
+                    type="color"
+                    onChange={handleColour}
+                    value={colour}
+                ></input>
+                <h3>{form.color_theme}</h3>
+
+                <QuestionList questions={questions} formid={form._id} />
+            </div>
+        ) : (
+            <Redirect to="/login" />
+        )
+    ) : (
+        <div>loading</div>
+    )
+}
 
 //!POSTMAN COPY-PASTE
 // "formid": "5fb61c61ac3bc523cf528434",
@@ -161,4 +166,4 @@ const EditFormPage: React.FC = () => {
 // "question_text": "Who is your favourite Rick?",
 // "options": [{"text": "Rick Riordan"}, {"text": "Rick Sanchez"}, {"text": "Rick Astley"}]
 
-export default EditFormPage;
+export default EditFormPage

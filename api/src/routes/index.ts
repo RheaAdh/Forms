@@ -1,20 +1,21 @@
-import express, { Response, Request } from "express";
-import { helloWorld, dbTesting } from "./helloworld";
-import { deleteForm, addForm, getForms, getForm, updateForm } from "./form";
+import express, { Response, Request } from "express"
+import { helloWorld, dbTesting } from "./helloworld"
+import { deleteForm, addForm, getForms, getForm, updateForm } from "./form"
 import {
-  addQuestion,
-  deleteQuestion,
-  getQuestions,
-  getQuestion,
-  getQuestionsByFormid,
-  updateQuestion,
-} from "./question";
-import { isValidAdmin } from "./adminuser";
-import { sendAnswer } from "./answer";
+    addQuestion,
+    deleteQuestion,
+    getQuestions,
+    getQuestion,
+    getQuestionsByFormid,
+    updateQuestion,
+} from "./question"
+import { isValidAdmin } from "./adminuser"
+import { sendAnswer } from "./answer"
+import submitResponse from "./response"
 // import { isValidAdmin } from "./adminuser";
-const router = express.Router();
+const router = express.Router()
 
-router.get("/helloworld", helloWorld);
+router.get("/helloworld", helloWorld)
 // router.get("/db", isValidAdmin, dbTesting);
 
 // //ADMIN LEVEL PROTECTED ROUTES
@@ -31,25 +32,23 @@ router.get("/helloworld", helloWorld);
 // router.put("/updatequestion", isValidAdmin, updateQuestion);
 // router.delete("/deletequestion", isValidAdmin, deleteQuestion);
 
-
 //------------------TESTING WITHOUT AUTH------------------
-router.get("/helloworld", helloWorld);
-router.get("/db", dbTesting);
+router.get("/helloworld", helloWorld)
+router.get("/db", dbTesting)
 
-router.get("/getforms", isValidAdmin, getForms);
-router.get("/getform/:formid", getForm);
-router.post("/addform", addForm);
-router.put("/updateform", updateForm);
-router.delete("/deleteform", deleteForm);
+router.get("/getforms", isValidAdmin, getForms)
+router.get("/getform/:formid", getForm)
+router.post("/addform", addForm)
+router.put("/updateform", updateForm)
+router.delete("/deleteform", deleteForm)
 
-router.get("/getquestions", getQuestions);
-router.get("/getquestion/:qid", getQuestion);
-router.get("/getquestionsbyformid/:formid", getQuestionsByFormid);
-router.post("/addquestion", addQuestion);
-router.put("/updatequestion", updateQuestion);
-router.delete("/deletequestion", deleteQuestion);
+router.get("/getquestions", getQuestions)
+router.get("/getquestion/:qid", getQuestion)
+router.get("/getquestionsbyformid/:formid", getQuestionsByFormid)
+router.post("/addquestion", addQuestion)
+router.put("/updatequestion", updateQuestion)
+router.delete("/deletequestion", deleteQuestion)
+router.post("/submitresponse", submitResponse)
+router.post("/sendAnswer", sendAnswer)
 
-router.post("/sendAnswer", sendAnswer);
-
-
-export default router;
+export default router

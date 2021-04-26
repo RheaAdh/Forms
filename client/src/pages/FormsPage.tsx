@@ -4,10 +4,10 @@ import NewForm from '../components/NewForm'
 import { useAuth } from '../context/AuthContext'
 const FormsPage: React.FC = () => {
     const [forms, setForms] = useState<any[]>([])
-    const value = useAuth()
+    const auth = useAuth()
 
     useEffect(() => {
-        value?.getCurrentUser()
+        auth?.getCurrentUser()
         fetch('http://localhost:7000/api/getforms', {
             method: 'GET',
             headers: {
@@ -32,13 +32,13 @@ const FormsPage: React.FC = () => {
     }, [])
 
     useEffect(() => {
-        value?.getCurrentUser()
+        auth?.getCurrentUser()
     }, [])
 
     const deleteForm = (id: any) => {
         setForms((prevForms) => prevForms.filter((form) => form._id !== id))
     }
-    return value?.currentUser ? (
+    return auth?.currentUser ? (
         <div>
             <FormList forms={forms} deleteForm={deleteForm} />
             <NewForm />
