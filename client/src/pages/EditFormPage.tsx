@@ -57,10 +57,9 @@ const EditFormPage: React.FC = () => {
                 .then((resp: any) => {
                     return resp.json()
                 })
-
                 .then((data: any) => {
-                    console.log({ data })
-                    setQuestions(data)
+                    console.log(data.ques)
+                    setQuestions(data.ques)
                 })
         }
 

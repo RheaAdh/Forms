@@ -2,6 +2,7 @@ import React, { useState, useContext, ReactElement } from "react"
 export type Nullable<T> = T | null
 
 export interface IUser {
+    userid: string,
     username: string
     email: string
     role: string
@@ -114,6 +115,7 @@ export default function AuthProvider({ children }: Props): ReactElement {
             username: data.username,
             email: data.email,
             role: data.role,
+            userid:data.userId
         }
         if (user.email) setCurrentUser(user)
         else setCurrentUser(null)

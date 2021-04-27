@@ -1,6 +1,8 @@
 import { Response, Request } from "express"
 import * as mongo from "../config/mongo"
 import { Form } from "../models/form"
+import FormResponse from "../models/response"
+
 import {
     Question,
     shortQuestion,
@@ -170,7 +172,38 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
     await mongo.connectMongo()
 
     const questions = await Question.find({ formid: req.params.formid })
-    res.json(questions)
+    console.log("inside getQuestions")
+    console.log(questions)
+    //sending previous response and questions
+    await mongo.connectMongo()
+    try {
+        let user = await FormResponse.findOne({
+            userid: req.session.userId,
+        })
+        console.log("data and question")
+        if (!user) {
+            let data = { prev_resp: null, ques: questions }
+            console.log(data)
+            res.json(data)
+        } else {
+            let data = { prev_resp: user, ques: questions }
+            console.log(data.prev_resp)
+            console.log(data)
+            res.send(data)
+        }
+    } catch (err) {
+        console.log(err)
+    }
+    // try {
+    //     let formResponse = await FormResponse.findOne({
+    //         formId: req.params.formid,
+    //     })
+    //     return res.send(formResponse)
+    // } catch (error) {
+    //     res.send(error)
+    //     console.error(error)
+    // }
+    // res.json(questions)
 }
 
 export async function updateQuestion(req: Request, res: Response) {

@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose"
 
 const response: Schema = new Schema({
-    // questionId:{type: Schema.Types.ObjectId, ref: "Question"},
     username: { type: String },
+    userid:{type: Schema.Types.ObjectId, ref:"User"},
     formId: { type: Schema.Types.ObjectId, ref: "Form" },
     responses: [
         {

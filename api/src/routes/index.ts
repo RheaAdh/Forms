@@ -11,7 +11,7 @@ import {
 } from "./question"
 import { isValidAdmin } from "./adminuser"
 // import { sendAnswer } from "./answer"
-import { submitResponse, getResponsesByForm } from "./response"
+import { submitResponse } from "./response"
 // import { isValidAdmin } from "./adminuser";
 const router = express.Router()
 
@@ -49,6 +49,6 @@ router.post("/addquestion", addQuestion)
 router.put("/updatequestion", updateQuestion)
 router.delete("/deletequestion", deleteQuestion)
 router.post("/submitresponse", submitResponse)
-router.get("/resbyformid/:formid", getResponsesByForm)
+// router.get("/resbyformid/:formid", getResponsesByForm)
 
 export default router

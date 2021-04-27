@@ -42,10 +42,15 @@ const DisplayForm = () => {
                 },
                 credentials: "include",
             })
+                //!!Above request has both prev_resp and questions --->prev_resp needs to be implemented in frontend
                 .then((resp) => resp.json())
-                .then((data) => {
-                    console.log(data)
+                .then((DATA) => {
+                    console.log("Data is here")
+                    console.log(DATA)
+                    let data=DATA.ques
                     data.map((q: any, idx: Number) => {
+                        console.log(q)
+                        console.log(idx)
                         setResponses((prevResponses) => [
                             ...prevResponses,
                             {
@@ -84,6 +89,7 @@ const DisplayForm = () => {
         } else setSubmitError(null)
         const body = {
             username: auth?.currentUser?.username,
+            userid:auth?.currentUser?.userid,
             formId: formid,
             responses: responses,
         }
@@ -96,6 +102,7 @@ const DisplayForm = () => {
             headers: {
                 "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify(body),
         })
             .then((res) => res.json())
