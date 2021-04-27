@@ -1,8 +1,17 @@
-import { Response, Request } from "express"
+import { Response, Request, response } from "express"
 import { Schema } from "mongoose"
 import * as mongo from "../config/mongo"
 import FormResponse from "../models/response"
-
+import { Form } from "../models/form"
+declare module "express-session" {
+    interface Session {
+        isAuth: boolean
+        userId: Schema.Types.ObjectId
+        role: String
+        email: String
+        username: String
+    }
+}
 export const submitResponse = async (req: Request, res: Response) => {
     await mongo.connectMongo()
     console.log("POST REQUEST WAS MADE for submit response")
@@ -47,14 +56,25 @@ export const submitResponse = async (req: Request, res: Response) => {
 
 export const getResponsesByForm = async (req: Request, res: Response) => {
     await mongo.connectMongo()
-    //WILL DO
-    // try {
-    //     let formResponse = await FormResponse.findOne({
-    //         formId: req.params.formid,
-    //     })
-    //     return res.send(formResponse)
-    // } catch (error) {
-    //     res.send(error)
-    //     console.error(error)
-    // }
+    let formId = req.params.formId
+    let formResponses: any
+    try {
+        let formResponses = await FormResponse.findOne({
+            formId: formId,
+        })
+        res.send(formResponses)
+    } catch (error) {
+        res.send("error")
+    }
+}
+export const getFormsByCreator = async (req: Request, res: Response) => {
+    await mongo.connectMongo()
+    let creatorId = req.params.creatorId
+    let usersForms: any
+    try {
+        usersForms = await Form.find({ owner: creatorId })
+        res.send(usersForms)
+    } catch (error) {
+        res.send("error")
+    }
 }
