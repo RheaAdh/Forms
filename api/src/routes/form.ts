@@ -12,12 +12,8 @@ declare module "express-session" {
         username: String
     }
 }
-let sessionData: any
 export async function getForms(req: Request, res: Response) {
     await mongo.connectMongo()
-    sessionData = req.session
-    // console.log("hello"+req.session.username);
-
     const forms = await Form.find().exec()
     res.json({ success: true, forms: forms })
 }
@@ -34,7 +30,7 @@ export async function addForm(req: any, res: Response) {
     let newForm: any
     newForm = new Form({
         title: req.body.title,
-        owner: sessionData.userId,
+        owner: req.session.userId,
         color_theme: req.body.color_theme,
     })
     console.log("POST REQUEST WAS MADE")
