@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document, Mongoose } from "mongoose";
-const options = { discriminatorKey: "question-type" };
+import mongoose, { Schema, Document, Mongoose } from "mongoose"
+const options = { discriminatorKey: "question-type" }
 
 //!BASE QUESTION SCHEMA
 
@@ -9,26 +9,24 @@ const questionSchema: Schema = new Schema(
         question_text: { type: String, required: true },
         required: { type: Boolean, default: false },
         //question_type: String This is  made by default by the discriminator key
+        userId: { type: Schema.Types.ObjectId, ref: "User" },
     },
     options
-);
+)
 
 //?COMPILE QUESTION MODEL
-export const Question = mongoose.model("question", questionSchema);
+export const Question = mongoose.model("question", questionSchema)
 
 // SHORT ANSWER:
-const shortSchema: Schema = new Schema({});
-export const shortQuestion = Question.discriminator(
-    "short-answer",
-    shortSchema
-);
+const shortSchema: Schema = new Schema({})
+export const shortQuestion = Question.discriminator("short-answer", shortSchema)
 
 // PARAGRAPH:
-const paragraphSchema: Schema = new Schema({});
+const paragraphSchema: Schema = new Schema({})
 export const paragraphQuestion = Question.discriminator(
     "paragraph-answer",
     paragraphSchema
-);
+)
 
 // EMAIL
 // const emailSchema: Schema = new Schema({});
@@ -37,35 +35,32 @@ export const paragraphQuestion = Question.discriminator(
 //     emailSchema
 // );
 // EMAIL
-const emailSchema: Schema = new Schema({});
-export const emailQuestion = Question.discriminator(
-    "email-answer",
-    emailSchema
-);
+const emailSchema: Schema = new Schema({})
+export const emailQuestion = Question.discriminator("email-answer", emailSchema)
 // MULTIPLE CHOICE:
 const mcqSchema: Schema = new Schema({
     //array of text
     options: [{ type: String }],
-});
-export const mcqQuestion = Question.discriminator("mcq-answer", mcqSchema);
+})
+export const mcqQuestion = Question.discriminator("mcq-answer", mcqSchema)
 
 // CHECKBOXES:
 const checkboxSchema: Schema = new Schema({
     options: [{ type: String }],
-});
+})
 export const checkboxQuestion = Question.discriminator(
     "checkbox-answer",
     checkboxSchema
-);
+)
 
 // DROPDOWN:
 const dropdownSchema: Schema = new Schema({
     options: [{ type: String }],
-});
+})
 export const dropdownQuestion = Question.discriminator(
     "dropdown-answer",
     dropdownSchema
-);
+)
 
 //LINEAR SCALE:
 const linearscaleSchema: Schema = new Schema({
@@ -73,36 +68,36 @@ const linearscaleSchema: Schema = new Schema({
     highRating: { type: Number, min: 2, max: 10 },
     lowRatingLabel: { type: String, default: "Low" },
     highRatingLabel: { type: String, default: "High" },
-});
+})
 export const linearscaleQuestion = Question.discriminator(
     "linearscale-answer",
     linearscaleSchema
-);
+)
 
 //MULTIPLE CHOICE GRID:
 const multiplechoicegridSchema: Schema = new Schema({
     rowLabel: [String],
     colLabel: [String],
-});
+})
 export const multiplechoicegridQuestion = Question.discriminator(
     "multiplechoicegrid-answer",
     multiplechoicegridSchema
-);
+)
 
 //CHECKBOXES GRID:
 const checkboxgridSchema: Schema = new Schema({
     rowLabel: [String],
     colLabel: [String],
-});
+})
 export const checkboxgridQuestion = Question.discriminator(
     "checkboxgrid-answer",
     checkboxgridSchema
-);
+)
 
 //DATE:
-const dateSchema: Schema = new Schema({});
-export const dateQuestion = Question.discriminator("date-answer", dateSchema);
+const dateSchema: Schema = new Schema({})
+export const dateQuestion = Question.discriminator("date-answer", dateSchema)
 
 //TIME:
-const timeSchema: Schema = new Schema({});
-export const timeQuestion = Question.discriminator("time-answer", timeSchema);
+const timeSchema: Schema = new Schema({})
+export const timeQuestion = Question.discriminator("time-answer", timeSchema)

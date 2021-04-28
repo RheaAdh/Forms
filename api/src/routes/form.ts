@@ -75,3 +75,36 @@ export async function deleteForm(req: Request, res: Response) {
         console.error(error)
     }
 }
+
+export async function getMyForms(req: Request, res: Response) {
+    await mongo.connectMongo()
+    // console.log(req.session.userId);
+
+    let myForms: any
+    try {
+        myForms = await Form.find({ owner: req.session.userId })
+        console.log(myForms)
+
+        res.send(myForms)
+    } catch (error) {
+        res.send(error)
+    }
+}
+
+export async function getMyForm(req: Request, res: Response) {
+    await mongo.connectMongo()
+    // console.log(req.session.userId);
+
+    let myForm: any
+    try {
+        myForm = await Form.find({
+            owner: req.session.userId,
+            _id: req.params.formid,
+        })
+        console.log(myForm)
+
+        res.send(myForm)
+    } catch (error) {
+        res.send(error)
+    }
+}

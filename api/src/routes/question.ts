@@ -346,3 +346,23 @@ export async function deleteQuestion(req: Request, res: Response) {
         res.end({ success: false, data: "You messed up.... again" })
     }
 }
+
+export async function getMyQuestions(req: Request, res: Response) {
+    await mongo.connectMongo()
+
+    const questions = await Question.find({userId:req.session.userId})
+    res.json(questions)
+}
+
+
+    // try {
+    //     let formResponse = await FormResponse.findOne({
+    //         formId: req.params.formid,
+    //     })
+    //     return res.send(formResponse)
+    // } catch (error) {
+    //     res.send(error)
+    //     console.error(error)
+    // }
+    // res.json(questions)
+}
