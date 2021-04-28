@@ -140,6 +140,7 @@ const Question: React.FC<props> = ({ question, deleteQuestion }) => {
             headers: {
                 "Content-Type": "application/json",
             },
+            credentials: "include",
             body: body,
         })
             .then((response) => response.json())
@@ -152,6 +153,7 @@ const Question: React.FC<props> = ({ question, deleteQuestion }) => {
             headers: {
                 "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({
                 id: question._id,
                 formid: question.formid,

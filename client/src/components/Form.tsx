@@ -24,6 +24,7 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify(body),
     })
       .then((response) => response.json())
@@ -39,11 +40,11 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
 
   return (
     <div onClick={handleClick}>
-      <div>
-        <h1 style={{ backgroundColor: form.color_theme, cursor: "pointer" }}>
-          {form.title}--{form.color_theme}
-          <button onClick={handleDelete}>Delete Form</button>
+      <div style={{ backgroundColor: form.color_theme, cursor: "pointer", margin:30 }}>
+        <h1>
+          {form.title}
         </h1>
+        <button onClick={handleDelete}>Delete Form</button>
       </div>
     </div>
   );

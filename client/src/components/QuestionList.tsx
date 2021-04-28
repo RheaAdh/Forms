@@ -26,6 +26,7 @@ const QuestionList: React.FC<props> = ({questions, formid}) => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify(newQuestion),
     })
       .then((response) => response.json())

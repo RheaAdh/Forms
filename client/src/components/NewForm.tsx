@@ -26,6 +26,7 @@ const NewForm = () => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify(form),
     })
       .then((response) => response.json())
