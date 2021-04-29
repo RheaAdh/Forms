@@ -1,7 +1,7 @@
 import path from "path"
 require("dotenv").config({ path: path.join(".env") })
 const cors = require("cors")
-import express, { Request, Response } from "express"
+import express, { Request, response, Response } from "express"
 import router from "./routes"
 import {
     sessionDetails,
@@ -14,6 +14,9 @@ import {
     adminResetPassword,
 } from "./routes/adminuser"
 import { store } from "./config/mongo"
+
+
+
 
 const port: Number = 7000
 const session = require("express-session")
@@ -91,5 +94,6 @@ app.get("/superadmin/dashboard", isValidSuperAdmin, (req, res) => {
 
 app.get("/sessiondetail", sessionDetails)
 app.get("/admin", sessionDetails)
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`))

@@ -22,8 +22,11 @@ import {
     submitResponse,
     getResponsesByForm,
     getFormsByCreator,
+    downloadResponse
 } from "./response"
 const router = express.Router()
+
+//Testing is half done with middleware was creating problem in frontend so commented
 
 //------------------ SUPERADMIN TESTING WITH AUTH------------------
 /*
@@ -127,5 +130,10 @@ router.delete("/deletemyform", deleteForm)
 router.post("/addmyquestion", addQuestion)
 router.put("/updatemyquestion", updateQuestion)
 router.delete("/deletemyquestion", deleteQuestion)
+
+
+
+//Covert to .csv and download route
+router.get("/download/:formid",downloadResponse)
 
 export default router

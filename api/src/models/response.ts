@@ -1,8 +1,30 @@
 import mongoose, { Schema, Document } from "mongoose"
+export interface ResponseDoc extends Document {
+    username: string
+    userid: any
+    formId: any
+    responses: [
+        {
+            questionId: string
+            answerType: string
+            shortText: string
+            paragraphText: string
+            emailText: string
+            selectedOption: string
+            multipleSelected: [string]
+            selectedOptionsGrid: [{ row: string; col: string }]
+            selectedOptionLinScale: Number
+            selectedDate: Date
+            timeHours: Number
+            timeMinutes: Number
+            emailAnswer: string
+        }
+    ]
+}
 
 const response: Schema = new Schema({
     username: { type: String },
-    userid:{type: Schema.Types.ObjectId, ref:"User"},
+    userid: { type: Schema.Types.ObjectId, ref: "User" },
     formId: { type: Schema.Types.ObjectId, ref: "Form" },
     responses: [
         {
@@ -22,6 +44,6 @@ const response: Schema = new Schema({
         },
     ],
 })
-const FormResponse = mongoose.model("response", response)
+const FormResponse = mongoose.model<ResponseDoc>("response", response)
 
 export default FormResponse
