@@ -49,7 +49,7 @@ export async function adminRegister(req: Request, res: Response) {
         });
     }
     //USER NOT CREATED
-    if (password.length < 9) {
+    if (password.length < 8) {
         return res.send({
             success: false,
             data: "Password must be atleast 8 characters long",

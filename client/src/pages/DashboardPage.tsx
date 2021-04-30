@@ -4,6 +4,7 @@ import FormsPage from "./FormsPage"
 import { useAuth } from "../context/AuthContext"
 import AdminLoginPage from "./AdminLoginPage"
 import { useHistory } from "react-router"
+import ResponseList from "../components/ResponseList"
 
 const DashboardPage: React.FC = () => {
     const auth = useAuth()
@@ -64,7 +65,7 @@ const DashboardPage: React.FC = () => {
                 {current === "forms" ? (
                     <FormsPage />
                 ) : current === "responses" ? (
-                    <h3>Nothing to see here</h3>
+                    <ResponseList />
                 ) : current === "users" ? (
                     <h3>Nothing to see here</h3>
                 ) : current === "admin-login" ? (

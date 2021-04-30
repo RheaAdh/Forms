@@ -74,6 +74,7 @@ const EditFormPage: React.FC = () => {
             headers: {
                 "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({ ...form, title: title }),
         })
             .then((response) => response.json())
@@ -94,6 +95,7 @@ const EditFormPage: React.FC = () => {
             headers: {
                 "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({ ...form, color_theme: colour }),
         })
             .then((response) => response.json())
