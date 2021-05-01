@@ -9,27 +9,45 @@ const ResponseList: React.FC<props> = ({ creatorRole }) => {
     const [forms, setForms] = useState<any[]>([])
 
     useEffect(() => {
-        console.log(`http://localhost:7000/api/get${creatorRole}forms`)
-        fetch(`http://localhost:7000/api/get${creatorRole}forms`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-        })
-            .then((resp: any) => {
-                return resp.json()
+        if (creatorRole === "singleAdmin") {
+            fetch("http://localhost:7000/api/getforms", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
             })
-            .catch((e) => console.log(e))
+                .then((resp) => resp.json())
+                .catch((err) => console.log(err))
+                .then((data) => {
+                    if (data.success) {
+                        setForms(data.forms)
+                    } else {
+                        console.log("Something's not right")
+                    }
+                })
+        } else {
+            fetch(`http://localhost:7000/api/get${creatorRole}forms`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            })
+                .then((resp: any) => {
+                    return resp.json()
+                })
+                .catch((e) => console.log(e))
 
-            .then((data: any) => {
-                console.log({ data })
-                if (data.success === true) {
-                    setForms(data.forms)
-                } else {
-                    console.log("Where is the data?")
-                }
-            })
+                .then((data: any) => {
+                    console.log({ data })
+                    if (data.success === true) {
+                        setForms(data.forms)
+                    } else {
+                        console.log("Where is the data?")
+                    }
+                })
+        }
     }, [creatorRole])
 
     return (

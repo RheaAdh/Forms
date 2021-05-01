@@ -180,8 +180,9 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
     try {
         let user = await FormResponse.findOne({
             userid: req.session.userId,
+            formId: req.params.formid,
         })
-        console.log("data and question")
+        console.log(user)
         if (!user) {
             let data = { prevResponse: null, ques: questions }
             console.log(data)

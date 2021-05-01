@@ -15,7 +15,6 @@ const QuestionResponse: React.FC<props> = ({
     index,
     submitStatus,
 }) => {
-    console.log(prevResponse)
     const typeToIdx = [
         "short-answer",
         "paragraph-answer",
@@ -37,11 +36,11 @@ const QuestionResponse: React.FC<props> = ({
     const [emailError, setEmailError] = useState<string | null>(null)
 
     // For linear scale
-    const [arr, setArr] = useState<number[]>([])
+    const [arr, setArr] = useState<string[]>([])
 
     const fillArray = (low: number, hi: number) => {
         for (let i: number = low; i <= hi; i++) {
-            setArr((prevState) => [...prevState, i])
+            setArr((prevState) => [...prevState, (i as unknown) as string])
         }
     }
 
@@ -56,23 +55,30 @@ const QuestionResponse: React.FC<props> = ({
             question["question-type"] === "checkboxgrid-answer"
         ) {
             //map to get rid of object id (Since it is an array of objects, mongo adds objectId by default)
-            setMcqgrid(
-                prevResponse?.["selectedOptionsGrid"].map(
-                    (res: any, idx: Number) => {
-                        return { row: res["row"], col: res["col"] }
-                    }
-                )
-            )
+
+            prevResponse?.["selectedOptionsGrid"]
+                ? setMcqgrid(
+                      prevResponse?.["selectedOptionsGrid"]?.map(
+                          (res: any, idx: Number) => {
+                              return { row: res["row"], col: res["col"] }
+                          }
+                      )
+                  )
+                : setMcqgrid([])
         } else if (
             question["question-type"] === "mcq-answer" ||
             question["question-type"] === "checkbox-answer"
         ) {
-            setOptionsChecked(prevResponse["multipleSelected"])
+            setOptionsChecked(
+                prevResponse?.["multipleSelected"]
+                    ? prevResponse?.["multipleSelected"]
+                    : []
+            )
         }
     }, [])
 
     const handleShortAnswer = (e: any) => {
-        if (e?.target.value === null && question["required"]) {
+        if ((e?.target.value).length === 0 && question["required"]) {
             submitStatus(index, false)
             return
         } else submitStatus(index, true)
@@ -84,7 +90,7 @@ const QuestionResponse: React.FC<props> = ({
         handleChange(index, answer)
     }
     const handleParagraphAnswer = (e: any) => {
-        if (e?.target.value === null && question["required"]) {
+        if ((e?.target.value).length === 0 && question["required"]) {
             submitStatus(index, false)
         } else submitStatus(index, true)
         const answer = {
@@ -151,8 +157,6 @@ const QuestionResponse: React.FC<props> = ({
             submitStatus(index, false)
         } else {
             setEmailError(null)
-        }
-        if (question["required"]) {
             submitStatus(index, true)
         }
         const answer = {
@@ -176,7 +180,10 @@ const QuestionResponse: React.FC<props> = ({
             mcq.push({ row: row, col: col })
         }
         setMcqgrid(mcq)
-        if (question["required"] && mcq.length === question["options"].length) {
+        if (
+            question["required"] &&
+            question["rowLabel"]?.length === mcqGrid.length
+        ) {
             submitStatus(index, true)
         }
         const answer = {
@@ -215,7 +222,6 @@ const QuestionResponse: React.FC<props> = ({
             questionId: question["_id"],
             selectedOptionsGrid: mcq,
         }
-        console.log(mcqGrid)
         handleChange(index, answer)
     }
     const handleLinearScale = (e: any) => {
@@ -294,12 +300,16 @@ const QuestionResponse: React.FC<props> = ({
         </div>,
         //Dropdown
         <div>
-            <select
-                onChange={(e) => handleDropdown(e)}
-                defaultValue={prevResponse?.selectedOption}
-            >
+            <select defaultValue={prevResponse?.selectedOption}>
                 {question["options"]?.map((optionText: string, i: Number) => {
-                    return <option value={optionText}>{optionText}</option>
+                    return (
+                        <option
+                            value={optionText}
+                            onClick={(e) => handleDropdown(e)}
+                        >
+                            {optionText}
+                        </option>
+                    )
                 })}
             </select>
         </div>,
@@ -381,7 +391,7 @@ const QuestionResponse: React.FC<props> = ({
                             {row}{" "}
                         </span>
                         {question["colLabel"]?.map((col: string, i: Number) => {
-                            return mcqGrid.find((obj) => {
+                            return mcqGrid?.find((obj) => {
                                 return obj["row"] === row && obj["col"] === col
                             }) !== undefined ? (
                                 <input
@@ -422,21 +432,19 @@ const QuestionResponse: React.FC<props> = ({
             {question["lowRatingLabel"] ? (
                 <span>{question["lowRatingLabel"]}</span>
             ) : null}
-            {arr.map((num: Number, idx: Number) => {
+            {arr.map((num: string, idx: Number) => {
                 return (
                     <span key={String(num)}>
                         <input
                             onChange={(e) => handleLinearScale(e)}
-                            value={num as number}
+                            value={num}
                             type="radio"
                             name={question["_id"]}
                             style={{
                                 marginLeft: "15px",
                                 display: "inline",
                             }}
-                            defaultChecked={
-                                prevResponse?.selectedOptionLinScale === num
-                            }
+                            defaultChecked={prevResponse?.selectedOption == num}
                         />
                         {num}
                     </span>
@@ -452,7 +460,7 @@ const QuestionResponse: React.FC<props> = ({
 
     return (
         <div>
-            {console.log(mcqGrid)}
+            {console.log(question?.["question-type"], mcqGrid, prevResponse)}
             <b>{question["question_text"]}</b>{" "}
             {question["required"] ? (
                 <span style={{ color: "red" }}>*</span>

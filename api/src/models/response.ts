@@ -36,7 +36,6 @@ const response: Schema = new Schema({
             selectedOption: String,
             multipleSelected: [String],
             selectedOptionsGrid: [{ row: String, col: String, _id: false }],
-            selectedOptionLinScale: Number,
             selectedDate: Date,
             timeHours: { type: Number, min: 1, max: 23 },
             timeMinutes: { type: Number, min: 0, max: 59 },

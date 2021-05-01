@@ -63,8 +63,6 @@ const EditFormPage: React.FC = () => {
 
             .then((data: any) => {
                 if (data.success) {
-                    console.log(data.form)
-                    console.log(data.form)
                     setForm(data.form)
                     setTitle(data.form.title)
                     setColour(data.form.color_theme)
@@ -73,9 +71,6 @@ const EditFormPage: React.FC = () => {
                     )
                     setCloseDate(
                         new Date(data.form["closes"]).toLocaleDateString()
-                    )
-                    console.log(
-                        new Date(data.form["closes"]).toLocaleTimeString()
                     )
                 } else {
                     console.log("failed to fetch form")
@@ -135,7 +130,6 @@ const EditFormPage: React.FC = () => {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log(data)
                 setForm(data)
             })
             .catch((error) => {
@@ -162,7 +156,6 @@ const EditFormPage: React.FC = () => {
         (auth?.currentUser.role === "admin" ||
             auth?.currentUser.role === "superadmin") ? (
             <div className="edit-form-page" style={{ backgroundColor: colour }}>
-                {console.log(colour)}
                 <Link to="/">
                     <button>Back</button>
                 </Link>

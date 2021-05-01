@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import { Redirect, useParams } from "react-router-dom"
-import { IndexType } from "typescript"
 import QuestionResponse from "../components/QuestionResponse"
 import { useAuth } from "../context/AuthContext"
 
@@ -15,6 +14,7 @@ const DisplayForm = () => {
     const [thankYou, setThankYou] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(true)
     const { formid }: any = useParams()
+    console.log(formid)
 
     useEffect(() => {
         auth?.getCurrentUser().then((res: any) => setLoading(false))
@@ -47,7 +47,6 @@ const DisplayForm = () => {
             })
                 .then((resp) => resp.json())
                 .then((data) => {
-                    console.log(data)
                     data["ques"].map((q: any, idx: Number) => {
                         setResponses((prevResponses) => [
                             ...prevResponses,
@@ -58,6 +57,7 @@ const DisplayForm = () => {
                                       questionId: q["_id"],
                                   },
                         ])
+
                         setCanSubmit((prevState) => [
                             ...prevState,
                             !q["required"],
@@ -75,7 +75,6 @@ const DisplayForm = () => {
         let resp = responses
         resp[index] = answer
         setResponses(resp)
-        console.log(resp)
     }
 
     const isFalse = (f: boolean) => !f

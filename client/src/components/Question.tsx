@@ -6,8 +6,9 @@ import "../styles/Questions.css"
 interface props {
     question: any
     deleteQuestion?: any
+    index: number
 }
-const Question: React.FC<props> = ({ question, deleteQuestion }) => {
+const Question: React.FC<props> = ({ question, deleteQuestion, index }) => {
     const questions_types = [
         "short-answer",
         "paragraph-answer",
@@ -161,7 +162,7 @@ const Question: React.FC<props> = ({ question, deleteQuestion }) => {
             .then((res: any) => res.json())
             .then((data) => {
                 if (data.success) {
-                    deleteQuestion(question._id)
+                    deleteQuestion(index)
                     console.log(question._id)
                 } else {
                     console.log("Something went wrong")
@@ -463,6 +464,7 @@ const Question: React.FC<props> = ({ question, deleteQuestion }) => {
 
             {types[type]}
             <button onClick={handleClick}>Delete Question</button>
+            {console.log(question["question_text"])}
         </div>
     )
 }

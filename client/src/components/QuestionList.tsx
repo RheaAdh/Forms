@@ -21,7 +21,6 @@ const QuestionList: React.FC<props> = ({ formid }) => {
                 return resp.json()
             })
             .then((data: any) => {
-                console.log(data.ques)
                 setQuestionList(data.ques)
             })
     }, [])
@@ -48,20 +47,20 @@ const QuestionList: React.FC<props> = ({ formid }) => {
         // setList(() => [...list, question]);
     }
 
-    const deleteQuestion = (id: any) => {
-        console.log(id)
-        let newList = questionList.filter((question) => question._id !== id)
-        setQuestionList(newList)
-        console.log(newList)
+    const deleteQuestion = (idx: number) => {
+        setQuestionList((prevList) =>
+            prevList.filter((question, i) => idx !== i)
+        )
     }
 
     return (
         <div className="list-container">
             {console.log(questionList)}
             <div className="list-body">
-                {questionList?.map((question) => (
+                {questionList?.map((question, index: number) => (
                     <Question
                         question={question}
+                        index={index}
                         deleteQuestion={deleteQuestion}
                     />
                 ))}

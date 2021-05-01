@@ -36,28 +36,34 @@ const DashboardPage: React.FC = () => {
     return (
         <div className="dashboard">
             <div className="sidebar">
-                <p
-                    className="btn"
-                    id="allForms"
-                    style={{ color: "red" }}
-                    onClick={(e) => handleChange(e)}
-                >
-                    All Forms
-                </p>
-                <p
-                    className="btn"
-                    id="adminForms"
-                    onClick={(e) => handleChange(e)}
-                >
-                    Admin Form Responses
-                </p>
-                <p
-                    className="btn"
-                    id="superAdminForms"
-                    onClick={(e) => handleChange(e)}
-                >
-                    Board Form responses
-                </p>
+                {auth?.currentUser?.role === "superadmin" ? (
+                    <p
+                        className="btn"
+                        id="allForms"
+                        style={{ color: "red" }}
+                        onClick={(e) => handleChange(e)}
+                    >
+                        All Forms
+                    </p>
+                ) : null}
+                {auth?.currentUser?.role === "superadmin" ? (
+                    <p
+                        className="btn"
+                        id="adminForms"
+                        onClick={(e) => handleChange(e)}
+                    >
+                        Admin Form Responses
+                    </p>
+                ) : null}
+                {auth?.currentUser?.role === "superadmin" ? (
+                    <p
+                        className="btn"
+                        id="superAdminForms"
+                        onClick={(e) => handleChange(e)}
+                    >
+                        Board Form responses
+                    </p>
+                ) : null}
                 {auth?.currentUser === null ? (
                     <p
                         className="btn"
@@ -75,16 +81,20 @@ const DashboardPage: React.FC = () => {
                 )}
             </div>
             <div className="main-column">
-                {current === "allForms" ? (
-                    <FormsPage />
-                ) : current === "adminForms" ? (
-                    <ResponseList creatorRole="admin" />
-                ) : current === "superAdminForms" ? (
-                    <ResponseList creatorRole="superadmin" />
-                ) : current === "admin-login" ? (
-                    <AdminLoginPage />
+                {auth?.currentUser?.role === "superadmin" ? (
+                    current === "allForms" ? (
+                        <FormsPage />
+                    ) : current === "adminForms" ? (
+                        <ResponseList creatorRole="admin" />
+                    ) : current === "superAdminForms" ? (
+                        <ResponseList creatorRole="superadmin" />
+                    ) : current === "admin-login" ? (
+                        <AdminLoginPage />
+                    ) : (
+                        <p>lmao</p>
+                    )
                 ) : (
-                    <p>lmao</p>
+                    <ResponseList creatorRole="singleAdmin" />
                 )}
             </div>
         </div>
