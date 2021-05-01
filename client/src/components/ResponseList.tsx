@@ -1,17 +1,21 @@
-import React, {useEffect, useState} from "react";
-import ResponseCard from "./ResponseCard";
+import React, { useEffect, useState } from "react"
+import ResponseCard from "./ResponseCard"
 
-const ResponseList: React.FC = () => {
+interface props {
+    creatorRole: string
+}
 
-  const [forms, setForms] = useState<any[]>([])
+const ResponseList: React.FC<props> = ({ creatorRole }) => {
+    const [forms, setForms] = useState<any[]>([])
 
     useEffect(() => {
-        fetch('http://localhost:7000/api/getforms', {
-            method: 'GET',
+        console.log(`http://localhost:7000/api/get${creatorRole}forms`)
+        fetch(`http://localhost:7000/api/get${creatorRole}forms`, {
+            method: "GET",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
-            credentials: 'include',
+            credentials: "include",
         })
             .then((resp: any) => {
                 return resp.json()
@@ -22,27 +26,26 @@ const ResponseList: React.FC = () => {
                 console.log({ data })
                 if (data.success === true) {
                     setForms(data.forms)
-                }
-                else {
-                    console.log('Where is the data?')
+                } else {
+                    console.log("Where is the data?")
                 }
             })
-    }, [])
+    }, [creatorRole])
 
-  return (
-    <div className="form-list">
-     Forms Responses:
-     {!forms ? (
-       "Loading..."
-     ) : (
-       <div>
-          {forms.map((form) => (
-          <ResponseCard form={form} key={form._id} />
-          ))}
-       </div>
-      )}
-    </div>
-  );
-};
+    return (
+        <div className="form-list">
+            Forms Responses:
+            {!forms ? (
+                "Loading..."
+            ) : (
+                <div>
+                    {forms.map((form) => (
+                        <ResponseCard form={form} key={form._id} />
+                    ))}
+                </div>
+            )}
+        </div>
+    )
+}
 
-export default ResponseList;
+export default ResponseList

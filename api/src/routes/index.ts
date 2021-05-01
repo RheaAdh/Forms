@@ -1,5 +1,6 @@
 import express, { Response, Request } from "express"
 import { helloWorld, dbTesting } from "./helloworld"
+import { isValidAdmin, isValidSuperAdmin } from "./adminuser"
 import {
     deleteForm,
     addForm,
@@ -7,6 +8,8 @@ import {
     getForm,
     updateForm,
     getMyForms,
+    getAdminForms,
+    getSuperAdminForms,
 } from "./form"
 import {
     addQuestion,
@@ -22,47 +25,36 @@ import {
     submitResponse,
     getResponsesByForm,
     getFormsByCreator,
-    downloadResponse
+    downloadResponse,
 } from "./response"
 const router = express.Router()
 
-//Testing is half done with middleware was creating problem in frontend so commented
-
-//------------------ SUPERADMIN TESTING WITH AUTH------------------
-/*
-//tested
 router.get("/helloworld", isValidSuperAdmin, helloWorld)
 router.get("/db", isValidSuperAdmin, dbTesting)
 
-router.get("/getforms", isValidSuperAdmin, getForms)
-router.get("/getform/:formid", isValidSuperAdmin, getForm)
-router.post("/addform", isValidSuperAdmin, addForm)
-router.get("/getquestions", isValidSuperAdmin, getQuestions)
-router.get("/getquestion/:qid", isValidSuperAdmin, getQuestion)
-router.get(
-    "/getquestionsbyformid/:formid",
-    isValidSuperAdmin,
-    getQuestionsByFormid
-)
+router.get("/getforms", isValidAdmin, getForms)
+router.get("/getform/:formid", isValidAdmin, getForm)
+router.get("/getadminforms", isValidSuperAdmin, getAdminForms)
+router.get("/getsuperadminforms", isValidSuperAdmin, getSuperAdminForms)
+router.post("/addform", isValidAdmin, addForm)
+router.get("/getquestions", isValidAdmin, getQuestions)
+router.get("/getquestion/:qid", isValidAdmin, getQuestion)
+router.get("/getquestionsbyformid/:formid", isValidAdmin, getQuestionsByFormid)
 
 router.get("/formsbycreator/:creatorId", isValidSuperAdmin, getFormsByCreator)
-router.get("/resbyformid/:formId", isValidSuperAdmin, getResponsesByForm)
+router.get("/resbyformid/:formId", isValidAdmin, getResponsesByForm)
 
 //middleware not needed(general route)
 router.post("/submitresponse", submitResponse)
 
-//havent tested from backend for middleware functionality
-router.put("/updateform", updateForm)
-router.delete("/deleteform", deleteForm)
+router.put("/updateform", isValidAdmin, updateForm)
+router.delete("/deleteform", isValidAdmin, deleteForm)
 
-router.post("/addquestion", addQuestion)
-router.put("/updatequestion", updateQuestion)
-router.delete("/deletequestion", deleteQuestion)
+router.post("/addquestion", isValidAdmin, addQuestion)
+router.put("/updatequestion", isValidAdmin, updateQuestion)
+router.delete("/deletequestion", isValidAdmin, deleteQuestion)
 
 //------------------ ADMIN TESTING WITH AUTH------------------
-
-//NEW ones are->  getMyQuestions,getMyForms
-//OTHERS REUSED
 
 router.get("/getmyforms", isValidAdmin, getMyForms)
 router.get("/getmyform/:formid", isValidAdmin, getForm)
@@ -80,60 +72,8 @@ router.delete("/deletemyform", isValidAdmin, deleteForm)
 router.post("/addmyquestion", isValidAdmin, addQuestion)
 router.put("/updatemyquestion", isValidAdmin, updateQuestion)
 router.delete("/deletemyquestion", isValidAdmin, deleteQuestion)
-*/
-
-//tested
-router.get("/helloworld", helloWorld)
-router.get("/db", dbTesting)
-
-router.get("/getforms", getForms)
-router.get("/getform/:formid", getForm)
-router.post("/addform", addForm)
-router.get("/getquestions", getQuestions)
-router.get("/getquestion/:qid", getQuestion)
-router.get(
-    "/getquestionsbyformid/:formid",
-    getQuestionsByFormid
-)
-
-router.get("/formsbycreator/:creatorId", getFormsByCreator)
-router.get("/resbyformid/:formId", getResponsesByForm)
-
-//middleware not needed(general route)
-router.post("/submitresponse", submitResponse)
-
-//havent tested from backend for middleware functionality
-router.put("/updateform", updateForm)
-router.delete("/deleteform", deleteForm)
-
-router.post("/addquestion", addQuestion)
-router.put("/updatequestion", updateQuestion)
-router.delete("/deletequestion", deleteQuestion)
-
-//------------------ ADMIN TESTING WITH AUTH------------------
-
-//NEW ones are->  getMyQuestions,getMyForms
-//OTHERS REUSED
-
-router.get("/getmyforms", getMyForms)
-router.get("/getmyform/:formid", getForm)
-router.post("/addmyform", addForm)
-router.get("/getmyquestions", getMyQuestions)
-router.get("/getmyquestion/:qid", getQuestion)
-router.get(
-    "/getmyquestionsbyformid/:formid",
-    getQuestionsByFormid
-)
-router.get("/resbymyformid/:formId", getResponsesByForm)
-router.put("/updatemyform", updateForm)
-router.delete("/deletemyform", deleteForm)
-router.post("/addmyquestion", addQuestion)
-router.put("/updatemyquestion", updateQuestion)
-router.delete("/deletemyquestion", deleteQuestion)
-
-
 
 //Covert to .csv and download route
-router.get("/download/:formid",downloadResponse)
+router.get("/download/:formid", downloadResponse)
 
 export default router

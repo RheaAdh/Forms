@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react'
-import FormList from '../components/FormList'
-import NewForm from '../components/NewForm'
-import { useAuth } from '../context/AuthContext'
+import React, { useEffect, useState } from "react"
+import FormList from "../components/FormList"
+import NewForm from "../components/NewForm"
+import { useAuth } from "../context/AuthContext"
 const FormsPage: React.FC = () => {
     const [forms, setForms] = useState<any[]>([])
     const auth = useAuth()
 
     useEffect(() => {
-        auth?.getCurrentUser()
-        fetch('http://localhost:7000/api/getforms', {
-            method: 'GET',
+        fetch(`http://localhost:7000/api/getforms`, {
+            method: "GET",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
-            credentials: 'include',
+            credentials: "include",
         })
             .then((resp: any) => {
                 return resp.json()
@@ -25,7 +24,7 @@ const FormsPage: React.FC = () => {
                 if (data.success === true) {
                     setForms(data.forms)
                 } else {
-                    console.log('There is an imposter among us!!')
+                    console.log("There is an imposter among us!!")
                     //REDIRECT TO DASHBOARD PAGE I GUESS
                 }
             })

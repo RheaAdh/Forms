@@ -35,7 +35,7 @@ const response: Schema = new Schema({
             emailText: { type: String },
             selectedOption: String,
             multipleSelected: [String],
-            selectedOptionsGrid: [{ row: String, col: String }],
+            selectedOptionsGrid: [{ row: String, col: String, _id: false }],
             selectedOptionLinScale: Number,
             selectedDate: Date,
             timeHours: { type: Number, min: 1, max: 23 },

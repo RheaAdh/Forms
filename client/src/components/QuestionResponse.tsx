@@ -5,14 +5,17 @@ interface props {
     handleChange: any
     index: Number
     submitStatus: any
+    prevResponse?: any
 }
 
 const QuestionResponse: React.FC<props> = ({
     question,
+    prevResponse,
     handleChange,
     index,
     submitStatus,
 }) => {
+    console.log(prevResponse)
     const typeToIdx = [
         "short-answer",
         "paragraph-answer",
@@ -25,9 +28,15 @@ const QuestionResponse: React.FC<props> = ({
         "linearscale-answer",
     ]
 
+    // For both mcq and checkbox
     const [optionsChecked, setOptionsChecked] = useState<string[]>([])
+
+    // For both mcq grid and checkbox grid
     const [mcqGrid, setMcqgrid] = useState<any[]>([])
+
     const [emailError, setEmailError] = useState<string | null>(null)
+
+    // For linear scale
     const [arr, setArr] = useState<number[]>([])
 
     const fillArray = (low: number, hi: number) => {
@@ -37,10 +46,30 @@ const QuestionResponse: React.FC<props> = ({
     }
 
     useEffect(() => {
-        if (arr.length === 0) {
+        if (
+            arr.length === 0 &&
+            question["question-type"] === "linearscale-answer"
+        ) {
             fillArray(question["lowRating"], question["highRating"])
+        } else if (
+            question["question-type"] === "multiplechoicegrid-answer" ||
+            question["question-type"] === "checkboxgrid-answer"
+        ) {
+            //map to get rid of object id (Since it is an array of objects, mongo adds objectId by default)
+            setMcqgrid(
+                prevResponse?.["selectedOptionsGrid"].map(
+                    (res: any, idx: Number) => {
+                        return { row: res["row"], col: res["col"] }
+                    }
+                )
+            )
+        } else if (
+            question["question-type"] === "mcq-answer" ||
+            question["question-type"] === "checkbox-answer"
+        ) {
+            setOptionsChecked(prevResponse["multipleSelected"])
         }
-    })
+    }, [])
 
     const handleShortAnswer = (e: any) => {
         if (e?.target.value === null && question["required"]) {
@@ -123,6 +152,9 @@ const QuestionResponse: React.FC<props> = ({
         } else {
             setEmailError(null)
         }
+        if (question["required"]) {
+            submitStatus(index, true)
+        }
         const answer = {
             answerType: "email-answer",
             questionId: question["_id"],
@@ -132,9 +164,6 @@ const QuestionResponse: React.FC<props> = ({
     }
 
     const handleMcqGrid = (row: string, col: string) => {
-        if (question["required"]) {
-            submitStatus(index, true)
-        }
         let mcq = mcqGrid
         let idx = mcq.findIndex((obj: any, i: Number) => {
             if (obj["row"] === row) {
@@ -142,13 +171,14 @@ const QuestionResponse: React.FC<props> = ({
             }
         })
         if (idx !== -1) {
-            mcq = mcq.filter((obj) =>
-                obj["row"] === row ? { row: row, col: col } : obj
-            )
+            mcq[idx] = { row: row, col: col }
         } else {
             mcq.push({ row: row, col: col })
         }
         setMcqgrid(mcq)
+        if (question["required"] && mcq.length === question["options"].length) {
+            submitStatus(index, true)
+        }
         const answer = {
             answerType: "multiplechoicegrid-answer",
             questionId: question["_id"],
@@ -158,6 +188,7 @@ const QuestionResponse: React.FC<props> = ({
     }
     const handleCheckboxGrid = (e: any, row: string, col: string) => {
         let mcq = mcqGrid
+
         if (e.target.checked) {
             // Push new data
             mcq.push({ row: row, col: col })
@@ -178,11 +209,13 @@ const QuestionResponse: React.FC<props> = ({
                 submitStatus(index, false)
             }
         }
+
         const answer = {
-            answerType: "multiplechoicegrid-answer",
+            answerType: "checkboxgrid-answer",
             questionId: question["_id"],
             selectedOptionsGrid: mcq,
         }
+        console.log(mcqGrid)
         handleChange(index, answer)
     }
     const handleLinearScale = (e: any) => {
@@ -203,6 +236,7 @@ const QuestionResponse: React.FC<props> = ({
                 type="text"
                 placeholder="Short Answer"
                 onChange={(e) => handleShortAnswer(e)}
+                defaultValue={prevResponse?.shortText}
             ></input>
         </div>,
         //Paragraph
@@ -211,6 +245,7 @@ const QuestionResponse: React.FC<props> = ({
                 placeholder="Paragraph answer"
                 style={{ resize: "none", width: "300px", height: "100px" }}
                 onChange={(e) => handleParagraphAnswer(e)}
+                defaultValue={prevResponse?.paragraphText}
             ></textarea>
         </div>,
         // MCQ
@@ -223,7 +258,10 @@ const QuestionResponse: React.FC<props> = ({
                                 type="radio"
                                 name="mcq-answer"
                                 value={optionText}
-                                onChange={(e) => handleMcq(e, optionText)}
+                                onClick={(e) => handleMcq(e, optionText)}
+                                defaultChecked={
+                                    prevResponse?.selectedOption === optionText
+                                }
                             />
                             {optionText}
                             {/* <label htmlFor={optionText}>{optionText}</label> */}
@@ -242,7 +280,10 @@ const QuestionResponse: React.FC<props> = ({
                                 type="checkbox"
                                 name="checkbox-answer"
                                 value={optionText}
-                                onChange={(e) => handleCheckbox(e, optionText)}
+                                onClick={(e) => handleCheckbox(e, optionText)}
+                                defaultChecked={prevResponse?.multipleSelected?.includes(
+                                    optionText
+                                )}
                             />
                             {optionText}
                             {/* <label htmlFor={optionText}>{optionText}</label> */}
@@ -253,7 +294,10 @@ const QuestionResponse: React.FC<props> = ({
         </div>,
         //Dropdown
         <div>
-            <select onChange={(e) => handleDropdown(e)}>
+            <select
+                onChange={(e) => handleDropdown(e)}
+                defaultValue={prevResponse?.selectedOption}
+            >
                 {question["options"]?.map((optionText: string, i: Number) => {
                     return <option value={optionText}>{optionText}</option>
                 })}
@@ -261,7 +305,11 @@ const QuestionResponse: React.FC<props> = ({
         </div>,
         //Email
         <div>
-            <input type="text" onChange={(e) => handleEmail(e)} />
+            <input
+                type="text"
+                onChange={(e) => handleEmail(e)}
+                defaultValue={prevResponse?.emailAnswer}
+            />
             <br />
             <b>{emailError}</b>
         </div>,
@@ -280,10 +328,28 @@ const QuestionResponse: React.FC<props> = ({
                         <span key={row} style={{ marginRight: "25px" }}>
                             {row}{" "}
                         </span>
-                        {question["colLabel"]?.map((col: string, i: Number) => {
-                            return (
+                        {question["colLabel"]?.map((col: string, j: Number) => {
+                            // Iterating through rows and columns to return radio element.
+                            // Based on previous response, return element with default checked set to true if checked
+                            // else leave the attribute out. (Setting to false wasn't working)
+
+                            return mcqGrid?.find((ob) => {
+                                return ob["row"] === row && ob["col"] === col
+                            }) !== undefined ? (
                                 <input
-                                    onChange={() => handleMcqGrid(row, col)}
+                                    onClick={() => handleMcqGrid(row, col)}
+                                    type="radio"
+                                    key={col}
+                                    name={row}
+                                    style={{
+                                        display: "inline",
+                                        marginRight: "10px",
+                                    }}
+                                    defaultChecked={true}
+                                />
+                            ) : (
+                                <input
+                                    onClick={() => handleMcqGrid(row, col)}
                                     type="radio"
                                     key={col}
                                     name={row}
@@ -315,7 +381,23 @@ const QuestionResponse: React.FC<props> = ({
                             {row}{" "}
                         </span>
                         {question["colLabel"]?.map((col: string, i: Number) => {
-                            return (
+                            return mcqGrid.find((obj) => {
+                                return obj["row"] === row && obj["col"] === col
+                            }) !== undefined ? (
+                                <input
+                                    onClick={(e) =>
+                                        handleCheckboxGrid(e, row, col)
+                                    }
+                                    type="checkbox"
+                                    key={col}
+                                    name={row}
+                                    style={{
+                                        display: "inline",
+                                        marginRight: "10px",
+                                    }}
+                                    defaultChecked={true}
+                                />
+                            ) : (
                                 <input
                                     onChange={(e) =>
                                         handleCheckboxGrid(e, row, col)
@@ -352,6 +434,9 @@ const QuestionResponse: React.FC<props> = ({
                                 marginLeft: "15px",
                                 display: "inline",
                             }}
+                            defaultChecked={
+                                prevResponse?.selectedOptionLinScale === num
+                            }
                         />
                         {num}
                     </span>
@@ -367,6 +452,7 @@ const QuestionResponse: React.FC<props> = ({
 
     return (
         <div>
+            {console.log(mcqGrid)}
             <b>{question["question_text"]}</b>{" "}
             {question["required"] ? (
                 <span style={{ color: "red" }}>*</span>

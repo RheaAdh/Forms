@@ -66,7 +66,6 @@ export const submitResponse = async (req: Request, res: Response) => {
 export const getResponsesByForm = async (req: Request, res: Response) => {
     await mongo.connectMongo()
     let formId = req.params.formId
-    let formResponses: any
     try {
         let formResponses = await FormResponse.findOne({
             formId: formId,

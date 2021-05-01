@@ -7,16 +7,17 @@ import { useAuth } from "../context/AuthContext"
 const DisplayForm = () => {
     const auth = useAuth()
 
-    const [form, setForm] = useState(null)
+    const [form, setForm] = useState<any>(null)
     const [responses, setResponses] = useState<any[]>([])
     const [questions, setQuestions] = useState<any[]>([])
     const [canSubmit, setCanSubmit] = useState<boolean[]>([])
     const [submitError, setSubmitError] = useState<string | null>(null)
     const [thankYou, setThankYou] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(true)
     const { formid }: any = useParams()
 
     useEffect(() => {
-        auth?.getCurrentUser()
+        auth?.getCurrentUser().then((res: any) => setLoading(false))
     }, [])
     useEffect(() => {
         fetch(`http://localhost:7000/api/getform/${formid}`, {
@@ -28,8 +29,10 @@ const DisplayForm = () => {
         })
             .then((resp) => resp.json())
             .then((data) => {
-                console.log(data)
-                setForm(data)
+                if (data.success) console.log(data.form)
+                else console.log("SOmething went wrong")
+
+                setForm(data.form)
             })
     }, [])
 
@@ -42,28 +45,25 @@ const DisplayForm = () => {
                 },
                 credentials: "include",
             })
-                //!!Above request has both prev_resp and questions --->prev_resp needs to be implemented in frontend
                 .then((resp) => resp.json())
-                .then((DATA) => {
-                    console.log("Data is here")
-                    console.log(DATA)
-                    let data=DATA.ques
-                    data.map((q: any, idx: Number) => {
-                        console.log(q)
-                        console.log(idx)
+                .then((data) => {
+                    console.log(data)
+                    data["ques"].map((q: any, idx: Number) => {
                         setResponses((prevResponses) => [
                             ...prevResponses,
-                            {
-                                answerType: q["question-type"],
-                                questionId: q["_id"],
-                            },
+                            data["prevResponse"]
+                                ? data["prevResponse"].responses[idx as number]
+                                : {
+                                      answerType: q["question-type"],
+                                      questionId: q["_id"],
+                                  },
                         ])
                         setCanSubmit((prevState) => [
                             ...prevState,
                             !q["required"],
                         ])
                     })
-                    setQuestions(data)
+                    setQuestions(data["ques"])
                 })
     }, [form])
     const submitStatus = (index: any, status: boolean) => {
@@ -89,9 +89,9 @@ const DisplayForm = () => {
         } else setSubmitError(null)
         const body = {
             username: auth?.currentUser?.username,
-            userid:auth?.currentUser?.userid,
+            userid: auth?.currentUser?.userid,
             formId: formid,
-            responses: responses,
+            responses: responses.filter((resp: any) => JSON.stringify(resp)),
         }
         if (auth?.currentUser === null) {
             setSubmitError("You are not logged in")
@@ -114,6 +114,15 @@ const DisplayForm = () => {
                 }
             })
     }
+
+    if (loading) {
+        return <div>Loading</div>
+    }
+
+    if (auth?.currentUser === null) {
+        return <Redirect to={`/login/${formid}`} />
+    }
+
     return thankYou ? (
         <div>
             <b>Your response has been submitted</b>
@@ -129,15 +138,21 @@ const DisplayForm = () => {
         </div>
     ) : (
         <div
-            style={{ backgroundColor: form?.["color_theme"], height: "100vh" }}
+            style={{
+                backgroundColor: form?.color_theme,
+                height: "100vh",
+                overflowY: "auto",
+            }}
         >
-            {questions?.map((q, idx) => {
+            <h2>{form?.title}</h2>
+            {questions.map((q: any, idx: Number) => {
                 return (
                     <QuestionResponse
                         question={q}
+                        prevResponse={responses[idx as number]}
                         handleChange={handleChange}
                         index={idx}
-                        key={idx}
+                        key={q["_id"]}
                         submitStatus={submitStatus}
                     />
                 )

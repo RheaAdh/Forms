@@ -1,15 +1,15 @@
 .list-container {
-  height: 70vh;
+    height: auto;
 }
 .list-body {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 
-  align-items: center;
-  height: 100%;
-  overflow: auto;
+    align-items: center;
+    height: 100%;
+    overflow: auto;
 }
 .add-button {
-  margin-top: 15px;
-  height: 5vh
+    margin-top: 15px;
+    height: 5vh;
 }

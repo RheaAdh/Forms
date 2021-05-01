@@ -2,7 +2,7 @@ import React, { useState, useContext, ReactElement } from "react"
 export type Nullable<T> = T | null
 
 export interface IUser {
-    userid: string,
+    userid: string
     username: string
     email: string
     role: string
@@ -23,6 +23,7 @@ export interface Value {
     ) => Promise<any>
     login: (email: string, password: string) => Promise<any>
     logout: () => Promise<any>
+    forgotPassword: (email: string) => Promise<any>
     getCurrentUser: any
 }
 
@@ -115,10 +116,25 @@ export default function AuthProvider({ children }: Props): ReactElement {
             username: data.username,
             email: data.email,
             role: data.role,
-            userid:data.userId
+            userid: data.userId,
         }
         if (user.email) setCurrentUser(user)
         else setCurrentUser(null)
+        return data
+    }
+
+    const forgotPassword = async (email: string) => {
+        const res = await fetch("http://localhost:7000/forgotpassword", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: email,
+            }),
+        })
+        const data = await res.json()
+        return data
     }
 
     const value: Value = {
@@ -128,6 +144,7 @@ export default function AuthProvider({ children }: Props): ReactElement {
         login,
         logout,
         getCurrentUser,
+        forgotPassword,
     }
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

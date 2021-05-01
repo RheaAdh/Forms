@@ -172,8 +172,9 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
     await mongo.connectMongo()
 
     const questions = await Question.find({ formid: req.params.formid })
-    console.log("inside getQuestions")
-    console.log(questions)
+    //console.log("inside getQuestions")
+
+    //console.log(questions)
     //sending previous response and questions
     await mongo.connectMongo()
     try {
@@ -182,12 +183,12 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
         })
         console.log("data and question")
         if (!user) {
-            let data = { prev_resp: null, ques: questions }
+            let data = { prevResponse: null, ques: questions }
             console.log(data)
             res.json(data)
         } else {
-            let data = { prev_resp: user, ques: questions }
-            console.log(data.prev_resp)
+            let data = { prevResponse: user, ques: questions }
+            console.log(data.prevResponse)
             console.log(data)
             res.send(data)
         }
@@ -350,19 +351,18 @@ export async function deleteQuestion(req: Request, res: Response) {
 export async function getMyQuestions(req: Request, res: Response) {
     await mongo.connectMongo()
 
-    const questions = await Question.find({userId:req.session.userId})
+    const questions = await Question.find({ userId: req.session.userId })
     res.json(questions)
 }
 
-
-    // try {
-    //     let formResponse = await FormResponse.findOne({
-    //         formId: req.params.formid,
-    //     })
-    //     return res.send(formResponse)
-    // } catch (error) {
-    //     res.send(error)
-    //     console.error(error)
-    // }
-    // res.json(questions)
-    //}
+// try {
+//     let formResponse = await FormResponse.findOne({
+//         formId: req.params.formid,
+//     })
+//     return res.send(formResponse)
+// } catch (error) {
+//     res.send(error)
+//     console.error(error)
+// }
+// res.json(questions)
+//}

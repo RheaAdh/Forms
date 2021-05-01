@@ -14,15 +14,52 @@ declare module "express-session" {
 }
 export async function getForms(req: Request, res: Response) {
     await mongo.connectMongo()
-    const forms = await Form.find().exec()
-    res.json({ success: true, forms: forms })
+    if (req.session.role === "admin") {
+        try {
+            const myForms = await Form.find({ owner: req.session.userId })
+            console.log(myForms)
+            res.send({ success: true, forms: myForms })
+        } catch (error) {
+            res.send(error)
+        }
+    } else {
+        const forms = await Form.find().exec()
+        res.json({ success: true, forms: forms })
+    }
 }
 
 export async function getForm(req: Request, res: Response) {
     await mongo.connectMongo()
     const form = await Form.findById(req.params.formid)
+    res.json({ success: true, form: form })
+}
 
-    res.json(form)
+export async function getAdminForms(req: Request, res: Response) {
+    await mongo.connectMongo()
+    try {
+        let adminForms = await Form.find().populate("owner", "role").exec()
+        adminForms = adminForms.filter((form) => {
+            return form?.owner?.role === "admin"
+        })
+        res.send({ success: true, forms: adminForms })
+    } catch (err) {
+        console.log(err)
+        res.send({ success: false, data: "something went wrong" })
+    }
+}
+
+export async function getSuperAdminForms(req: Request, res: Response) {
+    await mongo.connectMongo()
+    try {
+        let superAdminForms = await Form.find().populate("owner", "role").exec()
+        superAdminForms = superAdminForms.filter((form) => {
+            return form?.owner?.role === "superadmin"
+        })
+        res.send({ success: true, forms: superAdminForms })
+    } catch (err) {
+        console.log(err)
+        res.send({ success: false, data: "something went wrong" })
+    }
 }
 
 export async function addForm(req: any, res: Response) {
@@ -34,12 +71,11 @@ export async function addForm(req: any, res: Response) {
         color_theme: req.body.color_theme,
     })
     console.log("POST REQUEST WAS MADE")
-    console.log(req.body)
     //newForm = new Form(req.body);
     try {
-        await newForm.save()
+        const form = await newForm.save()
         console.log("Form added!")
-        res.send(newForm)
+        res.json(form)
     } catch (error) {
         res.send(error)
     }
@@ -79,32 +115,22 @@ export async function deleteForm(req: Request, res: Response) {
 export async function getMyForms(req: Request, res: Response) {
     await mongo.connectMongo()
     // console.log(req.session.userId);
-
-    let myForms: any
-    try {
-        myForms = await Form.find({ owner: req.session.userId })
-        console.log(myForms)
-
-        res.send(myForms)
-    } catch (error) {
-        res.send(error)
-    }
 }
 
-export async function getMyForm(req: Request, res: Response) {
-    await mongo.connectMongo()
-    // console.log(req.session.userId);
+// export async function getMyForm(req: Request, res: Response) {
+//     await mongo.connectMongo()
+//     // console.log(req.session.userId);
 
-    let myForm: any
-    try {
-        myForm = await Form.find({
-            owner: req.session.userId,
-            _id: req.params.formid,
-        })
-        console.log(myForm)
+//     let myForm: any
+//     try {
+//         myForm = await Form.find({
+//             owner: req.session.userId,
+//             _id: req.params.formid,
+//         })
+//         console.log(myForm)
 
-        res.send(myForm)
-    } catch (error) {
-        res.send(error)
-    }
-}
+//         res.send(myForm)
+//     } catch (error) {
+//         res.send(error)
+//     }
+// }

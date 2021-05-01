@@ -4,7 +4,7 @@ import useFormState from "../hooks/useFormState"
 
 import "../styles/Questions.css"
 interface props {
-    question?: any
+    question: any
     deleteQuestion?: any
 }
 const Question: React.FC<props> = ({ question, deleteQuestion }) => {
@@ -134,7 +134,6 @@ const Question: React.FC<props> = ({ question, deleteQuestion }) => {
                 "question-type": questions_types[type],
             })
         }
-        console.log(body)
         fetch("http://localhost:7000/api/updatequestion", {
             method: "PUT",
             headers: {
@@ -144,7 +143,7 @@ const Question: React.FC<props> = ({ question, deleteQuestion }) => {
             body: body,
         })
             .then((response) => response.json())
-            .then((data) => console.log({ data }))
+            .then((data) => null)
     }
 
     const handleClick = () => {
@@ -159,8 +158,14 @@ const Question: React.FC<props> = ({ question, deleteQuestion }) => {
                 formid: question.formid,
             }),
         })
-            .then((response) => {
-                deleteQuestion(question._id)
+            .then((res: any) => res.json())
+            .then((data) => {
+                if (data.success) {
+                    deleteQuestion(question._id)
+                    console.log(question._id)
+                } else {
+                    console.log("Something went wrong")
+                }
             })
             .catch((err) => {
                 console.log(err)
@@ -177,7 +182,6 @@ const Question: React.FC<props> = ({ question, deleteQuestion }) => {
         lowRatingLabel,
         highRatingLabel,
     ])
-    console.log(options)
     const types = [
         <div>
             <b>Short answer text</b>

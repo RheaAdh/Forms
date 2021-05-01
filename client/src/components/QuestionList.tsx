@@ -1,60 +1,79 @@
-import React, { useState, useEffect } from "react";
-import Question from "./Question";
+import React, { useState, useEffect } from "react"
+import Question from "./Question"
 
-import "../styles/QuestionList.css";
+import "../styles/QuestionList.css"
 
 interface props {
-  questions?: any[];
-  formid: any;
+    formid: any
 }
-const QuestionList: React.FC<props> = ({questions, formid}) => {
-  const [list, setList] = useState<any[]>([]);
+const QuestionList: React.FC<props> = ({ formid }) => {
+    const [questionList, setQuestionList] = useState<any[]>([])
 
-  useEffect(() => {
-    console.log({ questions });
-    if (questions) setList(questions);
-  }, [questions]);
+    useEffect(() => {
+        fetch(`http://localhost:7000/api/getquestionsbyformid/${formid}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+        })
+            .then((resp: any) => {
+                return resp.json()
+            })
+            .then((data: any) => {
+                console.log(data.ques)
+                setQuestionList(data.ques)
+            })
+    }, [])
 
-  const addQuestion = () => {
-    const newQuestion = {
-      question_text: "Question",
-      question_type: "short-answer",
-      formid: formid,
-    };
-    fetch("http://localhost:7000/api/addquestion", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(newQuestion),
-    })
-      .then((response) => response.json())
-      .then((data) => setList((prev) => [...prev, data]))
-      .catch((error) => {
-        console.log("Error: ", error);
-      });
-    // setList(() => [...list, question]);
-  };
+    const addQuestion = () => {
+        const newQuestion = {
+            question_text: "Question",
+            question_type: "short-answer",
+            formid: formid,
+        }
+        fetch("http://localhost:7000/api/addquestion", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(newQuestion),
+        })
+            .then((response) => response.json())
+            .then((data) => setQuestionList((prevList) => [...prevList, data]))
+            .catch((error) => {
+                console.log("Error: ", error)
+            })
+        // setList(() => [...list, question]);
+    }
 
-  const deleteQuestion = (id : any) =>{
-    setList((prevList:any)=> prevList.filter((question:any)=> question._id != id) )
-    console.log(id)
-  }
+    const deleteQuestion = (id: any) => {
+        console.log(id)
+        let newList = questionList.filter((question) => question._id !== id)
+        setQuestionList(newList)
+        console.log(newList)
+    }
 
-  return (
-    <div className="list-container">
-      <div className="list-body">
-        {list.map((question) => (
-          <Question question={question} deleteQuestion={deleteQuestion}/>
-        ))}    
-      </div>
-      <button className="add-button" onClick={addQuestion}>Add Question</button>
-    </div>
-  );
-};
+    return (
+        <div className="list-container">
+            {console.log(questionList)}
+            <div className="list-body">
+                {questionList?.map((question) => (
+                    <Question
+                        question={question}
+                        deleteQuestion={deleteQuestion}
+                    />
+                ))}
+            </div>
+            <button className="add-button" onClick={addQuestion}>
+                Add Question
+            </button>
+        </div>
+    )
+}
 
-export default QuestionList;
+export default QuestionList
 
 //SO HOW DO I SOLVE IT
 //UMMMM THERER MUST BE A WAY

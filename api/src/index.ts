@@ -15,9 +15,6 @@ import {
 } from "./routes/adminuser"
 import { store } from "./config/mongo"
 
-
-
-
 const port: Number = 7000
 const session = require("express-session")
 const bodyParser = require("body-parser")
@@ -45,7 +42,7 @@ app.use(
 )
 
 // FORGOT AND RESET PASSWORD
-app.post("/forgotPassword", adminForgotPassword)
+app.post("/forgotpassword", adminForgotPassword)
 app.get("/resetpassword/:token", (req, res) => {
     return res.send({
         success: true,
@@ -94,6 +91,5 @@ app.get("/superadmin/dashboard", isValidSuperAdmin, (req, res) => {
 
 app.get("/sessiondetail", sessionDetails)
 app.get("/admin", sessionDetails)
-
 
 app.listen(port, () => console.log(`Listening on port ${port}`))

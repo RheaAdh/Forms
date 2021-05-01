@@ -20,6 +20,7 @@ const form: Schema = new Schema(
         //array of question ids
         questions: [{ type: Schema.Types.ObjectId, ref: "question" }],
         owner: { type: Schema.Types.ObjectId, ref: "User" },
+        closes: Date,
     },
     {
         timestamps: true,

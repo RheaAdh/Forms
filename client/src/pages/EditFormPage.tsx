@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useMemo } from "react"
 import { Link, Redirect, useParams } from "react-router-dom"
 
 import QuestionList from "../components/QuestionList"
@@ -20,11 +20,20 @@ const EditFormPage: React.FC = () => {
     const { formid }: any = useParams()
 
     const [form, setForm] = useState<any>()
-    const [questions, setQuestions] = useState<any[]>()
+
+    const [questions, setQuestions] = useState<any[]>([])
 
     const [showEditTitle, setShowEditTitle] = useState<boolean>(false)
 
+    // date and time stored in db format, not input element format
+
+    const [closeDate, setCloseDate] = useState<string | undefined>(undefined)
+
+    const [closeTime, setCloseTime] = useState<string | null>(null)
+
     const [title, handleTitle, resetTitle, setTitle] = useFormState("")
+
+    const [loading, setLoading] = useState<boolean>(true)
 
     const [colour, handleColour, resetColour, setColour] = useFormState(
         "#FFFFFF"
@@ -32,39 +41,56 @@ const EditFormPage: React.FC = () => {
 
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const value = useAuth()
+    const auth = useAuth()
 
+    useEffect(() => {
+        auth?.getCurrentUser().then((res: any) => {
+            setLoading(false)
+        })
+    }, [])
     //?TO GET THE FORM
     useEffect(() => {
-        if (value?.currentUser === null) value.getCurrentUser()
-        fetch(`http://localhost:7000/api/getform/${formid}`)
+        fetch(`http://localhost:7000/api/getform/${formid}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+        })
             .then((resp: any) => {
                 return resp.json()
             })
 
             .then((data: any) => {
-                console.log(data)
-                setForm(data)
-                setTitle(data.title)
-                setColour(data.color_theme)
+                if (data.success) {
+                    console.log(data.form)
+                    console.log(data.form)
+                    setForm(data.form)
+                    setTitle(data.form.title)
+                    setColour(data.form.color_theme)
+                    setCloseTime(
+                        new Date(data.form["closes"]).toLocaleTimeString()
+                    )
+                    setCloseDate(
+                        new Date(data.form["closes"]).toLocaleDateString()
+                    )
+                    console.log(
+                        new Date(data.form["closes"]).toLocaleTimeString()
+                    )
+                } else {
+                    console.log("failed to fetch form")
+                }
             })
     }, [])
 
     //?TO GET THE QUESTIONS OF THAT FORM
-    useEffect(() => {
-        if (form) {
-            fetch(`http://localhost:7000/api/getquestionsbyformid/${formid}`)
-                .then((resp: any) => {
-                    return resp.json()
-                })
-                .then((data: any) => {
-                    console.log(data.ques)
-                    setQuestions(data.ques)
-                })
-        }
 
-        console.log(questions)
-    }, [form])
+    //SHOW AND HIDE EDIT FORM TITLE LOGIC
+    useEffect(() => {
+        if (showEditTitle) {
+            if (null !== inputRef.current) inputRef.current.focus()
+        }
+    }, [showEditTitle])
 
     const handleSubmit = (event: React.FocusEvent<HTMLInputElement>) => {
         event.preventDefault()
@@ -89,14 +115,23 @@ const EditFormPage: React.FC = () => {
             })
     }
 
-    const updateColour = () => {
+    const updateForm = (time?: string, date?: string) => {
+        let d = null
+        if (time && date) {
+            d = Date.parse("5/5/2012" + " " + time)
+            d = new Date(d)
+        }
         fetch("http://localhost:7000/api/updateform", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
             credentials: "include",
-            body: JSON.stringify({ ...form, color_theme: colour }),
+            body: JSON.stringify({
+                ...form,
+                color_theme: colour,
+                closes: d ? d : Date.parse(closeDate + " " + closeTime),
+            }),
         })
             .then((response) => response.json())
             .then((data) => {
@@ -108,24 +143,26 @@ const EditFormPage: React.FC = () => {
             })
     }
 
+    useEffect(updateForm, [colour])
+
     const handleTitleClick = () => {
         setShowEditTitle(true)
     }
 
-    //SHOW AND HIDE EDIT FORM TITLE LOGIC
-    useEffect(() => {
-        if (showEditTitle) {
-            if (null !== inputRef.current) inputRef.current.focus()
-        }
-    }, [showEditTitle])
+    const formatTimeToDb = (time: string) => {
+        return time + ":00"
+    }
 
-    useEffect(updateColour, [colour])
+    if (loading) {
+        return <div>Loading</div>
+    }
 
     return form ? (
-        value?.currentUser &&
-        (value?.currentUser.role === "admin" ||
-            value?.currentUser.role === "superadmin") ? (
+        auth?.currentUser &&
+        (auth?.currentUser.role === "admin" ||
+            auth?.currentUser.role === "superadmin") ? (
             <div className="edit-form-page" style={{ backgroundColor: colour }}>
+                {console.log(colour)}
                 <Link to="/">
                     <button>Back</button>
                 </Link>
@@ -133,7 +170,7 @@ const EditFormPage: React.FC = () => {
                     <input
                         onBlur={handleSubmit}
                         type="text"
-                        value={title}
+                        defaultValue={title}
                         onChange={handleTitle}
                         ref={inputRef}
                     ></input>
@@ -142,7 +179,11 @@ const EditFormPage: React.FC = () => {
                         <h1>{form.title}</h1>
                     </div>
                 )}
+                <h4>Closing date :</h4>
+                <input type="date" defaultValue={"2021-04-21"} />
 
+                <h4>Closing Time :</h4>
+                <input type="time" defaultValue={closeTime as string} />
                 <h2>Colour theme: </h2>
                 <input
                     type="color"
@@ -150,8 +191,7 @@ const EditFormPage: React.FC = () => {
                     value={colour}
                 ></input>
                 <h3>{form.color_theme}</h3>
-
-                <QuestionList questions={questions} formid={form._id} />
+                <QuestionList formid={form._id} />
             </div>
         ) : (
             <Redirect to="/login" />

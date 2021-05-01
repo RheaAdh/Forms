@@ -8,28 +8,37 @@ import ResponseList from "../components/ResponseList"
 
 const DashboardPage: React.FC = () => {
     const auth = useAuth()
-    const [current, setCurrent] = useState<string>("forms")
+    const [loading, setLoading] = useState<boolean>(true)
+    const [current, setCurrent] = useState<string>("allForms")
+
+    // Sidenav
     const handleChange = (e: any) => {
         let element = document.getElementById(current)
         element?.setAttribute("style", "color : black;")
         e.target.style.color = "red"
         setCurrent(e.target.id)
     }
+
     const history = useHistory()
     useEffect(() => {
-        auth?.getCurrentUser()
+        auth?.getCurrentUser().then((res: any) => setLoading(false))
     }, [])
     const handleLogout = async () => {
         auth?.logout()
             .then((res) => history.push("/adminlogin"))
             .catch((err) => console.log(err))
     }
+
+    if (loading) {
+        return <div>Loading</div>
+    }
+
     return (
         <div className="dashboard">
             <div className="sidebar">
                 <p
                     className="btn"
-                    id="forms"
+                    id="allForms"
                     style={{ color: "red" }}
                     onClick={(e) => handleChange(e)}
                 >
@@ -37,12 +46,16 @@ const DashboardPage: React.FC = () => {
                 </p>
                 <p
                     className="btn"
-                    id="responses"
+                    id="adminForms"
                     onClick={(e) => handleChange(e)}
                 >
                     Admin Form Responses
                 </p>
-                <p className="btn" id="users" onClick={(e) => handleChange(e)}>
+                <p
+                    className="btn"
+                    id="superAdminForms"
+                    onClick={(e) => handleChange(e)}
+                >
                     Board Form responses
                 </p>
                 {auth?.currentUser === null ? (
@@ -62,12 +75,12 @@ const DashboardPage: React.FC = () => {
                 )}
             </div>
             <div className="main-column">
-                {current === "forms" ? (
+                {current === "allForms" ? (
                     <FormsPage />
-                ) : current === "responses" ? (
-                    <ResponseList />
-                ) : current === "users" ? (
-                    <h3>Nothing to see here</h3>
+                ) : current === "adminForms" ? (
+                    <ResponseList creatorRole="admin" />
+                ) : current === "superAdminForms" ? (
+                    <ResponseList creatorRole="superadmin" />
                 ) : current === "admin-login" ? (
                     <AdminLoginPage />
                 ) : (

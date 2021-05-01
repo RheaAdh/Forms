@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage"
 import AdminLoginPage from "./pages/AdminLoginPage"
 import RegisterPage from "./pages/RegisterPage"
 import DisplayForm from "./pages/DisplayForm"
+import ResetPassword from "./pages/ResetPassword"
 import { Route } from "react-router-dom"
 
 function App() {
@@ -18,8 +19,13 @@ function App() {
             <Route path="/form/:formid" render={() => <DisplayForm />} />
             <Route path="/dashboard" render={() => <DashboardPage />} />
             <Route path="/adminlogin" render={() => <AdminLoginPage />} />
-            <Route path="/login" render={() => <LoginPage />} />
+            <Route path="/login/:formid" render={() => <LoginPage />} />
+            <Route exact path="/login" render={() => <LoginPage />} />
             <Route path="/register" render={() => <RegisterPage />} />
+            <Route
+                path="/resetpassword/:token"
+                render={() => <ResetPassword />}
+            />
         </div>
     )
 }
