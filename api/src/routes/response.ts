@@ -67,7 +67,7 @@ export const getResponsesByForm = async (req: Request, res: Response) => {
     await mongo.connectMongo()
     let formId = req.params.formId
     try {
-        let formResponses = await FormResponse.findOne({
+        let formResponses = await FormResponse.find({
             formId: formId,
         })
         res.send(formResponses)
@@ -171,5 +171,44 @@ export const downloadResponse = async (req: Request, res: Response) => {
     } else {
         console.log("Invalid form id")
         res.send({ success: false, data: "InValid Form Id" })
+    }
+}
+export const getResponsesByIndividualByFormId = async (
+    req: Request,
+    res: Response
+) => {
+    await mongo.connectMongo()
+    let formId = req.params.formId
+    let userId = req.params.userId
+    console.log(userId)
+    console.log(formId)
+    try {
+        let formIndividualResponses = await FormResponse.find({
+            formId: formId,
+            userid: userId,
+        })
+        res.send(formIndividualResponses)
+    } catch (error) {
+        res.send("error")
+    }
+}
+
+//some issue with query its returning all forms i only want by questionid
+export const getResponsesByQuestionsByForm = async (
+    req: Request,
+    res: Response
+) => {
+    await mongo.connectMongo()
+    let quesId = req.params.questionId
+    let formResponses: any
+    try {
+        formResponses = await FormResponse.find({
+            // "responses.questionId":quesId
+            // responses: { $elemMatch: { questionId: quesId } },
+             "responses": { $elemMatch: { questionId: quesId } },
+        })
+        res.send(formResponses)
+    } catch (error) {
+        res.send(error + "uhhhh")
     }
 }

@@ -26,6 +26,8 @@ import {
     getResponsesByForm,
     getFormsByCreator,
     downloadResponse,
+    getResponsesByIndividualByFormId,
+    getResponsesByQuestionsByForm,
 } from "./response"
 const router = express.Router()
 
@@ -44,16 +46,23 @@ router.get("/getquestionsbyformid/:formid", getQuestionsByFormid)
 router.get("/formsbycreator/:creatorId", isValidSuperAdmin, getFormsByCreator)
 router.get("/resbyformid/:formId", isValidAdmin, getResponsesByForm)
 
-//middleware not needed(general route)
-router.post("/submitresponse", submitResponse)
-
 router.put("/updateform", isValidAdmin, updateForm)
 router.delete("/deleteform", isValidAdmin, deleteForm)
 
 router.post("/addquestion", isValidAdmin, addQuestion)
 router.put("/updatequestion", isValidAdmin, updateQuestion)
 router.delete("/deletequestion", isValidAdmin, deleteQuestion)
-
+router.get(
+    "/resbyindividual/:formId/:userId",
+    isValidSuperAdmin,
+    getResponsesByIndividualByFormId
+)
+//since question id is unique to a form so no need to have formid as param
+router.get(
+    "/resbyquestions/:questionId",
+    isValidSuperAdmin,
+    getResponsesByQuestionsByForm
+)
 //------------------ ADMIN TESTING WITH AUTH------------------
 
 router.get("/getmyforms", isValidAdmin, getMyForms)
@@ -72,7 +81,22 @@ router.delete("/deletemyform", isValidAdmin, deleteForm)
 router.post("/addmyquestion", isValidAdmin, addQuestion)
 router.put("/updatemyquestion", isValidAdmin, updateQuestion)
 router.delete("/deletemyquestion", isValidAdmin, deleteQuestion)
+router.get(
+    "/resmyformbyindividual/:formId/:userId",
+    isValidAdmin,
+    getResponsesByIndividualByFormId
+)
+//since question id is unique to a form so no need to have formid as param
+router.get(
+    "/resbymyquestions/:questionId",
+    isValidAdmin,
+    getResponsesByQuestionsByForm
+)
 
+
+//--------------------------------------------------
+//middleware not needed(general route)
+router.post("/submitresponse", submitResponse)
 //Covert to .csv and download route
 router.get("/download/:formid", downloadResponse)
 
