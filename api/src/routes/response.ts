@@ -25,6 +25,7 @@ export const submitResponse = async (req: Request, res: Response) => {
     await mongo.connectMongo()
     console.log("POST REQUEST WAS MADE for submit response")
     let { username, userid, formId, responses } = req.body
+    console.log(responses)
     //if form is already submitted by user then updating
     let resp = await FormResponse.findOneAndUpdate(
         {
@@ -67,7 +68,7 @@ export const getResponsesByForm = async (req: Request, res: Response) => {
     await mongo.connectMongo()
     let formId = req.params.formId
     try {
-        let formResponses = await FormResponse.find({
+        let formResponses = await FormResponse.findOne({
             formId: formId,
         })
         res.send(formResponses)
@@ -173,6 +174,7 @@ export const downloadResponse = async (req: Request, res: Response) => {
         res.send({ success: false, data: "InValid Form Id" })
     }
 }
+
 export const getResponsesByIndividualByFormId = async (
     req: Request,
     res: Response
@@ -205,7 +207,7 @@ export const getResponsesByQuestionsByForm = async (
         formResponses = await FormResponse.find({
             // "responses.questionId":quesId
             // responses: { $elemMatch: { questionId: quesId } },
-             "responses": { $elemMatch: { questionId: quesId } },
+            responses: { $elemMatch: { questionId: quesId } },
         })
         res.send(formResponses)
     } catch (error) {

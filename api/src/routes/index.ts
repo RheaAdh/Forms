@@ -58,11 +58,7 @@ router.get(
     getResponsesByIndividualByFormId
 )
 //since question id is unique to a form so no need to have formid as param
-router.get(
-    "/resbyquestions/:questionId",
-    isValidSuperAdmin,
-    getResponsesByQuestionsByForm
-)
+router.get("/resbyquestions/:questionId", getResponsesByQuestionsByForm)
 //------------------ ADMIN TESTING WITH AUTH------------------
 
 router.get("/getmyforms", isValidAdmin, getMyForms)
@@ -92,7 +88,6 @@ router.get(
     isValidAdmin,
     getResponsesByQuestionsByForm
 )
-
 
 //--------------------------------------------------
 //middleware not needed(general route)
