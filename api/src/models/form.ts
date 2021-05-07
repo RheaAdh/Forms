@@ -10,6 +10,7 @@ export interface FormDoc extends Document {
             question_text: string
         }
     ]
+    description: string
     owner: any
 }
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
@@ -20,6 +21,7 @@ const form: Schema = new Schema(
         //array of question ids
         questions: [{ type: Schema.Types.ObjectId, ref: "question" }],
         owner: { type: Schema.Types.ObjectId, ref: "User" },
+        description: { type : String},
         closes: Date,
     },
     {
