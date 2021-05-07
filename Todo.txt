@@ -1,0 +1,5 @@
+Issues in Frontend
+* Looks like dropdown isnt working
+* When Logged in with user response page is not showing up properly
+* Now one cannot make form without title  --> change such that it is possible make form in such case with (untitled) by default 
+* admin is not able to create form (But it is fine for now, one can work when we get design)

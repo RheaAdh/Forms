@@ -1,4 +1,4 @@
-import { Response, Request, response } from "express"
+import e, { Response, Request, response } from "express"
 // import { Schema } from "mongoose"
 import * as mongo from "../config/mongo"
 import FormResponse from "../models/response"
@@ -193,7 +193,6 @@ export const getResponsesByIndividualByFormId = async (
     }
 }
 
-//some issue with query its returning all forms i only want by questionid
 export const getResponsesByQuestionsByForm = async (
     req: Request,
     res: Response
@@ -203,11 +202,116 @@ export const getResponsesByQuestionsByForm = async (
     let formResponses: any
     try {
         formResponses = await FormResponse.find({
-            // "responses.questionId":quesId
-            // responses: { $elemMatch: { questionId: quesId } },
-             "responses": { $elemMatch: { questionId: quesId } },
-        })
-        res.send(formResponses)
+            responses: { $elemMatch: { questionId: quesId } },
+        }).select("responses")
+
+        let ans: any = []
+        for (let i = 0; i < formResponses.length; i++) {
+            for (let j = 0; j < formResponses[i].responses.length; j++) {
+                if (formResponses[i].responses[j].questionId == quesId) {
+                    let answerType = formResponses[i].responses[j].answerType
+                    console.log(answerType)
+                    switch (answerType) {
+                        case "paragraph-answer":
+                            if (formResponses[i].responses[j].paragraphText) {
+                                ans.push(
+                                    formResponses[i].responses[j].paragraphText
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "short-answer":
+                            if (formResponses[i].responses[j].shortText) {
+                                ans.push(
+                                    formResponses[i].responses[j].shortText
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "email-answer":
+                            if (formResponses[i].responses[j].emailAnswer) {
+                                ans.push(
+                                    formResponses[i].responses[j].emailAnswer
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "mcq-answer":
+                            if (formResponses[i].responses[j].selectedOption) {
+                                ans.push(
+                                    formResponses[i].responses[j].selectedOption
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "checkbox-answer":
+                            if (
+                                formResponses[i].responses[j].multipleSelected
+                            ) {
+                                ans.push(
+                                    formResponses[i].responses[j]
+                                        .multipleSelected
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "dropdown-answer":
+                            if (formResponses[i].responses[j].selectedOption) {
+                                ans.push(
+                                    formResponses[i].responses[j].selectedOption
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "linearscale-answer":
+                            if (formResponses[i].responses[j].selectedOption) {
+                                ans.push(
+                                    formResponses[i].responses[j].selectedOption
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "multiplechoicegrid-answer":
+                            if (
+                                formResponses[i].responses[j]
+                                    .selectedOptionsGrid
+                            ) {
+                                ans.push(
+                                    formResponses[i].responses[j]
+                                        .selectedOptionsGrid
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "multiplechoicegrid-answer":
+                            if (
+                                formResponses[i].responses[j]
+                                    .selectedOptionsGrid
+                            ) {
+                                ans.push(
+                                    formResponses[i].responses[j]
+                                        .selectedOptionsGrid
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "date-answer":
+                            if (formResponses[i].responses[j].selectedDate) {
+                                ans.push(
+                                    formResponses[i].responses[j].selectedDate
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "time-answer":
+                            if (
+                                formResponses[i].responses[j].timeHours &&
+                                formResponses[i].responses[j].timeMinutes
+                            ) {
+                                ans.push({
+                                    timeHours:
+                                        formResponses[i].responses[j].timeHours,
+                                    timeMinutes:
+                                        formResponses[i].responses[j]
+                                            .timeMinutes,
+                                })
+                            } else ans.push("(null)")
+                            break
+                    }
+                }
+            }
+        }
+        res.send(ans)
     } catch (error) {
         res.send(error + "uhhhh")
     }
