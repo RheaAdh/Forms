@@ -70,6 +70,9 @@ export async function addForm(req: any, res: Response) {
         owner: req.session.userId,
         color_theme: req.body.color_theme,
         description: req.body.description,
+        isActive:req.body.isActive,
+        isEditable:req.body.isEditable,
+        multipleResponses:req.multipleResponses
     })
     console.log("POST REQUEST WAS MADE")
     //newForm = new Form(req.body);
