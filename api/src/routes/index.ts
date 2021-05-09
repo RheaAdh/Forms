@@ -10,6 +10,7 @@ import {
     getMyForms,
     getAdminForms,
     getSuperAdminForms,
+    closeForm
 } from "./form"
 import {
     addQuestion,
@@ -86,6 +87,7 @@ router.get(
     isValidAdmin,
     getResponsesByIndividualByFormId
 )
+router.put("/formclose/:formId",isValidAdmin,closeForm)
 //since question id is unique to a form so no need to have formid as param
 router.get(
     "/resbymyquestions/:questionId",

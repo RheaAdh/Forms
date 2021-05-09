@@ -138,3 +138,30 @@ export async function getMyForms(req: Request, res: Response) {
 //         res.send(error)
 //     }
 // }
+
+
+
+//Routes for closing-form  ---> to be implemented using toggle button in formlist correspomding to form
+export async function closeForm (req:Request,res:Response) {
+    await mongo.connectMongo()
+    let formId=req.body.formId
+    try
+    {
+        let updatedForm=await Form.findOneAndUpdate(
+            {_id:formId},
+            {
+                $set:{isActive: req.body.isActive}
+            },{new:true}
+        )
+            // console.log(formIsActive)
+            console.log(updatedForm)
+            if(updatedForm)
+                res.send({success:true,data:"Form Status changed to "+updatedForm.isActive})
+            else
+                res.send({success:false,data:"Form Status isn't updated please try again"})
+    }
+    catch(err)
+    {
+        res.send({ success: false, data: err})
+    }
+}
