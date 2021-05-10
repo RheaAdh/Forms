@@ -237,23 +237,31 @@ export async function adminResetPassword(
     } catch (error) {
         console.error("error")
     }
-
-    if (newPassword === newConfirmPassword) {
-        const hashpwd = await bcrypt.hash(newPassword, 10)
-        //updating newpassword by using old token
-        user = await User.updateOne(
-            { token: compareToken },
-            { $set: { password: hashpwd } }
-        )
-        //generate new token
-        user = await User.updateOne(
-            { token: compareToken },
-            { $set: { token: uuidv4() } }
-        )
-        return res.send({
-            success: true,
-            data: "Successfully created new password",
-        })
+    if (newPassword.length >= 8) {
+        if (newPassword === newConfirmPassword) {
+            const hashpwd = await bcrypt.hash(newPassword, 10)
+            //updating newpassword by using old token
+            user = await User.updateOne(
+                { token: compareToken },
+                { $set: { password: hashpwd } }
+            )
+            //generate new token
+            user = await User.updateOne(
+                { token: compareToken },
+                { $set: { token: uuidv4() } }
+            )
+            return res.send({
+                success: true,
+                data: "Successfully created new password",
+            })
+        } else {
+            return res.send({
+                success: false,
+                msg: "confirm and new pass not matching",
+            })
+        }
+    } else {
+        return res.send({ success: false, msg: "min len 8" })
     }
 }
 

@@ -356,14 +356,4 @@ export async function getMyQuestions(req: Request, res: Response) {
     res.json(questions)
 }
 
-// try {
-//     let formResponse = await FormResponse.findOne({
-//         formId: req.params.formid,
-//     })
-//     return res.send(formResponse)
-// } catch (error) {
-//     res.send(error)
-//     console.error(error)
-// }
-// res.json(questions)
-//}
+
