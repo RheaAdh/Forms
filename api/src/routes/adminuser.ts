@@ -20,7 +20,6 @@ const bcrypt = require("bcryptjs")
 //FOR ADMINS
 
 export async function adminRegister(req: Request, res: Response) {
-    await mongo.connectMongo()
     console.log("POST REQUEST WAS MADE")
     const { username, password, confirmPassword, email } = req.body
 
@@ -87,7 +86,6 @@ export async function adminRegister(req: Request, res: Response) {
 }
 
 export async function adminLogin(req: Request, res: Response) {
-    await mongo.connectMongo()
     console.log(" adminLogin POST REQUEST WAS MADE")
     const { email, password } = req.body
     let user: any
@@ -137,7 +135,6 @@ export async function isValidAdmin(
     res: Response,
     next: NextFunction
 ) {
-    await mongo.connectMongo()
     if (req.session.isAuth) {
         next()
     } else {
@@ -156,7 +153,7 @@ export async function isValidSuperAdmin(
     res: Response,
     next: NextFunction
 ) {
-    //await mongo.connectMongo()
+    //
     if (req.session.isAuth) {
         if (req.session.role == "superadmin") {
             next()
@@ -176,7 +173,6 @@ export async function adminLogout(
     res: Response,
     next: NextFunction
 ) {
-    await mongo.connectMongo()
     req.session.destroy(function (err) {
         if (err) {
             console.log(err)
@@ -192,7 +188,6 @@ export async function adminForgotPassword(
     res: Response,
     next: NextFunction
 ) {
-    await mongo.connectMongo()
     console.log("adminForgotPassword POST REQUEST WAS MADE")
     let { email } = req.body
     let user: any
@@ -224,7 +219,6 @@ export async function adminResetPassword(
     res: Response,
     next: NextFunction
 ) {
-    await mongo.connectMongo()
     console.log("adminResetPassword POST REQUEST WAS MADE")
     const compareToken = req.params.token
     console.log(compareToken)
@@ -266,7 +260,7 @@ export async function adminResetPassword(
 }
 
 export function sessionDetails(req: Request, res: Response) {
-    console.log("SessionID : ", req.sessionID)
-    console.log("Session: ", req.session)
+    // console.log("SessionID : ", req.sessionID)
+    // console.log("Session: ", req.session)
     res.send(req.session)
 }

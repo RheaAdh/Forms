@@ -19,8 +19,6 @@ import {
 } from "../models/question"
 
 export async function addQuestion(req: Request, res: Response) {
-    await mongo.connectMongo()
-
     let {
         formid,
         question_type,
@@ -154,29 +152,23 @@ export async function addQuestion(req: Request, res: Response) {
 }
 
 export async function getQuestions(req: Request, res: Response) {
-    await mongo.connectMongo()
-
     const questions = await Question.find().exec()
     res.json(questions)
 }
 
 export async function getQuestion(req: Request, res: Response) {
-    await mongo.connectMongo()
-
     const question = await Question.findById(req.params.qid)
 
     res.json(question)
 }
 
 export async function getQuestionsByFormid(req: Request, res: Response) {
-    await mongo.connectMongo()
-
     const questions = await Question.find({ formid: req.params.formid })
     //console.log("inside getQuestions")
 
     //console.log(questions)
     //sending previous response and questions
-    await mongo.connectMongo()
+
     try {
         let user = await FormResponse.findOne({
             userid: req.session.userId,
@@ -209,7 +201,6 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
 }
 
 export async function updateQuestion(req: Request, res: Response) {
-    await mongo.connectMongo()
     console.log(req.body)
     let moddedBody = { ...req.body }
     moddedBody["question-type"] = req.body["question-type"]
@@ -336,7 +327,6 @@ export async function updateQuestion(req: Request, res: Response) {
 }
 
 export async function deleteQuestion(req: Request, res: Response) {
-    await mongo.connectMongo()
     try {
         await Question.findByIdAndDelete(req.body.id)
         await Form.findOneAndUpdate(
@@ -350,10 +340,6 @@ export async function deleteQuestion(req: Request, res: Response) {
 }
 
 export async function getMyQuestions(req: Request, res: Response) {
-    await mongo.connectMongo()
-
     const questions = await Question.find({ userId: req.session.userId })
     res.json(questions)
 }
-
-

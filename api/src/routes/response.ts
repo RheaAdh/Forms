@@ -22,16 +22,10 @@ declare module "express-session" {
     }
 }
 export const submitResponse = async (req: Request, res: Response) => {
-    await mongo.connectMongo()
     console.log("POST REQUEST WAS MADE for submit response")
-    let {
-        username,
-        userid,
-        formId,
-        responses,
-    } = req.body
+    let { username, userid, formId, responses } = req.body
     //Checking if form isActive
-    let form:any= await Form.findOne({_id:formId})
+    let form: any = await Form.findOne({ _id: formId })
     console.log(form)
     if (form.isActive) {
         console.log("Inside Active")
@@ -97,7 +91,9 @@ export const submitResponse = async (req: Request, res: Response) => {
             }
         } //when form has submission but neither edit is allowed nor multiple responses
         else {
-            console.log("Form is noneditable and multiple responses are also not allowed")
+            console.log(
+                "Form is noneditable and multiple responses are also not allowed"
+            )
             res.send({
                 success: false,
                 data:
@@ -114,7 +110,6 @@ export const submitResponse = async (req: Request, res: Response) => {
 }
 
 export const getResponsesByForm = async (req: Request, res: Response) => {
-    await mongo.connectMongo()
     let formId = req.params.formId
     try {
         let formResponses = await FormResponse.find({
@@ -126,7 +121,6 @@ export const getResponsesByForm = async (req: Request, res: Response) => {
     }
 }
 export const getFormsByCreator = async (req: Request, res: Response) => {
-    await mongo.connectMongo()
     let creatorId = req.params.creatorId
     let usersForms: any
     try {
@@ -140,7 +134,7 @@ export const getFormsByCreator = async (req: Request, res: Response) => {
 //Coverting Response to .csv and then downloading
 
 export const downloadResponse = async (req: Request, res: Response) => {
-    // await mongo.connectMongo()
+    //
     let formId = req.params.formid
     console.log(req.params.formid)
 
@@ -227,7 +221,6 @@ export const getResponsesByIndividualByFormId = async (
     req: Request,
     res: Response
 ) => {
-    await mongo.connectMongo()
     let formId = req.params.formId
     let userId = req.params.userId
     console.log(userId)
@@ -247,7 +240,6 @@ export const getResponsesByQuestionsByForm = async (
     req: Request,
     res: Response
 ) => {
-    await mongo.connectMongo()
     let quesId = req.params.questionId
     let formResponses: any
     try {

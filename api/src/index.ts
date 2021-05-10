@@ -13,8 +13,10 @@ import {
     adminForgotPassword,
     adminResetPassword,
 } from "./routes/adminuser"
-import { store ,connectMongo} from "./config/mongo"
+//connect DB
+import { store, connectMongo } from "./config/mongo"
 connectMongo()
+
 const port: Number = 7000
 const session = require("express-session")
 const bodyParser = require("body-parser")

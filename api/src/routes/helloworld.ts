@@ -7,7 +7,7 @@ export function helloWorld(req: Request, res: Response) {
 }
 
 export async function dbTesting(req: Request, res: Response) {
-  await mongo.connectMongo();
+
 
   const newTest = new test({
     name: "haha",
