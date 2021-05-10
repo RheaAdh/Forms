@@ -1,9 +1,13 @@
 Issues in Frontend
 * Looks like dropdown isnt working
 * When Logged in with user response page is not showing up properly
-* Now one cannot make form without title  --> change such that it is possible make form in such case with (untitled) by default 
 *We have close route a toggle botten in formlist for closing form will be needed(send formId and isActive (true for open and false wants to close form) in request)
 * admin is not able to create form (But it is fine for now, one can work when we get design)
-
+*Need Toggle button for close/open form in formlist corresponding to all formlist
+*Form description is not visible in response page (should be there below title)
+*Also when both edit and multipleResponse is false then just one (i.e.very first) response is just possible or valid, but if a user wants to fill again it should show message
+    something similar to what is comming from backend in that case
+*Response page and implementation corresponding to different response routes is left
+*Admin dashboard is left
 
 * 404 page 
