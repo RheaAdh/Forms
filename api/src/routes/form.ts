@@ -3,7 +3,7 @@ import { Response, Request } from "express"
 import * as mongo from "../config/mongo"
 import { Form } from "../models/form"
 import { Question } from "../models/question"
-
+import FormResponse from "../models/response"
 declare module "express-session" {
     interface Session {
         isAuth: boolean
@@ -102,11 +102,16 @@ export async function updateForm(req: Request, res: Response) {
 export async function deleteForm(req: Request, res: Response) {
     try {
         console.log(req.body.id)
-
-        let deletedques: any
-        deletedques = await Question.deleteMany({
+        let deletedResponses: any
+        deletedResponses = await FormResponse.findOneAndDelete({
+            formId: req.body.id,
+        })
+        let deletedQuestions: any
+        deletedQuestions = await Question.deleteMany({
             formid: req.body.id,
         })
+        console.log(deletedResponses)
+
         let deletedForm: any
         deletedForm = await Form.findOneAndDelete({
             _id: req.body.id,

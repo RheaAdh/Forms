@@ -244,8 +244,11 @@ export const getResponsesByQuestionsByForm = async (
         formResponses = await FormResponse.find({
             responses: { $elemMatch: { questionId: quesId } },
         }).select("responses")
-
+        console.log(formResponses[0]);
+        
         let ans: any = []
+
+        
         for (let i = 0; i < formResponses.length; i++) {
             for (let j = 0; j < formResponses[i].responses.length; j++) {
                 if (formResponses[i].responses[j].questionId == quesId) {
