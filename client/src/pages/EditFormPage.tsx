@@ -35,9 +35,13 @@ const EditFormPage: React.FC = () => {
 
     const [loading, setLoading] = useState<boolean>(true)
 
-    const [colour, handleColour, resetColour, setColour] = useFormState(
-        "#FFFFFF"
-    )
+    const [colour, handleColour, resetColour, setColour] = useFormState("#FFFFFF")
+
+    const [desc, handleDesc, resetDesc, setDesc] = useFormState("")
+
+    const [edit, setEdit] = useState(false)
+
+    const [multi, setMulti] = useState(false)
 
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -66,6 +70,9 @@ const EditFormPage: React.FC = () => {
                     setForm(data.form)
                     setTitle(data.form.title)
                     setColour(data.form.color_theme)
+                    setDesc(data.form.description)
+                    setEdit(data.form.isEditable)
+                    setMulti(data.form.multipleResponses)
                     setCloseTime(
                         new Date(data.form["closes"]).toLocaleTimeString()
                     )
@@ -126,6 +133,9 @@ const EditFormPage: React.FC = () => {
                 ...form,
                 color_theme: colour,
                 closes: d ? d : Date.parse(closeDate + " " + closeTime),
+                description: desc,
+                isEditable: edit,
+                multipleResponses: multi,
             }),
         })
             .then((response) => response.json())
@@ -137,7 +147,7 @@ const EditFormPage: React.FC = () => {
             })
     }
 
-    useEffect(updateForm, [colour])
+    useEffect(updateForm, [colour,desc,edit,multi])
 
     const handleTitleClick = () => {
         setShowEditTitle(true)
@@ -177,13 +187,22 @@ const EditFormPage: React.FC = () => {
 
                 <h4>Closing Time :</h4>
                 <input type="time" defaultValue={closeTime as string} />
-                <h2>Colour theme: </h2>
+                <h3>Colour theme: </h3>
                 <input
                     type="color"
                     onChange={handleColour}
                     value={colour}
                 ></input>
                 <h3>{form.color_theme}</h3>
+                <h3>Description:</h3>
+                <textarea value={desc} onChange={handleDesc} rows={5} cols={80} className="description"></textarea>
+                <h4><input type="checkbox" checked={edit} 
+                onChange={(e)=>{const editVal=e.target.checked 
+                    setEdit(editVal)}}></input>Editable
+                <input type="checkbox" checked={multi} 
+                onChange={(e)=>{const multiVal=e.target.checked 
+                    setMulti(multiVal)}}></input>Multiple responses</h4>
+                <h2>Questions:</h2>
                 <QuestionList formid={form._id} />
             </div>
         ) : (
