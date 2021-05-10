@@ -19,193 +19,176 @@ import {
 } from "../models/question"
 
 export async function addQuestion(req: Request, res: Response) {
-    let {
-        formid,
-        question_type,
-        question_text,
-        description,
-        required,
-        options,
-        lowRating,
-        highRating,
-        lowRatingLabel,
-        highRatingLabel,
-        rowLabel,
-        colLabel,
-    } = req.body
-
-    //?FIND FORM
-
-    let form: any
     try {
+        let {
+            formid,
+            question_type,
+            question_text,
+            description,
+            required,
+            options,
+            lowRating,
+            highRating,
+            lowRatingLabel,
+            highRatingLabel,
+            rowLabel,
+            colLabel,
+        } = req.body
+
+        //?FIND FORM
+
+        let form: any
         form = await Form.findById(formid)
-    } catch (error) {
-        console.error(error)
-    }
-
-    const common = {
-        formid: formid,
-        question_text: question_text,
-        description: description,
-        required: required,
-    }
-
-    let newQuestion
-
-    switch (question_type) {
-        case "short-answer": {
-            newQuestion = new shortQuestion({ ...common })
-            break
+        const common = {
+            formid: formid,
+            question_text: question_text,
+            description: description,
+            required: required,
         }
 
-        case "email-answer": {
-            newQuestion = new emailQuestion({ ...common })
-            break
+        let newQuestion
+
+        switch (question_type) {
+            case "short-answer": {
+                newQuestion = new shortQuestion({ ...common })
+                break
+            }
+
+            case "email-answer": {
+                newQuestion = new emailQuestion({ ...common })
+                break
+            }
+
+            case "paragraph-answer": {
+                newQuestion = new paragraphQuestion({ ...common })
+                break
+            }
+
+            case "mcq-answer": {
+                newQuestion = new mcqQuestion({
+                    ...common,
+                    options: [...options],
+                })
+                break
+            }
+
+            case "checkbox-answer": {
+                newQuestion = new checkboxQuestion({
+                    ...common,
+                    options: [...options],
+                })
+                break
+            }
+
+            case "dropdown-answer": {
+                newQuestion = new dropdownQuestion({
+                    ...common,
+                    options: [...options],
+                })
+                break
+            }
+
+            case "linearscale-answer": {
+                newQuestion = new linearscaleQuestion({
+                    ...common,
+                    lowRating: lowRating,
+                    highRating: highRating,
+                    lowRatingLabel: lowRatingLabel,
+                    highRatingLabel: highRatingLabel,
+                })
+                break
+            }
+
+            case "multiplechoicegrid-answer": {
+                newQuestion = new multiplechoicegridQuestion({
+                    ...common,
+                    rowLabel: rowLabel,
+                    colLabel: colLabel,
+                })
+                break
+            }
+
+            case "checkboxgrid-answer": {
+                newQuestion = new checkboxgridQuestion({
+                    ...common,
+                    rowLabel: rowLabel,
+                    colLabel: colLabel,
+                })
+                break
+            }
+
+            case "date-answer": {
+                newQuestion = new dateQuestion({ ...common })
+                break
+            }
+
+            case "time-answer": {
+                newQuestion = new timeQuestion({ ...common })
+                break
+            }
+
+            default:
+                newQuestion = new Question({ ...common })
         }
 
-        case "paragraph-answer": {
-            newQuestion = new paragraphQuestion({ ...common })
-            break
-        }
-
-        case "mcq-answer": {
-            newQuestion = new mcqQuestion({ ...common, options: [...options] })
-            break
-        }
-
-        case "checkbox-answer": {
-            newQuestion = new checkboxQuestion({
-                ...common,
-                options: [...options],
-            })
-            break
-        }
-
-        case "dropdown-answer": {
-            newQuestion = new dropdownQuestion({
-                ...common,
-                options: [...options],
-            })
-            break
-        }
-
-        case "linearscale-answer": {
-            newQuestion = new linearscaleQuestion({
-                ...common,
-                lowRating: lowRating,
-                highRating: highRating,
-                lowRatingLabel: lowRatingLabel,
-                highRatingLabel: highRatingLabel,
-            })
-            break
-        }
-
-        case "multiplechoicegrid-answer": {
-            newQuestion = new multiplechoicegridQuestion({
-                ...common,
-                rowLabel: rowLabel,
-                colLabel: colLabel,
-            })
-            break
-        }
-
-        case "checkboxgrid-answer": {
-            newQuestion = new checkboxgridQuestion({
-                ...common,
-                rowLabel: rowLabel,
-                colLabel: colLabel,
-            })
-            break
-        }
-
-        case "date-answer": {
-            newQuestion = new dateQuestion({ ...common })
-            break
-        }
-
-        case "time-answer": {
-            newQuestion = new timeQuestion({ ...common })
-            break
-        }
-
-        default:
-            newQuestion = new Question({ ...common })
-    }
-
-    try {
         await newQuestion.save()
         console.log("Questoin saved!!")
-    } catch (error) {
-        console.log("Couldnt save question")
-    }
 
-    form.questions.push(newQuestion)
-
-    try {
+        form.questions.push(newQuestion)
         await form.save()
         console.log("Form saved!!")
+        return res.json(newQuestion)
     } catch (error) {
-        console.log("Couldnt save form")
+        return res.send({ success: false, msg: error })
     }
-
-    res.json(newQuestion)
 }
 
 export async function getQuestions(req: Request, res: Response) {
-    const questions = await Question.find().exec()
-    res.json(questions)
+    try {
+        const questions = await Question.find().exec()
+        return res.json(questions)
+    } catch (e) {
+        return res.send({ success: false, msg: e })
+    }
 }
 
 export async function getQuestion(req: Request, res: Response) {
-    const question = await Question.findById(req.params.qid)
-
-    res.json(question)
+    try {
+        const question = await Question.findById(req.params.qid)
+        return res.json(question)
+    } catch (e) {
+        return res.send({ success: false, msg: e })
+    }
 }
 
 export async function getQuestionsByFormid(req: Request, res: Response) {
-    const questions = await Question.find({ formid: req.params.formid })
-    //console.log("inside getQuestions")
-
-    //console.log(questions)
     //sending previous response and questions
-
     try {
+        const questions = await Question.find({ formid: req.params.formid })
         let user = await FormResponse.findOne({
             userid: req.session.userId,
             formId: req.params.formid,
         })
-        console.log(user)
         if (!user) {
             let data = { prevResponse: null, ques: questions }
             console.log(data)
-            res.json(data)
+            return res.json(data)
         } else {
             let data = { prevResponse: user, ques: questions }
             console.log(data.prevResponse)
             console.log(data)
-            res.send(data)
+            return res.send(data)
         }
-    } catch (err) {
-        console.log(err)
+    } catch (e) {
+        return res.send({ success: false, msg: e })
     }
-    // try {
-    //     let formResponse = await FormResponse.findOne({
-    //         formId: req.params.formid,
-    //     })
-    //     return res.send(formResponse)
-    // } catch (error) {
-    //     res.send(error)
-    //     console.error(error)
-    // }
-    // res.json(questions)
 }
 
 export async function updateQuestion(req: Request, res: Response) {
-    console.log(req.body)
-    let moddedBody = { ...req.body }
-    moddedBody["question-type"] = req.body["question-type"]
-    let updatedQuestion
     try {
+        let moddedBody = { ...req.body }
+        moddedBody["question-type"] = req.body["question-type"]
+        let updatedQuestion
         // Update by finding Question, so that question type can be changed
         updatedQuestion = await Question.findOneAndUpdate(
             { _id: req.body._id },
@@ -319,10 +302,9 @@ export async function updateQuestion(req: Request, res: Response) {
             default:
                 updatedQuestion = { data: { msg: "Something went wrong" } }
         }
-        console.log(updatedQuestion)
-        res.send(updatedQuestion)
+        return res.send(updatedQuestion)
     } catch (error) {
-        res.send(error)
+        return res.send({ success: false, data: error })
     }
 }
 
@@ -333,13 +315,17 @@ export async function deleteQuestion(req: Request, res: Response) {
             { _id: req.body.formid },
             { $pull: { questions: req.body.id } as any }
         )
-        res.send({ success: true, data: "Deleted successfully" })
+        return res.send({ success: true, data: "Deleted successfully" })
     } catch (error) {
-        res.end({ success: false, data: "You messed up.... again" })
+        return res.send({ success: false, data: "You messed up.... again" })
     }
 }
 
 export async function getMyQuestions(req: Request, res: Response) {
-    const questions = await Question.find({ userId: req.session.userId })
-    res.json(questions)
+    try {
+        const questions = await Question.find({ userId: req.session.userId })
+        return res.json(questions)
+    } catch (err) {
+        return res.send({ success: false, msg: err })
+    }
 }

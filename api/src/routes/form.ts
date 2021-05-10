@@ -2,6 +2,7 @@ import { Document, Schema } from "mongoose"
 import { Response, Request } from "express"
 import * as mongo from "../config/mongo"
 import { Form } from "../models/form"
+import { Question } from "../models/question"
 
 declare module "express-session" {
     interface Session {
@@ -13,23 +14,28 @@ declare module "express-session" {
     }
 }
 export async function getForms(req: Request, res: Response) {
-    if (req.session.role === "admin") {
-        try {
+    try {
+        if (req.session.role === "admin") {
+            //admin
             const myForms = await Form.find({ owner: req.session.userId })
-            console.log(myForms)
             res.send({ success: true, forms: myForms })
-        } catch (error) {
-            res.send(error)
+        } else {
+            //superadmin
+            const forms = await Form.find().exec()
+            res.json({ success: true, forms: forms })
         }
-    } else {
-        const forms = await Form.find().exec()
-        res.json({ success: true, forms: forms })
+    } catch (error) {
+        return res.send({ success: false, msg: error })
     }
 }
 
 export async function getForm(req: Request, res: Response) {
-    const form = await Form.findById(req.params.formid)
-    res.json({ success: true, form: form })
+    try {
+        const form = await Form.findById(req.params.formid)
+        return res.json({ success: true, form: form })
+    } catch (error) {
+        return res.send({ success: false, msg: error })
+    }
 }
 
 export async function getAdminForms(req: Request, res: Response) {
@@ -40,8 +46,7 @@ export async function getAdminForms(req: Request, res: Response) {
         })
         res.send({ success: true, forms: adminForms })
     } catch (err) {
-        console.log(err)
-        res.send({ success: false, data: "something went wrong" })
+        return res.send({ success: false, msg: err })
     }
 }
 
@@ -53,36 +58,33 @@ export async function getSuperAdminForms(req: Request, res: Response) {
         })
         res.send({ success: true, forms: superAdminForms })
     } catch (err) {
-        console.log(err)
-        res.send({ success: false, data: "something went wrong" })
+        return res.send({ success: false, msg: err })
     }
 }
 
 export async function addForm(req: any, res: Response) {
-    let newForm: any
-    newForm = new Form({
-        title: req.body.title,
-        owner: req.session.userId,
-        color_theme: req.body.color_theme,
-        description: req.body.description,
-        isActive: req.body.isActive,
-        isEditable: req.body.isEditable,
-        multipleResponses: req.multipleResponses,
-    })
-    console.log("POST REQUEST WAS MADE")
-    //newForm = new Form(req.body);
     try {
+        let newForm: any
+        newForm = new Form({
+            title: req.body.title,
+            owner: req.session.userId,
+            color_theme: req.body.color_theme,
+            description: req.body.description,
+            isActive: req.body.isActive,
+            isEditable: req.body.isEditable,
+            multipleResponses: req.multipleResponses,
+        })
         const form = await newForm.save()
         console.log("Form added!")
-        res.json(form)
+        return res.json(form)
     } catch (error) {
-        res.send(error)
+        return res.send(error)
     }
 }
 
 export async function updateForm(req: Request, res: Response) {
-    let updatedForm
     try {
+        let updatedForm: any
         updatedForm = await Form.findOneAndUpdate(
             { _id: req.body._id },
             {
@@ -90,51 +92,35 @@ export async function updateForm(req: Request, res: Response) {
             },
             { new: true }
         )
-        res.send(updatedForm)
+        return res.send(updatedForm)
     } catch (error) {
-        res.send(error)
+        return res.send({ success: false, msg: error })
     }
 }
 
 //!DELETE ALL THE QUESTIONS OF THIS FORM AS WELL
 export async function deleteForm(req: Request, res: Response) {
-    let deletedForm
-
     try {
-        deletedForm = await Form.findOneAndDelete({ _id: req.body.id })
-        res.send(deletedForm)
+        console.log(req.body.id)
+
+        let deletedques: any
+        deletedques = await Question.deleteMany({
+            formid: req.body.id,
+        })
+        let deletedForm: any
+        deletedForm = await Form.findOneAndDelete({
+            _id: req.body.id,
+        })
+        return res.send(deletedForm)
     } catch (error) {
-        res.send(error)
-        console.error(error)
+        return res.send({ success: false, msg: error })
     }
 }
 
-export async function getMyForms(req: Request, res: Response) {
-    // console.log(req.session.userId);
-}
-
-// export async function getMyForm(req: Request, res: Response) {
-//
-//     // console.log(req.session.userId);
-
-//     let myForm: any
-//     try {
-//         myForm = await Form.find({
-//             owner: req.session.userId,
-//             _id: req.params.formid,
-//         })
-//         console.log(myForm)
-
-//         res.send(myForm)
-//     } catch (error) {
-//         res.send(error)
-//     }
-// }
-
 //Routes for closing-form  ---> to be implemented using toggle button in formlist correspomding to form
 export async function closeForm(req: Request, res: Response) {
-    let formId = req.body.formId
     try {
+        let formId = req.body.formId
         let updatedForm = await Form.findOneAndUpdate(
             { _id: formId },
             {
@@ -142,19 +128,17 @@ export async function closeForm(req: Request, res: Response) {
             },
             { new: true }
         )
-        // console.log(formIsActive)
-        console.log(updatedForm)
         if (updatedForm)
-            res.send({
+            return res.send({
                 success: true,
                 data: "Form Status changed to " + updatedForm.isActive,
             })
         else
-            res.send({
+            return res.send({
                 success: false,
                 data: "Form Status isn't updated please try again",
             })
     } catch (err) {
-        res.send({ success: false, data: err })
+        return res.send({ success: false, data: err })
     }
 }

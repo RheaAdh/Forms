@@ -13,6 +13,7 @@ import {
     adminForgotPassword,
     adminResetPassword,
 } from "./routes/adminuser"
+
 //connect DB
 import { store, connectMongo } from "./config/mongo"
 connectMongo()
@@ -56,9 +57,7 @@ app.post("/resetpassword/:token", adminResetPassword)
 // PASSPORT CONFIG --> FOR USER LEVEL AUTH
 app.use(passport.initialize())
 app.use(passport.session())
-app.use("/user", Router)
-app.use("/user/logout", userLogout)
-app.use("/user/getuser", getUser)
+
 
 //ADMIN
 app.use("/api", router)

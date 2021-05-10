@@ -121,13 +121,13 @@ export const getResponsesByForm = async (req: Request, res: Response) => {
     }
 }
 export const getFormsByCreator = async (req: Request, res: Response) => {
-    let creatorId = req.params.creatorId
-    let usersForms: any
     try {
+        let creatorId = req.params.creatorId
+        let usersForms: any
         usersForms = await Form.find({ owner: creatorId })
         res.send(usersForms)
     } catch (error) {
-        res.send("error")
+        return res.send({ sucess: false, msg: error })
     }
 }
 
@@ -214,25 +214,23 @@ export const downloadResponse = async (req: Request, res: Response) => {
         }
     } else {
         console.log("Invalid form id")
-        res.send({ success: false, data: "InValid Form Id" })
+        return res.send({ success: false, data: "InValid Form Id" })
     }
 }
 export const getResponsesByIndividualByFormId = async (
     req: Request,
     res: Response
 ) => {
-    let formId = req.params.formId
-    let userId = req.params.userId
-    console.log(userId)
-    console.log(formId)
     try {
+        let formId = req.params.formId
+        let userId = req.params.userId
         let formIndividualResponses = await FormResponse.find({
             formId: formId,
             userid: userId,
         })
-        res.send(formIndividualResponses)
+        return res.send(formIndividualResponses)
     } catch (error) {
-        res.send("error")
+        return res.send({ success: false, data: error })
     }
 }
 
@@ -240,9 +238,9 @@ export const getResponsesByQuestionsByForm = async (
     req: Request,
     res: Response
 ) => {
-    let quesId = req.params.questionId
-    let formResponses: any
     try {
+        let quesId = req.params.questionId
+        let formResponses: any
         formResponses = await FormResponse.find({
             responses: { $elemMatch: { questionId: quesId } },
         }).select("responses")
@@ -353,8 +351,8 @@ export const getResponsesByQuestionsByForm = async (
                 }
             }
         }
-        res.send(ans)
+        return res.send(ans)
     } catch (error) {
-        res.send(error + "uhhhh")
+        return res.send({ success: false, data: error })
     }
 }
