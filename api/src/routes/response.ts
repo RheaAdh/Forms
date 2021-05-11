@@ -2,6 +2,7 @@ import e, { Response, Request, response } from "express"
 import mongoose, { Schema, Document } from "mongoose"
 import FormResponse from "../models/response"
 import { Form } from "../models/form"
+import { resolve } from "path"
 
 //Download csv
 const fileSystem = require("fs")
@@ -229,7 +230,30 @@ export const getResponsesByIndividualByFormId = async (
         return res.send({ success: false, data: error })
     }
 }
+export const getResponseIdByFormFilled = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        let formId = req.params.formId
+        console.log(formId)
+        let responses: any
+        responses = await FormResponse.find({
+            formId: formId,
+        })
+        let ans: any = [{}]
+        for (let i = 0; i < responses.length; i++) {
+            ans.push({
+                responseid: responses[i]._id,
+                username: responses[i].username,
+            })
+        }
 
+        return res.send(ans)
+    } catch (error) {
+        return res.send({ success: false, data: error })
+    }
+}
 export const getResponsesByQuestionsByForm = async (
     req: Request,
     res: Response
@@ -240,11 +264,10 @@ export const getResponsesByQuestionsByForm = async (
         formResponses = await FormResponse.find({
             responses: { $elemMatch: { questionId: quesId } },
         }).select("responses")
-        console.log(formResponses[0]);
-        
+        console.log(formResponses[0])
+
         let ans: any = []
 
-        
         for (let i = 0; i < formResponses.length; i++) {
             for (let j = 0; j < formResponses[i].responses.length; j++) {
                 if (formResponses[i].responses[j].questionId == quesId) {

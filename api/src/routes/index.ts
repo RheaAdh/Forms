@@ -27,10 +27,9 @@ import {
     downloadResponse,
     getResponsesByIndividualByFormId,
     getResponsesByQuestionsByForm,
+    getResponseIdByFormFilled,
 } from "./response"
 const router = express.Router()
-
-
 
 ///////////////////////ADMIN AND SUPERADMIN/////////////////////////////////
 router.get("/getforms", isValidAdmin, getForms)
@@ -51,11 +50,14 @@ router.get(
 )
 
 router.get("/resbyformid/:formId", isValidAdmin, getResponsesByForm)
-
-
-
+router.get(
+    "/responsesidbyformfilled/:formId",
+    isValidAdmin,
+    getResponseIdByFormFilled
+)
 
 ///////////////////////////SUPERADMIN////////////////////////////////
+
 router.get("/getadminforms", isValidSuperAdmin, getAdminForms)
 router.get("/getsuperadminforms", isValidSuperAdmin, getSuperAdminForms)
 router.get("/formsbycreator/:creatorId", isValidSuperAdmin, getFormsByCreator)
@@ -72,7 +74,6 @@ router.get(
     getResponsesByQuestionsByForm
 )
 
-
 ///////////////////////////ALL///////////////////////////////
 router.get("/getquestions", getQuestions)
 router.get("/getquestion/:qid", getQuestion)
@@ -80,7 +81,5 @@ router.get("/getquestionsbyformid/:formid", getQuestionsByFormid)
 router.post("/submitresponse", submitResponse)
 //Covert to .csv and download route
 router.get("/download/:formid", downloadResponse)
-
-
 
 export default router

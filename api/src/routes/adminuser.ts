@@ -154,6 +154,7 @@ export async function isValidSuperAdmin(
     next: NextFunction
 ) {
     //
+
     if (req.session.isAuth) {
         if (req.session.role == "superadmin") {
             next()

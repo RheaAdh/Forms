@@ -58,7 +58,6 @@ app.post("/resetpassword/:token", adminResetPassword)
 app.use(passport.initialize())
 app.use(passport.session())
 
-
 //ADMIN
 app.use("/api", router)
 
