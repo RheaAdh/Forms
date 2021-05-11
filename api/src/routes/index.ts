@@ -73,14 +73,12 @@ router.get(
     getResponsesByQuestionsByForm
 )
 
-///////////////////////////ALL///////////////////////////////
-router.get("/getquestions", getQuestions)
-router.get("/getquestion/:qid", getQuestion)
-router.get("/getquestionsbyformid/:formid", getQuestionsByFormid)
-router.post("/submitresponse", submitResponse)
-
 ///////////////////////////USER,ADMIN AND SUPERADMIN///////////////////////////////
 router.get("/getform/:formid", checkAuthentication, getForm)
+router.get("/getquestions",checkAuthentication, getQuestions)
+router.get("/getquestion/:qid",checkAuthentication, getQuestion)
+router.get("/getquestionsbyformid/:formid",checkAuthentication, getQuestionsByFormid)
+router.post("/submitresponse",checkAuthentication, submitResponse)
 
 //Covert to .csv and download route
 router.get("/download/:formid", downloadResponse)
