@@ -1,6 +1,5 @@
 import e, { Response, Request, response } from "express"
-// import { Schema } from "mongoose"
-import * as mongo from "../config/mongo"
+import mongoose, { Schema, Document } from "mongoose"
 import FormResponse from "../models/response"
 import { Form } from "../models/form"
 
@@ -8,9 +7,6 @@ import { Form } from "../models/form"
 const fileSystem = require("fs")
 const fastcsv = require("fast-csv")
 const download = require("download")
-import { User } from "../models/user"
-import { Question } from "../models/question"
-import mongoose, { Schema, Document } from "mongoose"
 
 declare module "express-session" {
     interface Session {
