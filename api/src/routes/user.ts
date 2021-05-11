@@ -118,7 +118,7 @@ export async function getUser(req: any, res: any) {
 
 //MIDDLEWARE FOR CHECKING USER LOGIN
 export async function checkAuthentication(req: any, res: any, next: any) {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() || req.session.isAuth) {
         console.log("Allowed to access")
         next()
     } else {

@@ -13,7 +13,6 @@ Frontend
 * link to register in login page and vice versa
 
 * dropdown isnt working
-* When Logged in with user response page is not showing up properly
 * We have close route a toggle botten in formlist for closing form will be needed(send formId and isActive (true for open and false wants to close form) in request)
 * Need Toggle button for close/open form in formlist corresponding to all formlist
 * Form description is not visible in response page (should be there below title)

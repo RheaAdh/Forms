@@ -29,16 +29,15 @@ import {
     getResponsesByQuestionsByForm,
     getResponseIdByFormFilled,
 } from "./response"
+import {checkAuthentication} from "./user"
 const router = express.Router()
 
 ///////////////////////ADMIN AND SUPERADMIN/////////////////////////////////
 router.get("/getforms", isValidAdmin, getForms)
-router.get("/getform/:formid", isValidAdmin, getForm)
 router.put("/updateform", isValidAdmin, updateForm)
 router.post("/addform", isValidAdmin, addForm)
 router.delete("/deleteform", isValidAdmin, deleteForm)
 router.put("/formclose/:formId", isValidAdmin, closeForm)
-
 router.get("/getmyquestions", isValidAdmin, getMyQuestions)
 router.post("/addquestion", isValidAdmin, addQuestion)
 router.put("/updatequestion", isValidAdmin, updateQuestion)
@@ -79,6 +78,10 @@ router.get("/getquestions", getQuestions)
 router.get("/getquestion/:qid", getQuestion)
 router.get("/getquestionsbyformid/:formid", getQuestionsByFormid)
 router.post("/submitresponse", submitResponse)
+
+///////////////////////////USER,ADMIN AND SUPERADMIN///////////////////////////////
+router.get("/getform/:formid", checkAuthentication, getForm)
+
 //Covert to .csv and download route
 router.get("/download/:formid", downloadResponse)
 
