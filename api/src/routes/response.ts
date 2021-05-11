@@ -1,16 +1,13 @@
-import { Response, Request, response } from "express"
-// import { Schema } from "mongoose"
-import * as mongo from "../config/mongo"
+import e, { Response, Request, response } from "express"
+import mongoose, { Schema, Document } from "mongoose"
 import FormResponse from "../models/response"
 import { Form } from "../models/form"
+import { resolve } from "path"
 
 //Download csv
 const fileSystem = require("fs")
 const fastcsv = require("fast-csv")
 const download = require("download")
-import { User } from "../models/user"
-import { Question } from "../models/question"
-import mongoose, { Schema, Document } from "mongoose"
 
 declare module "express-session" {
     interface Session {
@@ -22,50 +19,94 @@ declare module "express-session" {
     }
 }
 export const submitResponse = async (req: Request, res: Response) => {
-    await mongo.connectMongo()
     console.log("POST REQUEST WAS MADE for submit response")
     let { username, userid, formId, responses } = req.body
-    console.log(responses)
-    //if form is already submitted by user then updating
-    let resp = await FormResponse.findOneAndUpdate(
-        {
+    //Checking if form isActive
+    let form: any = await Form.findOne({ _id: formId })
+    console.log(form)
+    if (form.isActive) {
+        console.log("Inside Active")
+        let response = await FormResponse.findOne({
             userid: req.session.userId,
             formId,
-        },
-        {
-            $set: {
-                username,
-                userid,
-                formId,
-                responses,
-            },
-        }
-    )
-    console.log("RESP is ")
-    console.log(resp)
-    //If not submitted then saving as new response
-    if (!resp) {
-        try {
-            const formResponse = new FormResponse({
-                username,
-                userid,
-                formId,
-                responses,
+        })
+        //When form has no submission
+        if (!response) {
+            console.log("No resp")
+            try {
+                const formResponse = new FormResponse({
+                    username,
+                    userid,
+                    formId,
+                    responses,
+                })
+                await formResponse.save()
+                console.log("Response added!")
+                res.send({ success: true, data: "Response submitted" })
+            } catch (error) {
+                res.send({ success: false, data: error })
+            }
+        } else if (form.isEditable) {
+            //When form has a submission and editing is allowed
+            try {
+                let resp = await FormResponse.findOneAndUpdate(
+                    {
+                        userid: req.session.userId,
+                        formId,
+                    },
+                    {
+                        $set: {
+                            username,
+                            userid,
+                            formId,
+                            responses,
+                        },
+                    }
+                )
+                console.log("RESP is ")
+                console.log(resp)
+                console.log("Response Updated when editing was allowed")
+                res.send({ success: true, data: "Response Updated" })
+            } catch (err) {
+                res.send({ success: false, data: err })
+            }
+        } //when for has submission but editing is not allowed but multiple response by single user is allowed
+        else if (form.multipleResponses) {
+            try {
+                const formResponse = new FormResponse({
+                    username,
+                    userid,
+                    formId,
+                    responses,
+                })
+                await formResponse.save()
+                console.log("Response added!")
+                console.log("Submitting another Response by the user")
+                res.send({ success: true, data: "Response submitted " })
+            } catch (error) {
+                res.send({ success: false, data: error })
+            }
+        } //when form has submission but neither edit is allowed nor multiple responses
+        else {
+            console.log(
+                "Form is noneditable and multiple responses are also not allowed"
+            )
+            res.send({
+                success: false,
+                data:
+                    "Form is noneditable and multiple responses are also not allowed",
             })
-            await formResponse.save()
-            console.log("Response added!")
-            res.send({ success: true, data: "Response submitted" })
-        } catch (error) {
-            res.send({ success: false, data: error })
         }
     } else {
-        console.log("Response Updated")
-        res.send({ success: true, data: "Response Updated" })
+        console.log("Form is not active")
+        res.send({
+            success: false,
+            data: "Form is closed, Please try contacting Admin",
+        })
     }
 }
 
 export const getResponsesByForm = async (req: Request, res: Response) => {
-    await mongo.connectMongo()
     let formId = req.params.formId
     try {
         let formResponses = await FormResponse.findOne({
@@ -77,21 +118,20 @@ export const getResponsesByForm = async (req: Request, res: Response) => {
     }
 }
 export const getFormsByCreator = async (req: Request, res: Response) => {
-    await mongo.connectMongo()
-    let creatorId = req.params.creatorId
-    let usersForms: any
     try {
+        let creatorId = req.params.creatorId
+        let usersForms: any
         usersForms = await Form.find({ owner: creatorId })
         res.send(usersForms)
     } catch (error) {
-        res.send("error")
+        return res.send({ sucess: false, msg: error })
     }
 }
 
 //Coverting Response to .csv and then downloading
 
 export const downloadResponse = async (req: Request, res: Response) => {
-    // await mongo.connectMongo()
+    //
     let formId = req.params.formid
     console.log(req.params.formid)
 
@@ -171,46 +211,170 @@ export const downloadResponse = async (req: Request, res: Response) => {
         }
     } else {
         console.log("Invalid form id")
-        res.send({ success: false, data: "InValid Form Id" })
+        return res.send({ success: false, data: "InValid Form Id" })
     }
 }
 
-export const getResponsesByIndividualByFormId = async (
+export const getResponsesByResIdByFormId = async (
     req: Request,
     res: Response
 ) => {
-    await mongo.connectMongo()
-    let formId = req.params.formId
-    let userId = req.params.userId
-    console.log(userId)
-    console.log(formId)
     try {
-        let formIndividualResponses = await FormResponse.find({
-            formId: formId,
-            userid: userId,
+        let responseid = req.params.responseid
+        let formIndividualResponses = await FormResponse.findOne({
+            _id: responseid,
         })
-        res.send(formIndividualResponses)
+        return res.send({ success: true, data: formIndividualResponses })
     } catch (error) {
-        res.send("error")
+        return res.send({ success: false, data: error })
     }
 }
+export const getResponseIdByFormFilled = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        let formId = req.params.formId
+        console.log(formId)
+        let responses: any
+        responses = await FormResponse.find({
+            formId: formId,
+        })
+        console.log(responses)
+        let ans: any = []
+        for (let i = 0; i < responses.length; i++) {
+            ans.push({
+                responseid: responses[i]._id,
+                username: responses[i].username,
+            })
+        }
 
-//some issue with query its returning all forms i only want by questionid
+        return res.send({ success: true, data: ans })
+    } catch (error) {
+        return res.send({ success: false, data: error })
+    }
+}
 export const getResponsesByQuestionsByForm = async (
     req: Request,
     res: Response
 ) => {
-    await mongo.connectMongo()
-    let quesId = req.params.questionId
-    let formResponses: any
     try {
+        let quesId = req.params.questionId
+        let formResponses: any
         formResponses = await FormResponse.find({
-            // "responses.questionId":quesId
-            // responses: { $elemMatch: { questionId: quesId } },
             responses: { $elemMatch: { questionId: quesId } },
-        })
-        res.send(formResponses)
+        }).select("responses")
+        console.log(formResponses[0])
+
+        let ans: any = []
+
+        for (let i = 0; i < formResponses.length; i++) {
+            for (let j = 0; j < formResponses[i].responses.length; j++) {
+                if (formResponses[i].responses[j].questionId == quesId) {
+                    let answerType = formResponses[i].responses[j].answerType
+                    console.log(answerType)
+                    switch (answerType) {
+                        case "paragraph-answer":
+                            if (formResponses[i].responses[j].paragraphText) {
+                                ans.push(
+                                    formResponses[i].responses[j].paragraphText
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "short-answer":
+                            if (formResponses[i].responses[j].shortText) {
+                                ans.push(
+                                    formResponses[i].responses[j].shortText
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "email-answer":
+                            if (formResponses[i].responses[j].emailAnswer) {
+                                ans.push(
+                                    formResponses[i].responses[j].emailAnswer
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "mcq-answer":
+                            if (formResponses[i].responses[j].selectedOption) {
+                                ans.push(
+                                    formResponses[i].responses[j].selectedOption
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "checkbox-answer":
+                            if (
+                                formResponses[i].responses[j].multipleSelected
+                            ) {
+                                ans.push(
+                                    formResponses[i].responses[j]
+                                        .multipleSelected
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "dropdown-answer":
+                            if (formResponses[i].responses[j].selectedOption) {
+                                ans.push(
+                                    formResponses[i].responses[j].selectedOption
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "linearscale-answer":
+                            if (formResponses[i].responses[j].selectedOption) {
+                                ans.push(
+                                    formResponses[i].responses[j].selectedOption
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "multiplechoicegrid-answer":
+                            if (
+                                formResponses[i].responses[j]
+                                    .selectedOptionsGrid
+                            ) {
+                                ans.push(
+                                    formResponses[i].responses[j]
+                                        .selectedOptionsGrid
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "multiplechoicegrid-answer":
+                            if (
+                                formResponses[i].responses[j]
+                                    .selectedOptionsGrid
+                            ) {
+                                ans.push(
+                                    formResponses[i].responses[j]
+                                        .selectedOptionsGrid
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "date-answer":
+                            if (formResponses[i].responses[j].selectedDate) {
+                                ans.push(
+                                    formResponses[i].responses[j].selectedDate
+                                )
+                            } else ans.push("(null)")
+                            break
+                        case "time-answer":
+                            if (
+                                formResponses[i].responses[j].timeHours &&
+                                formResponses[i].responses[j].timeMinutes
+                            ) {
+                                ans.push({
+                                    timeHours:
+                                        formResponses[i].responses[j].timeHours,
+                                    timeMinutes:
+                                        formResponses[i].responses[j]
+                                            .timeMinutes,
+                                })
+                            } else ans.push("(null)")
+                            break
+                    }
+                }
+            }
+        }
+        return res.send(ans)
     } catch (error) {
-        res.send(error + "uhhhh")
+        return res.send({ success: false, data: error })
     }
 }

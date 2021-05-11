@@ -16,12 +16,19 @@ function App() {
         <div className="App">
             <Route path="/" exact render={() => <DashboardPage />} />
             <Route path="/editform/:formid" render={() => <EditFormPage />} />
-            <Route path="/form/:formid" render={() => <DisplayForm />} />
+            <Route
+                path="/form/:formid"
+                render={() => <DisplayForm readonly={false} />}
+            />
             <Route path="/dashboard" render={() => <DashboardPage />} />
             <Route path="/adminlogin" render={() => <AdminLoginPage />} />
             <Route path="/login/:formid" render={() => <LoginPage />} />
             <Route exact path="/login" render={() => <LoginPage />} />
             <Route path="/register" render={() => <RegisterPage />} />
+            <Route
+                path="/responsesbyusers/:formid"
+                render={() => <DisplayForm readonly={true} />}
+            />
             <Route
                 path="/resetpassword/:token"
                 render={() => <ResetPassword />}

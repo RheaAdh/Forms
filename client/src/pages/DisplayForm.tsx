@@ -3,13 +3,19 @@ import { Redirect, useParams } from "react-router-dom"
 import QuestionResponse from "../components/QuestionResponse"
 import { useAuth } from "../context/AuthContext"
 
-const DisplayForm = () => {
+interface props {
+    readonly: boolean
+}
+
+const DisplayForm: React.FC<props> = ({ readonly }) => {
     const auth = useAuth()
 
     const [form, setForm] = useState<any>(null)
     const [responses, setResponses] = useState<any[]>([])
     const [questions, setQuestions] = useState<any[]>([])
     const [canSubmit, setCanSubmit] = useState<boolean[]>([])
+    const [users, setUsers] = useState<any[]>([])
+    const [currentUser, setCurrentUser] = useState<any>()
     const [submitError, setSubmitError] = useState<string | null>(null)
     const [thankYou, setThankYou] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(true)
@@ -47,25 +53,83 @@ const DisplayForm = () => {
             })
                 .then((resp) => resp.json())
                 .then((data) => {
-                    data["ques"].map((q: any, idx: Number) => {
-                        setResponses((prevResponses) => [
-                            ...prevResponses,
-                            data["prevResponse"]
-                                ? data["prevResponse"].responses[idx as number]
-                                : {
-                                      answerType: q["question-type"],
-                                      questionId: q["_id"],
-                                  },
-                        ])
-
-                        setCanSubmit((prevState) => [
-                            ...prevState,
-                            !q["required"],
-                        ])
-                    })
+                    // if not readonly, check for previous responses of current user
+                    // and set accordingly
+                    if (!readonly)
+                        data["ques"].map((q: any, idx: Number) => {
+                            setResponses((prevResponses) => [
+                                ...prevResponses,
+                                data["prevResponse"]
+                                    ? data["prevResponse"].responses[
+                                          idx as number
+                                      ]
+                                    : {
+                                          answerType: q["question-type"],
+                                          questionId: q["_id"],
+                                      },
+                            ])
+                            setCanSubmit((prevState) => [
+                                ...prevState,
+                                !q["required"],
+                            ])
+                        })
                     setQuestions(data["ques"])
                 })
     }, [form])
+
+    useEffect(() => {
+        // if form exists and page is readonly, get list of ALL users who have filled the form
+        if (form && readonly)
+            fetch(
+                `http://localhost:7000/api/responsesidbyformfilled/${formid}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-type": "application/json",
+                    },
+                    credentials: "include",
+                }
+            )
+                .then((resp) => {
+                    //console.log(resp)
+                    return resp.json()
+                })
+                .catch((err) => console.log(err))
+                .then((data) => {
+                    console.log(data)
+                    if (data.success) {
+                        setUsers(data.data)
+                        setCurrentUser(data.data[0])
+                    } else {
+                        console.log(data.data)
+                    }
+                })
+    }, [form])
+
+    useEffect(() => {
+        if (currentUser)
+            fetch(
+                `http://localhost:7000/api/resbyresponseid/${currentUser.responseid}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-type": "application/json",
+                    },
+                    credentials: "include",
+                }
+            )
+                .then((resp) => resp.json())
+                .catch((err) => console.log(err))
+                .then((data) => {
+                    console.log(data)
+                    if (data.success) {
+                        setResponses(data.data.responses)
+                    } else {
+                        console.log(data.data)
+                    }
+                })
+    }, [currentUser])
+
     const submitStatus = (index: any, status: boolean) => {
         let s = canSubmit
         s[index] = status
@@ -121,7 +185,7 @@ const DisplayForm = () => {
     if (auth?.currentUser === null) {
         return <Redirect to={`/login/${formid}`} />
     }
-
+    console.log(responses)
     return thankYou ? (
         <div>
             <b>Your response has been submitted</b>
@@ -143,10 +207,30 @@ const DisplayForm = () => {
                 overflowY: "auto",
             }}
         >
+            <div>
+                {users.length ? (
+                    <select defaultValue={users[0].username}>
+                        {users.map((user: any, i: Number) => {
+                            return (
+                                <option
+                                    value={user.username}
+                                    onClick={(e) => {
+                                        setCurrentUser(user)
+                                    }}
+                                >
+                                    {user.username}
+                                </option>
+                            )
+                        })}
+                    </select>
+                ) : null}
+            </div>
             <h2>{form?.title}</h2>
+            <p>{form?.description}</p>
             {questions.map((q: any, idx: Number) => {
                 return (
                     <QuestionResponse
+                        readonly={readonly}
                         question={q}
                         prevResponse={responses[idx as number]}
                         handleChange={handleChange}
@@ -158,7 +242,7 @@ const DisplayForm = () => {
             })}
             <b style={{ color: "red" }}>{submitError}</b>
             <br />
-            <button onClick={handleSubmit}>Submit</button>
+            {readonly ? null : <button onClick={handleSubmit}>Submit</button>}
         </div>
     )
 }

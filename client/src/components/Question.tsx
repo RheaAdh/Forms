@@ -464,7 +464,6 @@ const Question: React.FC<props> = ({ question, deleteQuestion, index }) => {
 
             {types[type]}
             <button onClick={handleClick}>Delete Question</button>
-            {console.log(question["question_text"])}
         </div>
     )
 }

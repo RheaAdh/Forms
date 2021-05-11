@@ -1,0 +1,25 @@
+Frontend
+
+* make frontend look decent
+* other iecse designs can do similar https://www.figma.com/file/v9QEhA9OnSR5luEL64nHJu/IECSE-Main-website?node-id=0%3A1
+
+* Response page and implementation corresponding to different response routes is left
+
+*Admin dashboard is left
+    *view responses of admin only formlist
+    *create forms/ view only admin forms
+
+* 404 page 
+* link to register in login page and vice versa
+
+* dropdown isnt working
+* We have close route a toggle botten in formlist for closing form will be needed(send formId and isActive (true for open and false wants to close form) in request)
+* Need Toggle button for close/open form in formlist corresponding to all formlist
+* Form description is not visible in response page (should be there below title)
+* Also when both edit and multipleResponse is false then just one (i.e.very first) response is just possible or valid, but if a user wants to fill again it should show message something similar to what is comming from backend in that case
+
+
+Backend
+* upload/download files,images,responses as csv
+* sort/filter responses 
+* testing

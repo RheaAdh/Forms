@@ -10,7 +10,11 @@ export interface FormDoc extends Document {
             question_text: string
         }
     ]
+    description: string
     owner: any
+    closes: Date,
+    isEditable: boolean,
+    isActive: boolean
 }
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
 const form: Schema = new Schema(
@@ -20,7 +24,11 @@ const form: Schema = new Schema(
         //array of question ids
         questions: [{ type: Schema.Types.ObjectId, ref: "question" }],
         owner: { type: Schema.Types.ObjectId, ref: "User" },
+        description: { type : String},
         closes: Date,
+        isEditable:{type: Boolean, default:true},
+        isActive:{type: Boolean, default:true},
+        multipleResponses:{type: Boolean, default:false}
     },
     {
         timestamps: true,

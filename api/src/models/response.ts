@@ -29,17 +29,20 @@ const response: Schema = new Schema({
     responses: [
         {
             questionId: { type: Schema.Types.ObjectId, ref: "question" },
-            answerType: String,
+            answerType: { type: String, required: true },
             shortText: { type: String, max: 100, min: 1 },
             paragraphText: { type: String, max: 500, min: 50 },
             emailText: { type: String },
-            selectedOption: String,
-            multipleSelected: [String],
-            selectedOptionsGrid: [{ row: String, col: String, _id: false }],
-            selectedDate: Date,
+            selectedOption: { type: String },
+            multipleSelected: { type: [String], default: undefined },
+            selectedOptionsGrid: {
+                type: [{ row: String, col: String }],
+                default: undefined,
+            },
+            selectedDate: { type: Date },
             timeHours: { type: Number, min: 1, max: 23 },
             timeMinutes: { type: Number, min: 0, max: 59 },
-            emailAnswer: String,
+            emailAnswer: { type: String },
         },
     ],
 })

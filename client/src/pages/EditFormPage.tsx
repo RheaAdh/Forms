@@ -7,6 +7,10 @@ import useFormState from "../hooks/useFormState"
 
 import { useAuth } from "../context/AuthContext"
 
+import DatePicker from "react-datepicker"
+
+import "react-datepicker/dist/react-datepicker.css"
+
 import "../styles/EditFormPage.css"
 
 //TODO:
@@ -26,10 +30,7 @@ const EditFormPage: React.FC = () => {
     const [showEditTitle, setShowEditTitle] = useState<boolean>(false)
 
     // date and time stored in db format, not input element format
-
-    const [closeDate, setCloseDate] = useState<string | undefined>(undefined)
-
-    const [closeTime, setCloseTime] = useState<string | null>(null)
+    const [date, setDate] = useState<Date>(new Date())
 
     const [title, handleTitle, resetTitle, setTitle] = useFormState("")
 
@@ -38,6 +39,12 @@ const EditFormPage: React.FC = () => {
     const [colour, handleColour, resetColour, setColour] = useFormState(
         "#FFFFFF"
     )
+
+    const [desc, handleDesc, resetDesc, setDesc] = useFormState("")
+
+    const [edit, setEdit] = useState(false)
+
+    const [multi, setMulti] = useState(false)
 
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -66,12 +73,12 @@ const EditFormPage: React.FC = () => {
                     setForm(data.form)
                     setTitle(data.form.title)
                     setColour(data.form.color_theme)
-                    setCloseTime(
-                        new Date(data.form["closes"]).toLocaleTimeString()
-                    )
-                    setCloseDate(
-                        new Date(data.form["closes"]).toLocaleDateString()
-                    )
+                    setDesc(data.form.description)
+                    setEdit(data.form.isEditable)
+                    setMulti(data.form.multipleResponses)
+                    if (data.form.closes) {
+                        setDate(new Date(data.form.closes))
+                    }
                 } else {
                     console.log("failed to fetch form")
                 }
@@ -110,12 +117,7 @@ const EditFormPage: React.FC = () => {
             })
     }
 
-    const updateForm = (time?: string, date?: string) => {
-        let d = null
-        if (time && date) {
-            d = Date.parse("5/5/2012" + " " + time)
-            d = new Date(d)
-        }
+    const updateForm = () => {
         fetch("http://localhost:7000/api/updateform", {
             method: "PUT",
             headers: {
@@ -125,7 +127,10 @@ const EditFormPage: React.FC = () => {
             body: JSON.stringify({
                 ...form,
                 color_theme: colour,
-                closes: d ? d : Date.parse(closeDate + " " + closeTime),
+                description: desc,
+                isEditable: edit,
+                multipleResponses: multi,
+                closes: date,
             }),
         })
             .then((response) => response.json())
@@ -137,20 +142,16 @@ const EditFormPage: React.FC = () => {
             })
     }
 
-    useEffect(updateForm, [colour])
+    useEffect(updateForm, [colour, desc, edit, multi, date])
 
     const handleTitleClick = () => {
         setShowEditTitle(true)
     }
 
-    const formatTimeToDb = (time: string) => {
-        return time + ":00"
-    }
-
     if (loading) {
         return <div>Loading</div>
     }
-
+    //console.log(form?.closes)
     return form ? (
         auth?.currentUser &&
         (auth?.currentUser.role === "admin" ||
@@ -172,18 +173,61 @@ const EditFormPage: React.FC = () => {
                         <h1>{form.title}</h1>
                     </div>
                 )}
-                <h4>Closing date :</h4>
-                <input type="date" defaultValue={"2021-04-21"} />
+                <h3>Description:</h3>
+                <textarea
+                    value={desc}
+                    onChange={handleDesc}
+                    rows={5}
+                    cols={80}
+                    className="description"
+                ></textarea>
 
-                <h4>Closing Time :</h4>
-                <input type="time" defaultValue={closeTime as string} />
-                <h2>Colour theme: </h2>
+                <h4>Closing date :</h4>
+                <DatePicker
+                    selected={date}
+                    showTimeSelect
+                    dateFormat="MMMM d, yyyy h:mm aa"
+                    onChange={(date: Date) => {
+                        setDate(date)
+                        console.log(date)
+                    }}
+                />
+                <h3>Colour theme: </h3>
                 <input
                     type="color"
                     onChange={handleColour}
                     value={colour}
                 ></input>
                 <h3>{form.color_theme}</h3>
+                <h3>Description:</h3>
+                <textarea
+                    value={desc}
+                    onChange={handleDesc}
+                    rows={5}
+                    cols={80}
+                    className="description"
+                ></textarea>
+                <h4>
+                    <input
+                        type="checkbox"
+                        checked={edit}
+                        onChange={(e) => {
+                            const editVal = e.target.checked
+                            setEdit(editVal)
+                        }}
+                    ></input>
+                    Editable
+                    <input
+                        type="checkbox"
+                        checked={multi}
+                        onChange={(e) => {
+                            const multiVal = e.target.checked
+                            setMulti(multiVal)
+                        }}
+                    ></input>
+                    Multiple responses
+                </h4>
+                <h2>Questions:</h2>
                 <QuestionList formid={form._id} />
             </div>
         ) : (

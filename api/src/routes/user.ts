@@ -1,19 +1,9 @@
 import express from "express"
 const Router = express.Router()
-import mongoose from "mongoose"
-// import cors from 'cors';
 import passport from "passport"
 import { User } from "../models/user"
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy
-
-mongoose.connect(
-    `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@localhost:27017/forms`,
-    { useNewUrlParser: true, useUnifiedTopology: true },
-    async () => {
-        await console.log("Connected to DB")
-    }
-)
 
 Router.use(express.json())
 // app.use(cors({ origin: "https://localhost:3000", credentials: true }))
@@ -128,7 +118,7 @@ export async function getUser(req: any, res: any) {
 
 //MIDDLEWARE FOR CHECKING USER LOGIN
 export async function checkAuthentication(req: any, res: any, next: any) {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() || req.session.isAuth) {
         console.log("Allowed to access")
         next()
     } else {

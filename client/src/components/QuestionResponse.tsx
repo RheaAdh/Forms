@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react"
 
 interface props {
     question: any
-    handleChange: any
-    index: Number
-    submitStatus: any
+    handleChange?: any
+    index?: Number
+    submitStatus?: any
     prevResponse?: any
+    readonly: boolean
 }
 
 const QuestionResponse: React.FC<props> = ({
@@ -14,6 +15,7 @@ const QuestionResponse: React.FC<props> = ({
     handleChange,
     index,
     submitStatus,
+    readonly,
 }) => {
     const typeToIdx = [
         "short-answer",
@@ -74,6 +76,13 @@ const QuestionResponse: React.FC<props> = ({
                     ? prevResponse?.["multipleSelected"]
                     : []
             )
+        } else if (question["question-type"] === "dropdown-answer") {
+            const answer = {
+                answerType: "dropdown-answer",
+                questionId: question["_id"],
+                selectedOption: question["options"][0],
+            }
+            handleChange(index, answer)
         }
     }, [])
 
@@ -238,37 +247,77 @@ const QuestionResponse: React.FC<props> = ({
     const types = [
         //Short
         <div>
-            <input
-                type="text"
-                placeholder="Short Answer"
-                onChange={(e) => handleShortAnswer(e)}
-                defaultValue={prevResponse?.shortText}
-            ></input>
+            {readonly === true ? (
+                <input
+                    type="text"
+                    placeholder="Short Answer"
+                    defaultValue={prevResponse?.shortText}
+                    readOnly
+                ></input>
+            ) : (
+                <input
+                    type="text"
+                    placeholder="Short Answer"
+                    onChange={(e) => handleShortAnswer(e)}
+                    defaultValue={prevResponse?.shortText}
+                ></input>
+            )}
         </div>,
         //Paragraph
         <div>
-            <textarea
-                placeholder="Paragraph answer"
-                style={{ resize: "none", width: "300px", height: "100px" }}
-                onChange={(e) => handleParagraphAnswer(e)}
-                defaultValue={prevResponse?.paragraphText}
-            ></textarea>
+            {readonly === true ? (
+                <textarea
+                    placeholder="Paragraph answer"
+                    style={{ resize: "none", width: "300px", height: "100px" }}
+                    readOnly
+                    defaultValue={prevResponse?.paragraphText}
+                ></textarea>
+            ) : (
+                <textarea
+                    placeholder="Paragraph answer"
+                    style={{ resize: "none", width: "300px", height: "100px" }}
+                    onChange={(e) => handleParagraphAnswer(e)}
+                    defaultValue={prevResponse?.paragraphText}
+                ></textarea>
+            )}
         </div>,
         // MCQ
         <div>
             <form>
                 {question["options"]?.map((optionText: string, i: Number) => {
                     return (
+                        // Check if readonly or not. Then in both cases, check whether or not to add default checked attribute.
+                        // disabled attribute needed for readonly
                         <div key={optionText}>
-                            <input
-                                type="radio"
-                                name="mcq-answer"
-                                value={optionText}
-                                onClick={(e) => handleMcq(e, optionText)}
-                                defaultChecked={
-                                    prevResponse?.selectedOption === optionText
-                                }
-                            />
+                            {readonly ? (
+                                prevResponse?.selectedOption === optionText ? (
+                                    <input
+                                        disabled
+                                        type="radio"
+                                        name="mcq-answer"
+                                        defaultChecked
+                                    />
+                                ) : (
+                                    <input
+                                        disabled
+                                        type="radio"
+                                        name="mcq-answer"
+                                    />
+                                )
+                            ) : prevResponse?.selectedOption === optionText ? (
+                                <input
+                                    type="radio"
+                                    name="mcq-answer"
+                                    onClick={(e) => handleMcq(e, optionText)}
+                                    defaultChecked
+                                />
+                            ) : (
+                                <input
+                                    type="radio"
+                                    name="mcq-answer"
+                                    onClick={(e) => handleMcq(e, optionText)}
+                                />
+                            )}
                             {optionText}
                             {/* <label htmlFor={optionText}>{optionText}</label> */}
                         </div>
@@ -282,15 +331,47 @@ const QuestionResponse: React.FC<props> = ({
                 {question["options"]?.map((optionText: string, i: Number) => {
                     return (
                         <div key={optionText}>
-                            <input
-                                type="checkbox"
-                                name="checkbox-answer"
-                                value={optionText}
-                                onClick={(e) => handleCheckbox(e, optionText)}
-                                defaultChecked={prevResponse?.multipleSelected?.includes(
+                            {readonly ? (
+                                prevResponse?.multipleSelected?.includes(
                                     optionText
-                                )}
-                            />
+                                ) ? (
+                                    <input
+                                        type="checkbox"
+                                        disabled
+                                        name="checkbox-answer"
+                                        value={optionText}
+                                        defaultChecked
+                                    />
+                                ) : (
+                                    <input
+                                        type="checkbox"
+                                        disabled
+                                        name="checkbox-answer"
+                                        value={optionText}
+                                    />
+                                )
+                            ) : prevResponse?.multipleSelected?.includes(
+                                  optionText
+                              ) ? (
+                                <input
+                                    type="checkbox"
+                                    name="checkbox-answer"
+                                    value={optionText}
+                                    onClick={(e) =>
+                                        handleCheckbox(e, optionText)
+                                    }
+                                    defaultChecked
+                                />
+                            ) : (
+                                <input
+                                    type="checkbox"
+                                    name="checkbox-answer"
+                                    value={optionText}
+                                    onClick={(e) =>
+                                        handleCheckbox(e, optionText)
+                                    }
+                                />
+                            )}
                             {optionText}
                             {/* <label htmlFor={optionText}>{optionText}</label> */}
                         </div>
@@ -300,26 +381,51 @@ const QuestionResponse: React.FC<props> = ({
         </div>,
         //Dropdown
         <div>
-            <select defaultValue={prevResponse?.selectedOption}>
-                {question["options"]?.map((optionText: string, i: Number) => {
-                    return (
-                        <option
-                            value={optionText}
-                            onClick={(e) => handleDropdown(e)}
-                        >
-                            {optionText}
-                        </option>
-                    )
-                })}
-            </select>
+            {readonly ? (
+                <select defaultValue={prevResponse?.selectedOption} disabled>
+                    {question["options"]?.map(
+                        (optionText: string, i: Number) => {
+                            return (
+                                <option value={optionText}>{optionText}</option>
+                            )
+                        }
+                    )}
+                </select>
+            ) : (
+                <select defaultValue={prevResponse?.selectedOption}>
+                    {question["options"]?.map(
+                        (optionText: string, i: Number) => {
+                            return (
+                                <option
+                                    value={optionText}
+                                    onClick={(e) => handleDropdown(e)}
+                                >
+                                    {optionText}
+                                </option>
+                            )
+                        }
+                    )}
+                </select>
+            )}
         </div>,
         //Email
         <div>
-            <input
-                type="text"
-                onChange={(e) => handleEmail(e)}
-                defaultValue={prevResponse?.emailAnswer}
-            />
+            {console.log(prevResponse?.emailAnswer, "EMAIL", readonly)}
+            {readonly === true ? (
+                <input
+                    readOnly
+                    type="text"
+                    defaultValue={prevResponse?.emailAnswer}
+                ></input>
+            ) : (
+                <input
+                    type="text"
+                    onChange={(e) => handleEmail(e)}
+                    defaultValue={prevResponse?.emailAnswer}
+                >
+                    {" "}
+                </input>
+            )}
             <br />
             <b>{emailError}</b>
         </div>,
@@ -346,8 +452,34 @@ const QuestionResponse: React.FC<props> = ({
                             return mcqGrid?.find((ob) => {
                                 return ob["row"] === row && ob["col"] === col
                             }) !== undefined ? (
+                                readonly ? (
+                                    <input
+                                        type="radio"
+                                        key={col}
+                                        name={row}
+                                        style={{
+                                            display: "inline",
+                                            marginRight: "10px",
+                                        }}
+                                        disabled
+                                        defaultChecked
+                                    />
+                                ) : (
+                                    <input
+                                        onClick={() => handleMcqGrid(row, col)}
+                                        type="radio"
+                                        key={col}
+                                        name={row}
+                                        style={{
+                                            display: "inline",
+                                            marginRight: "10px",
+                                        }}
+                                        defaultChecked
+                                    />
+                                )
+                            ) : readonly ? (
                                 <input
-                                    onClick={() => handleMcqGrid(row, col)}
+                                    disabled
                                     type="radio"
                                     key={col}
                                     name={row}
@@ -355,7 +487,6 @@ const QuestionResponse: React.FC<props> = ({
                                         display: "inline",
                                         marginRight: "10px",
                                     }}
-                                    defaultChecked={true}
                                 />
                             ) : (
                                 <input
@@ -394,10 +525,36 @@ const QuestionResponse: React.FC<props> = ({
                             return mcqGrid?.find((obj) => {
                                 return obj["row"] === row && obj["col"] === col
                             }) !== undefined ? (
+                                readonly ? (
+                                    <input
+                                        disabled
+                                        type="checkbox"
+                                        key={col}
+                                        name={row}
+                                        style={{
+                                            display: "inline",
+                                            marginRight: "10px",
+                                        }}
+                                        defaultChecked
+                                    />
+                                ) : (
+                                    <input
+                                        onClick={(e) =>
+                                            handleCheckboxGrid(e, row, col)
+                                        }
+                                        type="checkbox"
+                                        key={col}
+                                        name={row}
+                                        style={{
+                                            display: "inline",
+                                            marginRight: "10px",
+                                        }}
+                                        defaultChecked={true}
+                                    />
+                                )
+                            ) : readonly ? (
                                 <input
-                                    onClick={(e) =>
-                                        handleCheckboxGrid(e, row, col)
-                                    }
+                                    readOnly
                                     type="checkbox"
                                     key={col}
                                     name={row}
@@ -405,7 +562,6 @@ const QuestionResponse: React.FC<props> = ({
                                         display: "inline",
                                         marginRight: "10px",
                                     }}
-                                    defaultChecked={true}
                                 />
                             ) : (
                                 <input
@@ -435,17 +591,36 @@ const QuestionResponse: React.FC<props> = ({
             {arr.map((num: string, idx: Number) => {
                 return (
                     <span key={String(num)}>
-                        <input
-                            onChange={(e) => handleLinearScale(e)}
-                            value={num}
-                            type="radio"
-                            name={question["_id"]}
-                            style={{
-                                marginLeft: "15px",
-                                display: "inline",
-                            }}
-                            defaultChecked={prevResponse?.selectedOption == num}
-                        />
+                        {readonly ? (
+                            <input
+                                readOnly
+                                value={num}
+                                type="radio"
+                                name={question["_id"]}
+                                style={{
+                                    marginLeft: "15px",
+                                    display: "inline",
+                                }}
+                                defaultChecked={
+                                    prevResponse?.selectedOption == num
+                                }
+                                disabled
+                            />
+                        ) : (
+                            <input
+                                onChange={(e) => handleLinearScale(e)}
+                                value={num}
+                                type="radio"
+                                name={question["_id"]}
+                                style={{
+                                    marginLeft: "15px",
+                                    display: "inline",
+                                }}
+                                defaultChecked={
+                                    prevResponse?.selectedOption == num
+                                }
+                            />
+                        )}
                         {num}
                     </span>
                 )
@@ -460,7 +635,6 @@ const QuestionResponse: React.FC<props> = ({
 
     return (
         <div>
-            {console.log(question?.["question-type"], mcqGrid, prevResponse)}
             <b>{question["question_text"]}</b>{" "}
             {question["required"] ? (
                 <span style={{ color: "red" }}>*</span>

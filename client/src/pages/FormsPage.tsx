@@ -20,7 +20,7 @@ const FormsPage: React.FC = () => {
             .catch((e) => console.log(e))
 
             .then((data: any) => {
-                console.log({ data })
+                //console.log({ data })
                 if (data.success === true) {
                     setForms(data.forms)
                 } else {

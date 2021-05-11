@@ -2,7 +2,8 @@ import { Document, Schema } from "mongoose"
 import { Response, Request } from "express"
 import * as mongo from "../config/mongo"
 import { Form } from "../models/form"
-
+import { Question } from "../models/question"
+import FormResponse from "../models/response"
 declare module "express-session" {
     interface Session {
         isAuth: boolean
@@ -13,29 +14,31 @@ declare module "express-session" {
     }
 }
 export async function getForms(req: Request, res: Response) {
-    await mongo.connectMongo()
-    if (req.session.role === "admin") {
-        try {
+    try {
+        if (req.session.role === "admin") {
+            //admin
             const myForms = await Form.find({ owner: req.session.userId })
-            console.log(myForms)
             res.send({ success: true, forms: myForms })
-        } catch (error) {
-            res.send(error)
+        } else {
+            //superadmin
+            const forms = await Form.find().exec()
+            res.json({ success: true, forms: forms })
         }
-    } else {
-        const forms = await Form.find().exec()
-        res.json({ success: true, forms: forms })
+    } catch (error) {
+        return res.send({ success: false, msg: error })
     }
 }
 
 export async function getForm(req: Request, res: Response) {
-    await mongo.connectMongo()
-    const form = await Form.findById(req.params.formid)
-    res.json({ success: true, form: form })
+    try {
+        const form = await Form.findById(req.params.formid)
+        return res.json({ success: true, form: form })
+    } catch (error) {
+        return res.send({ success: false, msg: error })
+    }
 }
 
 export async function getAdminForms(req: Request, res: Response) {
-    await mongo.connectMongo()
     try {
         let adminForms = await Form.find().populate("owner", "role").exec()
         adminForms = adminForms.filter((form) => {
@@ -43,13 +46,11 @@ export async function getAdminForms(req: Request, res: Response) {
         })
         res.send({ success: true, forms: adminForms })
     } catch (err) {
-        console.log(err)
-        res.send({ success: false, data: "something went wrong" })
+        return res.send({ success: false, msg: err })
     }
 }
 
 export async function getSuperAdminForms(req: Request, res: Response) {
-    await mongo.connectMongo()
     try {
         let superAdminForms = await Form.find().populate("owner", "role").exec()
         superAdminForms = superAdminForms.filter((form) => {
@@ -57,35 +58,33 @@ export async function getSuperAdminForms(req: Request, res: Response) {
         })
         res.send({ success: true, forms: superAdminForms })
     } catch (err) {
-        console.log(err)
-        res.send({ success: false, data: "something went wrong" })
+        return res.send({ success: false, msg: err })
     }
 }
 
 export async function addForm(req: any, res: Response) {
-    await mongo.connectMongo()
-    let newForm: any
-    newForm = new Form({
-        title: req.body.title,
-        owner: req.session.userId,
-        color_theme: req.body.color_theme,
-    })
-    console.log("POST REQUEST WAS MADE")
-    //newForm = new Form(req.body);
     try {
+        let newForm: any
+        newForm = new Form({
+            title: req.body.title,
+            owner: req.session.userId,
+            color_theme: req.body.color_theme,
+            description: req.body.description,
+            isActive: req.body.isActive,
+            isEditable: req.body.isEditable,
+            multipleResponses: req.multipleResponses,
+        })
         const form = await newForm.save()
         console.log("Form added!")
-        res.json(form)
+        return res.json(form)
     } catch (error) {
-        res.send(error)
+        return res.send(error)
     }
 }
 
 export async function updateForm(req: Request, res: Response) {
-    await mongo.connectMongo()
-
-    let updatedForm
     try {
+        let updatedForm: any
         updatedForm = await Form.findOneAndUpdate(
             { _id: req.body._id },
             {
@@ -93,44 +92,58 @@ export async function updateForm(req: Request, res: Response) {
             },
             { new: true }
         )
-        res.send(updatedForm)
+        return res.send(updatedForm)
     } catch (error) {
-        res.send(error)
+        return res.send({ success: false, msg: error })
     }
 }
 
 //!DELETE ALL THE QUESTIONS OF THIS FORM AS WELL
 export async function deleteForm(req: Request, res: Response) {
-    let deletedForm
-    await mongo.connectMongo()
     try {
-        deletedForm = await Form.findOneAndDelete({ _id: req.body.id })
-        res.send(deletedForm)
+        console.log(req.body.id)
+        let deletedResponses: any
+        deletedResponses = await FormResponse.findOneAndDelete({
+            formId: req.body.id,
+        })
+        let deletedQuestions: any
+        deletedQuestions = await Question.deleteMany({
+            formid: req.body.id,
+        })
+        console.log(deletedResponses)
+
+        let deletedForm: any
+        deletedForm = await Form.findOneAndDelete({
+            _id: req.body.id,
+        })
+        return res.send(deletedForm)
     } catch (error) {
-        res.send(error)
-        console.error(error)
+        return res.send({ success: false, msg: error })
     }
 }
 
-export async function getMyForms(req: Request, res: Response) {
-    await mongo.connectMongo()
-    // console.log(req.session.userId);
+//Routes for closing-form  ---> to be implemented using toggle button in formlist correspomding to form
+export async function closeForm(req: Request, res: Response) {
+    try {
+        let formId = req.body.formId
+        let updatedForm = await Form.findOneAndUpdate(
+            { _id: formId },
+            {
+                $set: { isActive: req.body.isActive },
+            },
+            { new: true }
+        )
+        if (updatedForm)
+            return res.send({
+                success: true,
+                data: "Form Status changed to " + updatedForm.isActive,
+            })
+        else
+            return res.send({
+                success: false,
+                data: "Form Status isn't updated please try again",
+            })
+    } catch (err) {
+        return res.send({ success: false, data: err })
+    }
 }
-
-// export async function getMyForm(req: Request, res: Response) {
-//     await mongo.connectMongo()
-//     // console.log(req.session.userId);
-
-//     let myForm: any
-//     try {
-//         myForm = await Form.find({
-//             owner: req.session.userId,
-//             _id: req.params.formid,
-//         })
-//         console.log(myForm)
-
-//         res.send(myForm)
-//     } catch (error) {
-//         res.send(error)
-//     }
-// }

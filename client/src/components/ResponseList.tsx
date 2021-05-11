@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import NewForm from "./NewForm"
 import ResponseCard from "./ResponseCard"
 
 interface props {
@@ -60,6 +61,7 @@ const ResponseList: React.FC<props> = ({ creatorRole }) => {
                     {forms.map((form) => (
                         <ResponseCard form={form} key={form._id} />
                     ))}
+                    <NewForm />
                 </div>
             )}
         </div>

@@ -55,7 +55,6 @@ const QuestionList: React.FC<props> = ({ formid }) => {
 
     return (
         <div className="list-container">
-            {console.log(questionList)}
             <div className="list-body">
                 {questionList?.map((question, index: number) => (
                     <Question

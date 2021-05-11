@@ -18,7 +18,7 @@ const NewForm = () => {
 
     const addForm = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        const form = { title: title, color_theme: "#ffffff" }
+        const form = { title: title?title:"untitled", color_theme: "#ffffff" }
 
         //UPDATE ON BACKEND
         fetch("http://localhost:7000/api/addForm", {

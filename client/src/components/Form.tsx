@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { useHistory } from "react-router-dom"
 interface props {
     form: any
@@ -6,10 +6,36 @@ interface props {
 }
 
 const Form: React.FC<props> = ({ form, deleteForm }) => {
+
+    const [active, setActive] = useState(form.isActive)
+
     let history = useHistory()
 
     const handleClick = () => {
         history.push(`/editForm/${form._id}`)
+    }
+
+    const toggleActive = (
+        event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+        ) => {
+        event.stopPropagation()
+
+        setActive(!active)
+        fetch("http://localhost:7000/api/updateform", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                ...form,
+                isActive: !form.isActive
+            }),
+        })
+            .then((response) => response.json())
+            .catch((error) => {
+                console.error("Error:", error)
+            })
     }
 
     const handleDelete = (
@@ -38,19 +64,18 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
             })
     }
 
+
     return (
-        <div onClick={handleClick}>
-            <div>
-                <h1
-                    style={{
-                        backgroundColor: form.color_theme,
-                        cursor: "pointer",
-                    }}
-                >
-                    {form.title}--{form.color_theme}
-                    <button onClick={handleDelete}>Delete Form</button>
-                </h1>
-            </div>
+        <div onClick={handleClick} style={{
+            backgroundColor: form.color_theme,
+            cursor: "pointer",
+            margin: 30
+        }}>
+                <h1>{form.title}</h1>
+                <p>{form.description}</p>
+                <h4>{active?"Accepting responses":"Form closed"}</h4>
+                <button onClick={toggleActive}>{active?"Close form":"Open form"}</button>
+                <button onClick={handleDelete}>Delete Form</button>
         </div>
     )
 }
