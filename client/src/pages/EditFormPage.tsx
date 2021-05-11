@@ -182,11 +182,15 @@ const EditFormPage: React.FC = () => {
                         <h1>{form.title}</h1>
                     </div>
                 )}
+                <h3>Description:</h3>
+                <textarea value={desc} onChange={handleDesc} rows={5} cols={80} className="description"></textarea>
+
                 <h4>Closing date :</h4>
                 <input type="date" defaultValue={"2021-04-21"} />
 
                 <h4>Closing Time :</h4>
                 <input type="time" defaultValue={closeTime as string} />
+                
                 <h3>Colour theme: </h3>
                 <input
                     type="color"
@@ -194,8 +198,7 @@ const EditFormPage: React.FC = () => {
                     value={colour}
                 ></input>
                 <h3>{form.color_theme}</h3>
-                <h3>Description:</h3>
-                <textarea value={desc} onChange={handleDesc} rows={5} cols={80} className="description"></textarea>
+                
                 <h4><input type="checkbox" checked={edit} 
                 onChange={(e)=>{const editVal=e.target.checked 
                     setEdit(editVal)}}></input>Editable
