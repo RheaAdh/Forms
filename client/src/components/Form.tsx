@@ -15,21 +15,16 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
         history.push(`/editForm/${form._id}`)
     }
 
-    const toggleActive = (
-        event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-        ) => {
-        event.stopPropagation()
+    const toggleActive = () => {
 
-        setActive(!active)
-        fetch("http://localhost:7000/api/updateform", {
+        fetch(`http://localhost:7000/api/formclose/${form._id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
             credentials: "include",
             body: JSON.stringify({
-                ...form,
-                isActive: !form.isActive
+                isActive: active
             }),
         })
             .then((response) => response.json())
@@ -64,6 +59,8 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
             })
     }
 
+    useEffect(toggleActive,[active])
+
 
     return (
         <div onClick={handleClick} style={{
@@ -74,7 +71,11 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
                 <h1>{form.title}</h1>
                 <p>{form.description}</p>
                 <h4>{active?"Accepting responses":"Form closed"}</h4>
-                <button onClick={toggleActive}>{active?"Close form":"Open form"}</button>
+                <button onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>)=>
+                {
+                    event.stopPropagation()
+                    setActive(!active)
+                }}>{active?"Close form":"Open form"}</button>
                 <button onClick={handleDelete}>Delete Form</button>
         </div>
     )

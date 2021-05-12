@@ -125,7 +125,7 @@ export async function deleteForm(req: Request, res: Response) {
 //Routes for closing-form  ---> to be implemented using toggle button in formlist correspomding to form
 export async function closeForm(req: Request, res: Response) {
     try {
-        let formId = req.body.formId
+        let formId = req.params.formId
         let updatedForm = await Form.findOneAndUpdate(
             { _id: formId },
             {
