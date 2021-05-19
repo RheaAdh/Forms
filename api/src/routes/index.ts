@@ -9,6 +9,7 @@ import {
     getAdminForms,
     getSuperAdminForms,
     closeForm,
+    extractFormid,
 } from "./form"
 import {
     addQuestion,
@@ -85,5 +86,7 @@ router.post("/submitresponse", checkAuthentication, submitResponse)
 
 //Covert to .csv and download route
 router.get("/download/:formid", downloadResponse)
+
+router.get("/extractformid/:formid",extractFormid)
 
 export default router

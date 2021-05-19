@@ -10,6 +10,12 @@ Router.use(express.json())
 // app.set("trust proxy", 1);
 
 //Using GoogleStrategy for Authentication
+
+// let formid
+// Router.get('')
+
+import {fid} from "./form"
+
 passport.use(
     new GoogleStrategy(
         {
@@ -82,10 +88,10 @@ Router.get(
         let user = req?.user
         req.session.email = (user as any).email
         req.session.username = (user as any).username
-        res.send(
-            "User form should be seen with submit button which takes u to a thanku page which has logout for user  /user/logout"
-        )
-        // res.redirect("http://localhost:3000/")
+        // res.send(
+            // "User form should be seen with submit button which takes u to a thanku page which has logout for user  /user/logout"
+        // )
+        res.redirect(`http://localhost:3000/form/${fid}`)
     }
 )
 

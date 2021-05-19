@@ -147,3 +147,12 @@ export async function closeForm(req: Request, res: Response) {
         return res.send({ success: false, data: err })
     }
 }
+
+
+
+export let fid:any
+export async function extractFormid(req: Request,res:Response){
+    fid = req.params.formid
+    console.log(fid)
+    res.send("Extracted FormID")
+}
