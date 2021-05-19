@@ -154,5 +154,8 @@ export let fid:any
 export async function extractFormid(req: Request,res:Response){
     fid = req.params.formid
     console.log(fid)
-    res.send("Extracted FormID")
+    if(fid)
+        return res.send({success:true,msg:"Extracted FormID"})
+    else 
+        return res.send({success:false,msg:"Couldn't Extract FormID"})
 }
