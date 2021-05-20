@@ -88,6 +88,8 @@ Router.get(
         let user = req?.user
         req.session.email = (user as any).email
         req.session.username = (user as any).username
+        req.session.userId = (user as any)._id
+
         res.redirect(`http://localhost:3000/form/${fid}`)
     }
 )
