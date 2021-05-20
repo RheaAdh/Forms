@@ -88,9 +88,6 @@ Router.get(
         let user = req?.user
         req.session.email = (user as any).email
         req.session.username = (user as any).username
-        // res.send(
-            // "User form should be seen with submit button which takes u to a thanku page which has logout for user  /user/logout"
-        // )
         res.redirect(`http://localhost:3000/form/${fid}`)
     }
 )

@@ -74,7 +74,7 @@ router.get(
 )
 
 ///////////////////////////USER,ADMIN AND SUPERADMIN///////////////////////////////
-router.get("/getform/:formid", checkAuthentication, getForm)
+router.get("/getform/:formid", extractFormid,checkAuthentication, getForm)
 router.get("/getquestions", checkAuthentication, getQuestions)
 router.get("/getquestion/:qid", checkAuthentication, getQuestion)
 router.get(
@@ -86,7 +86,5 @@ router.post("/submitresponse", checkAuthentication, submitResponse)
 
 //Covert to .csv and download route
 router.get("/download/:formid", downloadResponse)
-
-router.get("/extractformid/:formid",extractFormid)
 
 export default router

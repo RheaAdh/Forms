@@ -1,5 +1,5 @@
 import { Document, Schema } from "mongoose"
-import { Response, Request } from "express"
+import { Response, Request,NextFunction } from "express"
 import * as mongo from "../config/mongo"
 import { Form } from "../models/form"
 import { Question } from "../models/question"
@@ -151,11 +151,17 @@ export async function closeForm(req: Request, res: Response) {
 
 
 export let fid:any
-export async function extractFormid(req: Request,res:Response){
-    fid = req.params.formid
-    console.log(fid)
-    if(fid)
-        return res.send({success:true,msg:"Extracted FormID"})
-    else 
-        return res.send({success:false,msg:"Couldn't Extract FormID"})
+export async function extractFormid(req: Request,res:Response,next: NextFunction){
+    let form = await Form.find({_id:req.params.id})
+    if(form)
+    {
+        console.log("Voila!! we found formid")
+        fid = req.params.formid
+        next()
+    }
+    else
+    {
+        console.log("FormID is invalid")
+        return res.send({success:false,msg:"Form doesn't exists"})
+    }
 }
