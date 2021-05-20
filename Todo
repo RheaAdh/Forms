@@ -13,9 +13,6 @@ Frontend
 * link to register in login page and vice versa
 
 * dropdown isnt working
-* We have close route a toggle botten in formlist for closing form will be needed(send formId and isActive (true for open and false wants to close form) in request)
-* Need Toggle button for close/open form in formlist corresponding to all formlist
-* Form description is not visible in response page (should be there below title)
 * Also when both edit and multipleResponse is false then just one (i.e.very first) response is just possible or valid, but if a user wants to fill again it should show message something similar to what is comming from backend in that case
 *we need copy button inside each form in admin/superadmin dashboard which will have something like this http://localhost:3000/form/60a5869152d95e761a715007 which can be used to share link of form 
 
