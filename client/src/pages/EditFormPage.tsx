@@ -206,6 +206,10 @@ const EditFormPage: React.FC = () => {
                         onChange={(e) => {
                             const editVal = e.target.checked
                             setEdit(editVal)
+                            if(editVal)
+                            {
+                                setMulti(false)
+                            }
                         }}
                     ></input>
                     Editable
@@ -215,6 +219,10 @@ const EditFormPage: React.FC = () => {
                         onChange={(e) => {
                             const multiVal = e.target.checked
                             setMulti(multiVal)
+                            if(multiVal)
+                            {
+                                setEdit(false)
+                            }
                         }}
                     ></input>
                     Multiple responses
