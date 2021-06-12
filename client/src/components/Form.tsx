@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react"
 import { useHistory } from "react-router-dom"
+// import CopyToClipboard from "react-copy-to-clipboard"
 interface props {
     form: any
     deleteForm: any
 }
 
 const Form: React.FC<props> = ({ form, deleteForm }) => {
-
     const [active, setActive] = useState(form.isActive)
-
+    const formLink = `http://localhost:3000/form/${form._id}`
     let history = useHistory()
 
     const handleClick = () => {
@@ -16,7 +16,6 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
     }
 
     const toggleActive = () => {
-
         fetch(`http://localhost:7000/api/formclose/${form._id}`, {
             method: "PUT",
             headers: {
@@ -24,7 +23,7 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
             },
             credentials: "include",
             body: JSON.stringify({
-                isActive: active
+                isActive: active,
             }),
         })
             .then((response) => response.json())
@@ -59,24 +58,34 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
             })
     }
 
-    useEffect(toggleActive,[active])
-
+    useEffect(toggleActive, [active])
 
     return (
-        <div onClick={handleClick} style={{
-            backgroundColor: form.color_theme,
-            cursor: "pointer",
-            margin: 30
-        }}>
-                <h1>{form.title}</h1>
-                <p>{form.description}</p>
-                <h4>{active?"Accepting responses":"Form closed"}</h4>
-                <button onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>)=>
-                {
+        <div
+            onClick={handleClick}
+            style={{
+                backgroundColor: form.color_theme,
+                cursor: "pointer",
+                margin: 30,
+            }}
+        >
+            <h1>{form.title}</h1>
+            <p>{form.description}</p>
+            <h4>{active ? "Accepting responses" : "Form closed"}</h4>
+            <button
+                onClick={(
+                    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                ) => {
                     event.stopPropagation()
                     setActive(!active)
-                }}>{active?"Close form":"Open form"}</button>
-                <button onClick={handleDelete}>Delete Form</button>
+                }}
+            >
+                {active ? "Close form" : "Open form"}
+            </button>
+            <button onClick={handleDelete}>Delete Form</button>
+            <a href={formLink}>Redirect to form</a>
+
+            <text>Copy Link:{formLink}</text>
         </div>
     )
 }

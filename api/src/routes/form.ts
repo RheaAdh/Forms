@@ -1,5 +1,5 @@
 import { Document, Schema } from "mongoose"
-import { Response, Request,NextFunction } from "express"
+import { Response, Request, NextFunction } from "express"
 import * as mongo from "../config/mongo"
 import { Form } from "../models/form"
 import { Question } from "../models/question"
@@ -17,11 +17,13 @@ export async function getForms(req: Request, res: Response) {
     try {
         if (req.session.role === "admin") {
             //admin
-            const myForms = await Form.find({ owner: req.session.userId })
+            const myForms = await Form.find({
+                owner: req.session.userId,
+            }).sort({ createdAt: -1 })
             res.send({ success: true, forms: myForms })
         } else {
             //superadmin
-            const forms = await Form.find().exec()
+            const forms = await Form.find().sort({ createdAt: -1 })
             res.json({ success: true, forms: forms })
         }
     } catch (error) {
@@ -40,7 +42,9 @@ export async function getForm(req: Request, res: Response) {
 
 export async function getAdminForms(req: Request, res: Response) {
     try {
-        let adminForms = await Form.find().populate("owner", "role").exec()
+        let adminForms = await Form.find()
+            .populate("owner", "role")
+            .sort({ createdAt: -1 })
         adminForms = adminForms.filter((form) => {
             return form?.owner?.role === "admin"
         })
@@ -52,7 +56,9 @@ export async function getAdminForms(req: Request, res: Response) {
 
 export async function getSuperAdminForms(req: Request, res: Response) {
     try {
-        let superAdminForms = await Form.find().populate("owner", "role").exec()
+        let superAdminForms = await Form.find()
+            .populate("owner", "role")
+            .sort({ createdAt: -1 })
         superAdminForms = superAdminForms.filter((form) => {
             return form?.owner?.role === "superadmin"
         })
@@ -98,25 +104,30 @@ export async function updateForm(req: Request, res: Response) {
     }
 }
 
-//!DELETE ALL THE QUESTIONS OF THIS FORM AS WELL
+//!DELETE ALL THE QUESTIONS/RESPONSES OF THIS FORM AS WELL
 export async function deleteForm(req: Request, res: Response) {
     try {
         console.log(req.body.id)
+
         let deletedResponses: any
-        deletedResponses = await FormResponse.findOneAndDelete({
+        deletedResponses = await FormResponse.deleteMany({
             formId: req.body.id,
         })
+        console.log(deletedResponses)
+
         let deletedQuestions: any
         deletedQuestions = await Question.deleteMany({
             formid: req.body.id,
         })
-        console.log(deletedResponses)
+        console.log(deletedQuestions)
 
         let deletedForm: any
-        deletedForm = await Form.findOneAndDelete({
+        deletedForm = await Form.deleteOne({
             _id: req.body.id,
         })
-        return res.send(deletedForm)
+        console.log(deletedForm)
+
+        return res.send({ success: true, msg: deletedForm })
     } catch (error) {
         return res.send({ success: false, msg: error })
     }
@@ -148,20 +159,19 @@ export async function closeForm(req: Request, res: Response) {
     }
 }
 
-
-
-export let fid:any
-export async function extractFormid(req: Request,res:Response,next: NextFunction){
-    let form = await Form.find({_id:req.params.id})
-    if(form)
-    {
+export let fid: any
+export async function extractFormid(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    let form = await Form.find({ _id: req.params.id })
+    if (form) {
         console.log("Voila!! we found formid")
         fid = req.params.formid
         next()
-    }
-    else
-    {
+    } else {
         console.log("FormID is invalid")
-        return res.send({success:false,msg:"Form doesn't exists"})
+        return res.send({ success: false, msg: "Form doesn't exists" })
     }
 }
