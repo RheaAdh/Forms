@@ -382,14 +382,7 @@ const QuestionResponse: React.FC<props> = ({
         //Dropdown
         <div>
             {readonly ? (
-                <select
-                    defaultValue={
-                        prevResponse?.selectedOption
-                            ? prevResponse.selectedOption
-                            : question["options"][0]
-                    }
-                    disabled
-                >
+                <select defaultValue={prevResponse?.selectedOption} disabled>
                     {question["options"]?.map(
                         (optionText: string, i: Number) => {
                             return (
@@ -417,7 +410,6 @@ const QuestionResponse: React.FC<props> = ({
         </div>,
         //Email
         <div>
-            {console.log(prevResponse?.emailAnswer, "EMAIL", readonly)}
             {readonly === true ? (
                 <input
                     readOnly
@@ -637,7 +629,6 @@ const QuestionResponse: React.FC<props> = ({
             ) : null}
         </div>,
     ]
-
     return (
         <div>
             <b>{question["question_text"]}</b>{" "}

@@ -15,32 +15,33 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
     const [questions, setQuestions] = useState<any[]>([])
     const [canSubmit, setCanSubmit] = useState<boolean[]>([])
     const [users, setUsers] = useState<any[]>([])
-    const [currentUser, setCurrentUser] = useState<any>()
+    const [currentUser, setCurrentUser] = useState<any>(null)
     const [submitError, setSubmitError] = useState<string | null>(null)
     const [thankYou, setThankYou] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(true)
     const { formid }: any = useParams()
-    console.log(formid)
 
     useEffect(() => {
-        auth?.getCurrentUser().then((res: any) => setLoading(false))
+        auth?.getCurrentUser()
     }, [])
     useEffect(() => {
-        fetch(`http://localhost:7000/api/getform/${formid}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-        })
-            .then((resp) => resp.json())
-            .then((data) => {
-                if (data.success) console.log(data.form)
-                else console.log("SOmething went wrong")
-
-                setForm(data.form)
+        if (formid)
+            fetch(`http://localhost:7000/api/getform/${formid}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
             })
-    }, [])
+                .then((resp) => resp.json())
+                .then((data) => {
+                    if (data.success) {
+                        setForm(data.form)
+                        //console.log("GET FORM", data.form)
+                    }
+                })
+                .catch((err) => console.log(err))
+    }, [formid])
 
     useEffect(() => {
         if (form)
@@ -57,7 +58,7 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                     // and set accordingly
                     // mapping through data["ques"] instead of prevResponses so that if there's no
                     // prevResponse, can set to default state
-                    if (!readonly)
+                    if (!readonly) {
                         data["ques"].map((q: any, idx: Number) => {
                             setResponses((prevResponses) => [
                                 ...prevResponses,
@@ -81,12 +82,15 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
 
                             return null
                         })
+                        setLoading(false)
+                    }
                     setQuestions(data["ques"])
                 })
     }, [form])
 
     useEffect(() => {
         // if form exists and page is readonly, get list of ALL users who have filled the form
+        // This is for admin to view responses user-wise
         if (form && readonly)
             fetch(
                 `http://localhost:7000/api/responsesidbyformfilled/${formid}`,
@@ -99,12 +103,10 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                 }
             )
                 .then((resp) => {
-                    //console.log(resp)
                     return resp.json()
                 })
                 .catch((err) => console.log(err))
                 .then((data) => {
-                    console.log(data)
                     if (data.success) {
                         setUsers(data.data)
                         setCurrentUser(data.data[0])
@@ -115,7 +117,9 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
     }, [form])
 
     useEffect(() => {
-        if (currentUser)
+        if (currentUser && readonly) {
+            // Get responses for current user
+            setLoading(true)
             fetch(
                 `http://localhost:7000/api/resbyresponseid/${currentUser.responseid}`,
                 {
@@ -129,13 +133,15 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                 .then((resp) => resp.json())
                 .catch((err) => console.log(err))
                 .then((data) => {
-                    console.log(data)
                     if (data.success) {
                         setResponses(data.data.responses)
                     } else {
                         console.log(data.data)
                     }
+                    setLoading(false)
                 })
+        }
+        console.log(currentUser)
     }, [currentUser])
 
     const submitStatus = (index: any, status: boolean) => {
@@ -189,11 +195,12 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
     if (loading) {
         return <div>Loading</div>
     }
-
+    if (form === null) {
+        return <div>You got the wrong address</div>
+    }
     if (auth?.currentUser === null) {
         return <Redirect to={`/login/${formid}`} />
     }
-    console.log(responses)
     return thankYou ? (
         <div>
             <b>Your response has been submitted</b>
@@ -201,7 +208,6 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
             <button
                 onClick={() => {
                     auth?.logout()
-                    console.log("Logged out")
                 }}
             >
                 Logout
@@ -217,7 +223,7 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
         >
             <div>
                 {users.length ? (
-                    <select defaultValue={users[0].username}>
+                    <select defaultValue={currentUser.username}>
                         {users.map((user: any, i: Number) => {
                             return (
                                 <option
@@ -235,12 +241,12 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
             </div>
             <h2>{form?.title}</h2>
             <p>{form?.description}</p>
-            {questions.map((q: any, idx: Number) => {
+            {questions.map((q: any, idx: number) => {
                 return (
                     <QuestionResponse
                         readonly={readonly}
                         question={q}
-                        prevResponse={responses[idx as number]}
+                        prevResponse={responses[idx]}
                         handleChange={handleChange}
                         index={idx}
                         key={q["_id"]}

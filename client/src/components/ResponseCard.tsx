@@ -25,7 +25,13 @@ const ResponseCard: React.FC<props> = ({ form }) => {
                 <p>Start time:</p>
                 <p>End time:</p>
                 <p>Number of responses:</p>
-                <button>View Responses</button>
+                <button
+                    onClick={() => {
+                        history.push(`/responses/${form._id}`)
+                    }}
+                >
+                    View Responses
+                </button>
             </div>
         </div>
     )

@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext"
 
 const LoginPage: React.FC = () => {
     const auth = useAuth()
-    const [loading, setLoading] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(true)
     const { formid }: any = useParams()
     const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -15,7 +15,7 @@ const LoginPage: React.FC = () => {
 
     useEffect(() => {
         const fetchStore = async () => {
-            await auth?.getCurrentUser()
+            await auth?.getCurrentUser().then((res: any) => setLoading(false))
         }
         fetchStore()
     }, [])

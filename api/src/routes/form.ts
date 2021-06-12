@@ -165,7 +165,8 @@ export async function extractFormid(
     res: Response,
     next: NextFunction
 ) {
-    let form = await Form.find({ _id: req.params.id })
+    let form = await Form.findById(req.params.formid)
+
     if (form) {
         console.log("Voila!! we found formid")
         fid = req.params.formid
