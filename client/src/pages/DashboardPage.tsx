@@ -35,6 +35,7 @@ const DashboardPage: React.FC = () => {
 
     return (
         <div className="dashboard">
+            
             <div className="sidebar">
                 {auth?.currentUser?.role === "superadmin" ? (
                     <p
@@ -65,15 +66,26 @@ const DashboardPage: React.FC = () => {
                     </p>
                 ) : null}
                 {auth?.currentUser === null ? (
-                    <p
-                        className="btn"
-                        id="admin-login"
-                        onClick={(e) => {
-                            history.push("/adminlogin")
-                        }}
-                    >
-                        Login
-                    </p>
+                    <div>
+                        <p
+                            className="btn"
+                            id="admin-login"
+                            onClick={(e) => {
+                                history.push("/adminlogin")
+                            }}
+                        >
+                            Login
+                        </p>
+                        <p
+                            className="btn"
+                            id="admin-login"
+                            onClick={(e) => {
+                                history.push("/register")
+                            }}
+                        >
+                            Register
+                        </p>
+                    </div>
                 ) : (
                     <p className="btn" id="logout" onClick={handleLogout}>
                         Logout

@@ -20,3 +20,10 @@ Backend
 * upload/download files,images,responses as csv
 * sort/filter responses 
 * testing
+
+
+New Features (Explicit to iecse)
+board can create form and save as template which is visible to all
+create predefined templates for events we know 
+send responses thru iecse mailer on taking email as parameter
+clear responses if user thinks whatever filled till now is working
