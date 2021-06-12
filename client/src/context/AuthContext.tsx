@@ -72,7 +72,6 @@ export default function AuthProvider({ children }: Props): ReactElement {
         const data = await response.json()
         if (data.success === true) {
             setCurrentUser(data.user)
-            localStorage.setItem("user", JSON.stringify(data.user))
             return data
         }
         return data

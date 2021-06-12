@@ -253,14 +253,14 @@ const QuestionResponse: React.FC<props> = ({
                     placeholder="Short Answer"
                     defaultValue={prevResponse?.shortText}
                     readOnly
-                ></input>
+                />
             ) : (
                 <input
                     type="text"
                     placeholder="Short Answer"
                     onChange={(e) => handleShortAnswer(e)}
                     defaultValue={prevResponse?.shortText}
-                ></input>
+                />
             )}
         </div>,
         //Paragraph
@@ -382,7 +382,14 @@ const QuestionResponse: React.FC<props> = ({
         //Dropdown
         <div>
             {readonly ? (
-                <select defaultValue={prevResponse?.selectedOption} disabled>
+                <select
+                    defaultValue={
+                        prevResponse?.selectedOption
+                            ? prevResponse.selectedOption
+                            : question["options"][0]
+                    }
+                    disabled
+                >
                     {question["options"]?.map(
                         (optionText: string, i: Number) => {
                             return (
@@ -416,15 +423,13 @@ const QuestionResponse: React.FC<props> = ({
                     readOnly
                     type="text"
                     defaultValue={prevResponse?.emailAnswer}
-                ></input>
+                />
             ) : (
                 <input
                     type="text"
                     onChange={(e) => handleEmail(e)}
                     defaultValue={prevResponse?.emailAnswer}
-                >
-                    {" "}
-                </input>
+                />
             )}
             <br />
             <b>{emailError}</b>

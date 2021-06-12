@@ -118,13 +118,23 @@ export async function adminLogin(req: Request, res: Response) {
         return res.send({
             success: true,
             data: "Successfully LoggedIn, Redirect SuperAdmin Dashboard",
-            user: user,
+            user: {
+                role: user.role,
+                email: user.email,
+                id: user._id,
+                username: user.username,
+            },
         })
     } else if (user.role == "admin") {
         return res.send({
             success: true,
             data: "Successfully LoggedIn, Redirect Admin Dashboard",
-            user: { role: user.role, email: user.email },
+            user: {
+                role: user.role,
+                email: user.email,
+                id: user._id,
+                username: user.username,
+            },
         })
     }
 }

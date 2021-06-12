@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import "../styles/Login.css"
 import useFormState from "../hooks/useFormState"
-import { useHistory, Redirect } from "react-router"
+import { Redirect } from "react-router"
 import { useParams } from "react-router-dom"
-import { useAuth } from "../context/AuthContext"
 
 const ResetPassword: React.FC = () => {
     const [password, handlePassword] = useFormState(null)

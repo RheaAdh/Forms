@@ -55,6 +55,8 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                 .then((data) => {
                     // if not readonly, check for previous responses of current user
                     // and set accordingly
+                    // mapping through data["ques"] instead of prevResponses so that if there's no
+                    // prevResponse, can set to default state
                     if (!readonly)
                         data["ques"].map((q: any, idx: Number) => {
                             setResponses((prevResponses) => [
@@ -68,10 +70,16 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                                           questionId: q["_id"],
                                       },
                             ])
+                            // Status indicating if user can submit the form initially
+                            // Cannot submit if required. Can submit if user is editing form
+                            // since form has been submitted already.
                             setCanSubmit((prevState) => [
                                 ...prevState,
-                                !q["required"],
+                                !q["required"] ||
+                                    (data["prevResponse"] ? true : false),
                             ])
+
+                            return null
                         })
                     setQuestions(data["ques"])
                 })

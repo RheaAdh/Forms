@@ -14,7 +14,7 @@ Router.use(express.json())
 // let formid
 // Router.get('')
 
-import {fid} from "./form"
+import { fid } from "./form"
 
 passport.use(
     new GoogleStrategy(
@@ -89,8 +89,8 @@ Router.get(
         req.session.email = (user as any).email
         req.session.username = (user as any).username
         req.session.userId = (user as any)._id
-
-        res.redirect(`http://localhost:3000/form/${fid}`)
+        if (fid !== undefined) res.redirect(`http://localhost:3000/form/${fid}`)
+        else res.redirect("http://localhost:3000/login")
     }
 )
 
