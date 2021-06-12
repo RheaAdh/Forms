@@ -19,6 +19,9 @@ const Question: React.FC<props> = ({ question, deleteQuestion, index }) => {
         "multiplechoicegrid-answer",
         "checkboxgrid-answer",
         "email-answer",
+        "file-upload",
+        "date-answer",
+        "time-answer",
     ]
     const [type, setType] = useState<any>(
         question ? questions_types.indexOf(question["question-type"]) : 0
