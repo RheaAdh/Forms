@@ -61,7 +61,7 @@ const ResponseList: React.FC<props> = ({ creatorRole }) => {
                     {forms.map((form) => (
                         <ResponseCard form={form} key={form._id} />
                     ))}
-                    <NewForm />
+                    
                 </div>
             )}
         </div>

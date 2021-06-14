@@ -39,8 +39,8 @@ const FormsPage: React.FC = () => {
     }
     return auth?.currentUser ? (
         <div>
-            <FormList forms={forms} deleteForm={deleteForm} />
             <NewForm />
+            <FormList forms={forms} deleteForm={deleteForm} />
         </div>
     ) : (
         <div>Please Login</div>

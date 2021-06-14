@@ -31,6 +31,7 @@ import {
     getResponseByBothFormidAndResponseid,
 } from "./response"
 import { checkAuthentication } from "./user"
+
 const router = express.Router()
 
 ///////////////////////ADMIN AND SUPERADMIN/////////////////////////////////
@@ -57,26 +58,29 @@ router.get(
 )
 router.get(
     "/formresponse/:formId/:responseId",
+    isValidAdmin,
     getResponseByBothFormidAndResponseid
 )
 
-///////////////////////////SUPERADMIN////////////////////////////////
-
-router.get("/getadminforms", isValidSuperAdmin, getAdminForms)
-router.get("/getsuperadminforms", isValidSuperAdmin, getSuperAdminForms)
-router.get("/formsbycreator/:creatorId", isValidSuperAdmin, getFormsByCreator)
-
+router.get("/getadminforms", isValidAdmin, getAdminForms)
+router.get("/formsbycreator/:creatorId", isValidAdmin, getFormsByCreator)
 router.get(
     "/resbyresponseid/:responseid",
     isValidAdmin,
     getResponsesByResIdByFormId
 )
-//since question id is unique to a form so no need to have formid as param
 router.get(
     "/resbyquestions/:questionId",
     isValidAdmin,
     getResponsesByQuestionsByForm
 )
+
+
+
+///////////////////////////SUPERADMIN ONLY////////////////////////////////
+router.get("/getsuperadminforms", isValidSuperAdmin, getSuperAdminForms)
+
+
 
 ///////////////////////////USER,ADMIN AND SUPERADMIN///////////////////////////////
 router.get("/getform/:formid", extractFormid, checkAuthentication, getForm)
@@ -88,6 +92,9 @@ router.get(
     getQuestionsByFormid
 )
 router.post("/submitresponse", checkAuthentication, submitResponse)
+
+
+
 
 //Covert to .csv and download route
 router.get("/download/:formid", downloadResponse)

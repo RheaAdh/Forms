@@ -18,7 +18,10 @@ const NewForm = () => {
 
     const addForm = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        const form = { title: title?title:"untitled", color_theme: "#ffffff" }
+        const form = {
+            title: title ? title : "untitled",
+            color_theme: "#ffffff",
+        }
 
         //UPDATE ON BACKEND
         fetch("http://localhost:7000/api/addForm", {
@@ -43,8 +46,11 @@ const NewForm = () => {
         <div>
             <form onSubmit={addForm}>
                 <input type="text" value={title} onChange={handleTitle} />
-                <button type="submit">Add New Form</button>
+                <button type="submit">
+                    <b>Add New Form</b>
+                </button>
             </form>
+            <hr></hr>
         </div>
     )
 }
