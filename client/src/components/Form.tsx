@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useHistory } from "react-router-dom"
-// import CopyToClipboard from "react-copy-to-clipboard"
+import { CopyToClipboard } from "react-copy-to-clipboard"
 interface props {
     form: any
     deleteForm: any
@@ -8,7 +8,7 @@ interface props {
 
 const Form: React.FC<props> = ({ form, deleteForm }) => {
     const [active, setActive] = useState(form.isActive)
-    const formLink = `http://localhost:3000/form/${form._id}`
+    const [link, setLink] = useState(`http://localhost:3000/form/${form._id}`)
     let history = useHistory()
 
     const handleClick = () => {
@@ -83,9 +83,11 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
                 {active ? "Close form" : "Open form"}
             </button>
             <button onClick={handleDelete}>Delete Form</button>
-            <a href={formLink}>Redirect to form</a>
-
-            <text>Copy Link:{formLink}</text>
+            <CopyToClipboard text={link}>
+                <button>
+                    <i className="fas fa-copy"></i>
+                </button>
+            </CopyToClipboard>
         </div>
     )
 }

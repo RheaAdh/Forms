@@ -28,6 +28,7 @@ import {
     getResponsesByResIdByFormId,
     getResponsesByQuestionsByForm,
     getResponseIdByFormFilled,
+    getResponseByBothFormidAndResponseid,
 } from "./response"
 import { checkAuthentication } from "./user"
 const router = express.Router()
@@ -54,6 +55,10 @@ router.get(
     isValidAdmin,
     getResponseIdByFormFilled
 )
+router.get(
+    "/formresponse/:formId/:responseId",
+    getResponseByBothFormidAndResponseid
+)
 
 ///////////////////////////SUPERADMIN////////////////////////////////
 
@@ -63,18 +68,18 @@ router.get("/formsbycreator/:creatorId", isValidSuperAdmin, getFormsByCreator)
 
 router.get(
     "/resbyresponseid/:responseid",
-    isValidSuperAdmin,
+    isValidAdmin,
     getResponsesByResIdByFormId
 )
 //since question id is unique to a form so no need to have formid as param
 router.get(
     "/resbyquestions/:questionId",
-    isValidSuperAdmin,
+    isValidAdmin,
     getResponsesByQuestionsByForm
 )
 
 ///////////////////////////USER,ADMIN AND SUPERADMIN///////////////////////////////
-router.get("/getform/:formid", extractFormid,checkAuthentication, getForm)
+router.get("/getform/:formid", extractFormid, checkAuthentication, getForm)
 router.get("/getquestions", checkAuthentication, getQuestions)
 router.get("/getquestion/:qid", checkAuthentication, getQuestion)
 router.get(

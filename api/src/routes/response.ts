@@ -229,6 +229,7 @@ export const getResponsesByResIdByFormId = async (
         return res.send({ success: false, data: error })
     }
 }
+
 export const getResponseIdByFormFilled = async (
     req: Request,
     res: Response
@@ -375,6 +376,30 @@ export const getResponsesByQuestionsByForm = async (
         }
         return res.send(ans)
     } catch (error) {
+        return res.send({ success: false, data: error })
+    }
+}
+
+export const getResponseByBothFormidAndResponseid = async (
+    req: Request,
+    res: Response
+) => {
+    console.log(
+        "http://localhost:7000/api/formresponse/" +
+            req.params.formId +
+            "/" +
+            req.params.responseId
+    )
+    try {
+        let responseId = req.params.responseId
+        let formIndividualResponsesForForm = await FormResponse.findOne({
+            _id: responseId,
+            formId: req.params.formId,
+        })
+        return res.send({ success: true, data: formIndividualResponsesForForm })
+    } catch (error) {
+        console.log(error)
+
         return res.send({ success: false, data: error })
     }
 }
