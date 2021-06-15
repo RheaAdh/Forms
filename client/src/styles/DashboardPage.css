@@ -1,8 +1,9 @@
 * {
     background-image: url("../images/logo.png");
     background-repeat: no-repeat;
-    background-size: 500px 800px;
+    background-size: 893px 1009px;
     background-attachment: fixed;
+    background-position: right center;
 }
 .dashboard {
     background-color: #dcdae2;

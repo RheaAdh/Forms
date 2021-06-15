@@ -207,7 +207,9 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
             <br />
             {/* if form is accepting multiple */}
             {form?.multipleResponses ? (
-                <a>Submit another response?</a>
+                <a href={`http://localhost:3000/form/${formid}`}>
+                    <button>Submit another response?</button>
+                </a>
             ) : (
                 <div>We accept only 1 response per user</div>
             )}
@@ -215,9 +217,11 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
             <br />
             {/* if form is editable */}
             {form?.isEditable ? (
-                <a>Edit form?</a>
+                <a href={`http://localhost:3000/form/${formid}`}>
+                    <button>Edit form?</button>
+                </a>
             ) : (
-                <div>You cannot edit form</div>
+                <div>You cannot edit this form</div>
             )}
 
             <br />
@@ -232,7 +236,7 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
     ) : (
         <div
             style={{
-                backgroundColor: form?.color_theme,
+                backgroundColor: "#E5E5E5",
                 height: "100vh",
                 overflowY: "auto",
             }}
@@ -255,8 +259,38 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                     </select>
                 ) : null}
             </div>
-            <h2>{form?.title}</h2>
-            <p>{form?.description}</p>
+            <div
+                style={{
+                    left: " 21.04%",
+                    right: "16.51%",
+                    top: " 5.37%",
+                    bottom: "66.76%",
+                    background: "rgba(190, 190, 190, 0.1)",
+                    borderRadius: "20px",
+                    backdropFilter: " blur(99.6667px);",
+                }}
+            >
+                <h1
+                    style={{
+                        left: "23.49%;",
+                        right: "64.84%;",
+                        top: "7.13%;",
+                        bottom: "83.8%;",
+
+                        fontFamily: "Catamaran;",
+                        fontWeight: "bold",
+                        fontSize: "60px;",
+                        lineHeight: "98px;",
+                        letterSpacing: "0.03em;",
+
+                        // color: #000000;
+                    }}
+                >
+                    {form?.title}
+                </h1>
+
+                <p>{form?.description}</p>
+            </div>
             {questions.map((q: any, idx: number) => {
                 return (
                     <QuestionResponse
@@ -272,10 +306,31 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
             })}
             <b style={{ color: "red" }}>{submitError}</b>
             <br />
-            {readonly ? (
-                <div>READONLY</div>
+            {!form?.isEditable && !form?.multipleResponses ? (
+                <div
+                    style={{
+                        background: "red",
+                        width: "100%",
+                        textAlign: "center",
+                    }}
+                >
+                    YOU HAVE ALREADY SUBMITTED THE FORM
+                </div>
             ) : (
-                <button onClick={handleSubmit}>Submit</button>
+                <button
+                    style={{
+                        left: "21.09%;",
+                        right: " 72.55%;",
+                        top: "76.3%",
+                        bottom: "20.09%",
+                        background: "#8B64EA",
+                        borderRadius: "5px;",
+                        color: "white",
+                    }}
+                    onClick={handleSubmit}
+                >
+                    Submit
+                </button>
             )}
         </div>
     )
