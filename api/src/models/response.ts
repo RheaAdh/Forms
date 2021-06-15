@@ -9,7 +9,7 @@ export interface ResponseDoc extends Document {
             answerType: string
             shortText: string
             paragraphText: string
-            emailText: string
+            // emailText: string
             selectedOption: string
             multipleSelected: [string]
             selectedOptionsGrid: [{ row: string; col: string }]
@@ -32,7 +32,7 @@ const response: Schema = new Schema({
             answerType: { type: String, required: true },
             shortText: { type: String, max: 100, min: 1 },
             paragraphText: { type: String, max: 500, min: 50 },
-            emailText: { type: String },
+            // emailText: { type: String },
             selectedOption: { type: String },
             multipleSelected: { type: [String], default: undefined },
             selectedOptionsGrid: {

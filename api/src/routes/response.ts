@@ -149,6 +149,7 @@ export const downloadResponse = async (req: Request, res: Response) => {
             "question_text"
         )
         if (form) {
+            console.log("Form is "+form)
             let questions = form.questions
             for (let i in questions) {
                 quesidtotext[String(questions[i]._id)] =
@@ -166,6 +167,7 @@ export const downloadResponse = async (req: Request, res: Response) => {
         let data = []
         //here we are extracting answer from array of responses->resp and storing in data which will be used in converting to .csv
         //For now just shortText and paragraphText type is implemented
+        console.log("Resp is "+resp)
         for (let i = 0; i < resp.length; i++) {
             temp = resp[i].responses
             let datarow
@@ -179,14 +181,64 @@ export const downloadResponse = async (req: Request, res: Response) => {
                 }
                 if (temp[j].paragraphText) {
                     let test: any = {}
-
                     test[str] = temp[j].paragraphText
                     datarow = { ...datarow, ...test }
                 }
+                if (temp[j].selectedOption) {
+                    let test: any = {}
+                    test[str] = temp[j].selectedOption
+                    datarow = { ...datarow, ...test }
+                }
+                if (temp[j].emailAnswer) {
+                    let test: any = {}
+                    test[str] = temp[j].emailAnswer
+                    datarow = { ...datarow, ...test }
+                }
+                if (temp[j].selectedOptionsGrid) {
+                    for(let k=0;k<temp[j].selectedOptionsGrid.length;k++)
+                    {
+                        console.log("k is "+k)
+                        let test: any = {}
+                        let s1:any =str
+                        s1=s1+' ['+temp[j].selectedOptionsGrid[k].row + ']'
+                        if(datarow[s1])
+                        {
+                            test[s1] =datarow[s1]+', '+temp[j].selectedOptionsGrid[k].col 
+                        }
+                        else
+                        {
+                            test[s1] = temp[j].selectedOptionsGrid[k].col
+                        }
+                        datarow = { ...datarow, ...test }   
+                    }
+                }
+                
+                if(temp[j].multipleSelected)
+                {
+                    console.log(temp[j].multipleSelected)
+                    let s:any=""    
+                    for(let k=0;k<temp[j].multipleSelected.length;k++)
+                    {
+                        if(s=="")
+                        {
+                            s=temp[j].multipleSelected[k]
+                        }
+                        else
+                        {
+                            s=s+', '+temp[j].multipleSelected[k]
+                        }
+                        console.log(s)
+
+                    }
+                    let test: any = {}
+                    test[str] = s
+                    datarow = { ...datarow, ...test }
+                }
+
             }
             data.push(datarow)
         }
-
+        console.log("final")
         console.log(data)
 
         //Converting data to .csv and writting to a file
