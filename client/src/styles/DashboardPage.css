@@ -1,8 +1,15 @@
-.dashboard{
+* {
+    background-image: url("../images/logo.png");
+    background-repeat: no-repeat;
+    background-size: 500px 800px;
+    background-attachment: fixed;
+}
+.dashboard {
+    background-color: #dcdae2;
     display: flex;
     flex-direction: row;
 }
-.sidebar{
+.sidebar {
     width: 15vw;
     height: 100vh;
     border-right: 1px solid black;
@@ -11,14 +18,16 @@
     justify-content: center;
     position: relative;
 }
-.btn{
-    margin-top: 25px;;
+.btn {
+    color: #8b64ea;
+
+    margin-top: 25px;
     cursor: pointer;
 }
-.btn:focus{
+.btn:focus {
     color: red;
 }
-.main-column{
+.main-column {
     position: relative;
     width: 100%;
 }

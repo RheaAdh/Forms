@@ -62,32 +62,35 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
 
     return (
         <div
-            onClick={handleClick}
             style={{
                 backgroundColor: form.color_theme,
                 cursor: "pointer",
                 margin: 30,
             }}
         >
-            <h1>{form.title}</h1>
-            <p>{form.description}</p>
-            <h4>{active ? "Accepting responses" : "Form closed"}</h4>
-            <button
-                onClick={(
-                    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-                ) => {
-                    event.stopPropagation()
-                    setActive(!active)
-                }}
-            >
-                {active ? "Close form" : "Open form"}
-            </button>
-            <button onClick={handleDelete}>Delete Form</button>
-            <CopyToClipboard text={link}>
-                <button>
-                    <i className="fas fa-copy"></i>
+            <div onClick={handleClick}>
+                <h1>{form.title}</h1>
+                <p>{form.description}</p>
+                <h5>{active ? "Accepting responses" : "Form closed"}</h5>
+            </div>
+            <div>
+                <button
+                    onClick={(
+                        event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                    ) => {
+                        event.stopPropagation()
+                        setActive(!active)
+                    }}
+                >
+                    {active ? "Close form" : "Open form"}
                 </button>
-            </CopyToClipboard>
+                <button onClick={handleDelete}>Delete Form</button>
+                <CopyToClipboard text={link}>
+                    <button>
+                        <i className="fas fa-copy">Copy Link</i>
+                    </button>
+                </CopyToClipboard>
+            </div>
         </div>
     )
 }

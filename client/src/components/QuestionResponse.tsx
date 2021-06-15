@@ -631,7 +631,7 @@ const QuestionResponse: React.FC<props> = ({
     ]
     return (
         <div>
-            <b>{question["question_text"]}</b>{" "}
+            <b>{question["question_text"]}</b>
             {question["required"] ? (
                 <span style={{ color: "red" }}>*</span>
             ) : null}

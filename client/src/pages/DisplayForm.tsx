@@ -203,7 +203,23 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
     }
     return thankYou ? (
         <div>
-            <b>Your response has been submitted</b>
+            <b>Your response has been submitted!</b>
+            <br />
+            {/* if form is accepting multiple */}
+            {form?.multipleResponses ? (
+                <a>Submit another response?</a>
+            ) : (
+                <div>We accept only 1 response per user</div>
+            )}
+
+            <br />
+            {/* if form is editable */}
+            {form?.isEditable ? (
+                <a>Edit form?</a>
+            ) : (
+                <div>You cannot edit form</div>
+            )}
+
             <br />
             <button
                 onClick={() => {
@@ -256,7 +272,11 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
             })}
             <b style={{ color: "red" }}>{submitError}</b>
             <br />
-            {readonly ? null : <button onClick={handleSubmit}>Submit</button>}
+            {readonly ? (
+                <div>READONLY</div>
+            ) : (
+                <button onClick={handleSubmit}>Submit</button>
+            )}
         </div>
     )
 }
