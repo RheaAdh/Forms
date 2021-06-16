@@ -4,6 +4,7 @@ import FormsPage from "./FormsPage"
 import { useAuth } from "../context/AuthContext"
 import AdminLoginPage from "./AdminLoginPage"
 import { useHistory } from "react-router"
+import TemplateList from "../components/TemplateList"
 import ResponseList from "../components/ResponseList"
 
 const DashboardPage: React.FC = () => {
@@ -30,24 +31,31 @@ const DashboardPage: React.FC = () => {
     }
 
     if (loading) {
-        return <div>Loading</div>
+        return <div>Loading...</div>
     }
 
     return (
         <div className="dashboard">
-            
             <div className="sidebar">
-                {auth?.currentUser?.role === "superadmin" ? (
+                {auth?.currentUser !== null ? (
                     <p
                         className="btn"
                         id="allForms"
-                        style={{ color: "red" }}
                         onClick={(e) => handleChange(e)}
                     >
                         All Forms
                     </p>
                 ) : null}
-                {auth?.currentUser?.role === "superadmin" ? (
+                {auth?.currentUser !== null ? (
+                    <p
+                        className="btn"
+                        id="templates"
+                        onClick={(e) => handleChange(e)}
+                    >
+                        Templates
+                    </p>
+                ) : null}
+                {auth?.currentUser !== null ? (
                     <p
                         className="btn"
                         id="adminForms"
@@ -93,20 +101,23 @@ const DashboardPage: React.FC = () => {
                 )}
             </div>
             <div className="main-column">
-                {auth?.currentUser?.role === "superadmin" ? (
+                {auth?.currentUser?.role !== null ? (
                     current === "allForms" ? (
                         <FormsPage />
                     ) : current === "adminForms" ? (
                         <ResponseList creatorRole="admin" />
-                    ) : current === "superAdminForms" ? (
+                    ) : current === "superAdminForms" &&
+                      auth?.currentUser?.role === "superadmin" ? (
                         <ResponseList creatorRole="superadmin" />
                     ) : current === "admin-login" ? (
                         <AdminLoginPage />
+                    ) : current === "templates" ? (
+                        <TemplateList />
                     ) : (
                         <p>lmao</p>
                     )
                 ) : (
-                    <ResponseList creatorRole="singleAdmin" />
+                    <ResponseList creatorRole="admin" />
                 )}
             </div>
         </div>

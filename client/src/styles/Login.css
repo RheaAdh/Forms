@@ -32,8 +32,7 @@ body {
     border: none;
     height: 40px;
     width: 82%;
-    background: rgba(0, 0, 0, 0.1);
-    color: rgba(255, 255, 255, 0.7);
+    color: black;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.5) inset;
     font-size: 17px;
     padding: 0 10px;
@@ -42,7 +41,7 @@ body {
 }
 
 .error-message {
-    color: white;
+    color: black
 }
 /*Login*/
 .form-container form input[type="submit"] {

@@ -93,6 +93,21 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
                         <i className="fas fa-copy"></i>
                     </button>
                 </CopyToClipboard>
+                <a href={`http://localhost:7000/api/makeTemplate/${form._id}`}>
+                    {" "}
+                    <button>Add to templates</button>
+                </a>
+                {form.isTemplate ? (
+                    <div>
+                        <a
+                            href={`http://localhost:7000/api/useTemplate/${form._id}`}
+                        >
+                            <button>Use template</button>
+                        </a>
+                    </div>
+                ) : (
+                    <div></div>
+                )}
             </div>
         </div>
     )
