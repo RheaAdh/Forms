@@ -14,7 +14,8 @@ export interface FormDoc extends Document {
     owner: any
     closes: Date,
     isEditable: boolean,
-    isActive: boolean
+    isActive: boolean,
+    isTemplate:boolean
 }
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
 const form: Schema = new Schema(
@@ -28,7 +29,8 @@ const form: Schema = new Schema(
         closes: Date,
         isEditable:{type: Boolean, default:true},
         isActive:{type: Boolean, default:true},
-        multipleResponses:{type: Boolean, default:false}
+        multipleResponses:{type: Boolean, default:false},
+        isTemplate:{type: Boolean, default:false}
     },
     {
         timestamps: true,
