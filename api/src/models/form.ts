@@ -16,7 +16,6 @@ export interface FormDoc extends Document {
     isEditable: boolean
     isActive: boolean
     isTemplate: boolean
-    isDeleted: boolean
 }
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
 const form: Schema = new Schema(
@@ -32,7 +31,6 @@ const form: Schema = new Schema(
         isActive: { type: Boolean, default: true },
         multipleResponses: { type: Boolean, default: false },
         isTemplate: { type: Boolean, default: false },
-        isDeleted: { type: Boolean, default: false },
     },
     {
         timestamps: true,

@@ -1,4 +1,4 @@
-import { Document, Schema } from "mongoose"
+import mongoose, { Document, Schema } from "mongoose"
 import { Response, Request, NextFunction } from "express"
 import * as mongo from "../config/mongo"
 import { Form } from "../models/form"
@@ -110,40 +110,22 @@ export async function deleteForm(req: Request, res: Response) {
     try {
         console.log(req.body.id)
         let form = await Form.findById(req.body.id)
-        if (!form?.isTemplate) {
-            console.log("Form is not template")
-            let deletedResponses: any
-            deletedResponses = await FormResponse.deleteMany({
-                formId: req.body.id,
-            })
-            // console.log(deletedResponses)
+        console.log("Form is not template")
+        let deletedResponses: any
+        deletedResponses = await FormResponse.deleteMany({
+            formId: req.body.id,
+        })
 
-            let deletedQuestions: any
-            deletedQuestions = await Question.deleteMany({
-                formid: req.body.id,
-            })
-            // console.log(deletedQuestions)
+        let deletedQuestions: any
+        deletedQuestions = await Question.deleteMany({
+            formid: req.body.id,
+        })
 
-            let deletedForm: any
-            deletedForm = await Form.deleteOne({
-                _id: req.body.id,
-            })
-            // console.log(deletedForm)
-            return res.send({ success: true, msg: deletedForm })
-        } else {
-            let deletedResponses: any
-            deletedResponses = await FormResponse.deleteMany({
-                formId: req.body.id,
-            })
-            console.log(deletedResponses)
-            form.isDeleted = true
-            await form.save()
-            console.log("Form was template")
-            return res.send({
-                success: true,
-                msg: "Form exits as Template but all responses are deleted",
-            })
-        }
+        let deletedForm: any
+        deletedForm = await Form.deleteOne({
+            _id: req.body.id,
+        })
+        return res.send({ success: true, msg: deletedForm })
     } catch (error) {
         return res.send({ success: false, msg: error })
     }
@@ -197,53 +179,45 @@ export async function makeTemplate(req: Request, res: Response) {
         let formId = req.params.formId
         let form = await Form.findById(formId)
         if (form) {
-            form.isTemplate = true
-            await form.save()
-            return res.send({ success: true, msg: "Form saved as template" })
-        } else {
-            console.log("FormID is invalid")
-            return res.send({ success: false, msg: "Form doesn't exists" })
-        }
-    } catch (err) {
-        console.log(err)
-        return res.send({ success: false, msg: "Server Error" })
-    }
-}
-export async function deleteTemplate(req: Request, res: Response) {
-    try {
-        let formId = req.params.formId
-        let form = await Form.findById(formId)
-        if (form) {
-            let formId = req.params.formId
-            let form = await Form.findById(formId)
-            if (form?.isTemplate) {
-                if (form.isDeleted) {
-                    //delete form ques
-                    let deletedQuestions: any
-                    deletedQuestions = await Question.deleteMany({
-                        formid: formId,
-                    })
-                    console.log(deletedQuestions)
-                    //delete form
-                    let deletedForm: any
-                    deletedForm = await Form.deleteOne({
-                        _id: formId,
-                    })
-                    res.send({ success: true, msg: "Form Template deleted" })
-                } else {
-                    form.isTemplate = false
-                    await form.save()
-                    return res.send({
-                        success: true,
-                        msg: "Form removed from template",
-                    })
-                }
-            } else {
+            if (form.isTemplate) {
                 return res.send({
                     success: false,
-                    msg: "Form is not a template",
+                    msg:
+                        "Cannot create a template from already existing template",
                 })
             }
+
+            Form.findById(formId).exec(async function (err, doc) {
+                if (doc) {
+                    doc._id = mongoose.Types.ObjectId()
+                    doc.isNew = true
+                    doc.isTemplate = true
+                    doc.title = doc.title + "_template"
+                    doc.owner = req.session.userId
+                    for (let i = 0; i < doc.questions.length; i++) {
+                        let presentqueid = doc.questions[i]
+                        let newquesid: any
+                        Question.findById(presentqueid).exec(async function (
+                            err,
+                            document
+                        ) {
+                            if (document) {
+                                document._id = mongoose.Types.ObjectId()
+                                document.isNew = true
+                                document.formid = doc._id
+                                newquesid = document._id
+                                doc.questions[i] = newquesid
+                                await document.save()
+                            }
+                        })
+                    }
+                    await doc.save()
+                    console.log(doc.questions)
+                    console.log("new template")
+                }
+            })
+
+            return res.send({ success: true, msg: "Form saved as template" })
         } else {
             console.log("FormID is invalid")
             return res.send({ success: false, msg: "Form doesn't exists" })
@@ -258,9 +232,48 @@ export async function useTemplate(req: Request, res: Response) {
         let formId = req.params.formId
         let form: any = await Form.findById(formId)
         if (form) {
-            form.isDeleted = false
-            await form.save()
-            return res.send({ success: true, msg: "Template ready to be used" })
+            if (!form.isTemplate) {
+                return res.send({
+                    success: false,
+                    msg:
+                        "Cannot use form as to create a copy, requires template",
+                })
+            }
+
+            Form.findById(formId).exec(async function (err, doc) {
+                if (doc) {
+                    doc._id = mongoose.Types.ObjectId()
+                    doc.isNew = true
+                    doc.isTemplate = false
+                    doc.title = doc.title + "_copy"
+                    doc.owner = req.session.userId
+                    for (let i = 0; i < doc.questions.length; i++) {
+                        let presentqueid = doc.questions[i]
+                        let newquesid: any
+                        Question.findById(presentqueid).exec(async function (
+                            err,
+                            document
+                        ) {
+                            if (document) {
+                                document._id = mongoose.Types.ObjectId()
+                                document.isNew = true
+                                document.formid = doc._id
+                                newquesid = document._id
+                                doc.questions[i] = newquesid
+                                await document.save()
+                            }
+                        })
+                    }
+                    await doc.save()
+                    console.log(doc.questions)
+                    console.log("Form made from template")
+                }
+            })
+
+            return res.send({
+                success: true,
+                msg: "Template ready to be used,Form made from template",
+            })
         } else {
             console.log("FormID is invalid")
             return res.send({ success: false, msg: "Form doesn't exists" })

@@ -1,6 +1,10 @@
 import mongoose, { Schema, Document, Mongoose } from "mongoose"
 const options = { discriminatorKey: "question-type" }
 
+export interface QuesDoc extends Document {
+    formid: { type: Schema.Types.ObjectId; ref: "Form" }
+}
+
 //!BASE QUESTION SCHEMA
 
 const questionSchema: Schema = new Schema(
@@ -15,7 +19,8 @@ const questionSchema: Schema = new Schema(
 )
 
 //?COMPILE QUESTION MODEL
-export const Question = mongoose.model("question", questionSchema)
+// export const Question = mongoose.model("question", questionSchema)
+export const Question = mongoose.model<QuesDoc>("question", questionSchema)
 
 // SHORT ANSWER:
 const shortSchema: Schema = new Schema({})

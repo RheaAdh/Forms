@@ -11,7 +11,6 @@ import {
     closeForm,
     extractFormid,
     makeTemplate,
-    deleteTemplate,
     useTemplate,
 } from "./form"
 import {
@@ -78,7 +77,6 @@ router.get(
     getResponsesByQuestionsByForm
 )
 router.get("/makeTemplate/:formId", makeTemplate)
-router.get("/deleteTemplate/:formId", deleteTemplate)
 router.get("/useTemplate/:formId", useTemplate)
 
 ///////////////////////////SUPERADMIN ONLY////////////////////////////////
