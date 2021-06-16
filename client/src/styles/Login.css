@@ -4,6 +4,7 @@ body {
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
     transition: all 0.2s linear;
+    background-color: #dcdae2;
 }
 .form-container {
     min-height: 100vh;
@@ -29,7 +30,6 @@ body {
 /*Login*/
 .form-container form input {
     outline: none;
-    border: none;
     height: 40px;
     width: 82%;
     color: black;
@@ -38,10 +38,12 @@ body {
     padding: 0 10px;
     margin: 15px 0;
     letter-spacing: 1px;
+    font-size: bold;
 }
 
 .error-message {
-    color: black
+    font-size: bold;
+    color: black;
 }
 /*Login*/
 .form-container form input[type="submit"] {
@@ -50,7 +52,7 @@ body {
     margin-top: 25px;
 }
 .form-container form input[type="submit"]:hover {
-    letter-spacing: 4px;
+    cursor: pointer;
 }
 .container {
     display: block;

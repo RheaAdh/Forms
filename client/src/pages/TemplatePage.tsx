@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react"
 import FormList from "../components/FormList"
-import NewForm from "../components/NewForm"
+
 import { useAuth } from "../context/AuthContext"
-const FormsPage: React.FC = () => {
+const TemplatePage: React.FC = () => {
     const [forms, setForms] = useState<any[]>([])
     const auth = useAuth()
 
     useEffect(() => {
-        fetch(`http://localhost:7000/api/getforms`, {
+        fetch(`http://localhost:7000/api/viewAllTemplates`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -20,7 +20,7 @@ const FormsPage: React.FC = () => {
             .catch((e) => console.log(e))
 
             .then((data: any) => {
-                //console.log({ data })
+                console.log({ data })
                 if (data.success === true) {
                     setForms(data.forms)
                 } else {
@@ -39,7 +39,6 @@ const FormsPage: React.FC = () => {
     }
     return auth?.currentUser ? (
         <div>
-            <NewForm />
             <FormList forms={forms} deleteForm={deleteForm} />
         </div>
     ) : (
@@ -47,4 +46,4 @@ const FormsPage: React.FC = () => {
     )
 }
 
-export default FormsPage
+export default TemplatePage

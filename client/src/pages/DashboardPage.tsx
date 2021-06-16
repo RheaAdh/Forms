@@ -4,7 +4,7 @@ import FormsPage from "./FormsPage"
 import { useAuth } from "../context/AuthContext"
 import AdminLoginPage from "./AdminLoginPage"
 import { useHistory } from "react-router"
-import TemplateList from "../components/TemplateList"
+import TemplatePage from "../pages/TemplatePage"
 import ResponseList from "../components/ResponseList"
 
 const DashboardPage: React.FC = () => {
@@ -61,7 +61,7 @@ const DashboardPage: React.FC = () => {
                         id="adminForms"
                         onClick={(e) => handleChange(e)}
                     >
-                        Admin Form Responses
+                        Mancomm Form Responses
                     </p>
                 ) : null}
                 {auth?.currentUser?.role === "superadmin" ? (
@@ -112,7 +112,7 @@ const DashboardPage: React.FC = () => {
                     ) : current === "admin-login" ? (
                         <AdminLoginPage />
                     ) : current === "templates" ? (
-                        <TemplateList />
+                        <TemplatePage />
                     ) : (
                         <p>lmao</p>
                     )

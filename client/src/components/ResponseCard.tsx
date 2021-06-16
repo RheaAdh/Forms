@@ -22,7 +22,9 @@ const ResponseCard: React.FC<props> = ({ form }) => {
                 >
                     {form.title}
                 </h2>
-                <p>Is Active:{(form.isActive)?<div>YES</div>:<div>NO</div>}</p>
+                <p>
+                    Is Active:{form.isActive ? <div>YES</div> : <div>NO</div>}
+                </p>
                 <p>End time:{form.closes}</p>
                 <p>Number of responses:</p>
                 <button
@@ -32,6 +34,9 @@ const ResponseCard: React.FC<props> = ({ form }) => {
                 >
                     View Responses
                 </button>
+                <a href={`http://localhost:7000/api/download/${form._id}`}>
+                    <button>Download Responses</button>
+                </a>
             </div>
         </div>
     )

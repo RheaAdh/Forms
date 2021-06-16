@@ -88,15 +88,25 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
                 <button style={{ margin: "2px" }} onClick={handleDelete}>
                     <i className="fas fa-trash-alt"></i>
                 </button>
-                <CopyToClipboard text={link}>
-                    <button style={{ margin: "2px" }}>
-                        <i className="fas fa-copy"></i>
-                    </button>
-                </CopyToClipboard>
-                <a href={`http://localhost:7000/api/makeTemplate/${form._id}`}>
-                    {" "}
-                    <button>Add to templates</button>
-                </a>
+                {!form.isTemplate ? (
+                    <CopyToClipboard text={link}>
+                        <button style={{ margin: "2px" }}>
+                            <i className="fas fa-copy"></i>
+                        </button>
+                    </CopyToClipboard>
+                ) : (
+                    <div></div>
+                )}
+                {!form.isTemplate ? (
+                    <a
+                        href={`http://localhost:7000/api/makeTemplate/${form._id}`}
+                    >
+                        <button>Add to templates</button>
+                    </a>
+                ) : (
+                    <div></div>
+                )}
+
                 {form.isTemplate ? (
                     <div>
                         <a

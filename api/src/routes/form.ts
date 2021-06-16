@@ -284,11 +284,12 @@ export async function useTemplate(req: Request, res: Response) {
     }
 }
 
-
 export async function viewAllTempalates(req: Request, res: Response) {
     const forms = await Form.find({
         isTemplate: true,
     }).sort({ createdAt: -1 })
+    console.log("egfewjgpjps")
+
     console.log(forms)
-    res.send({ success: true, data:forms })
+    return res.send({ success: true, forms: forms })
 }

@@ -1,14 +1,24 @@
 Frontend
-check delete question some error(IMP)
+
+finish user form design 
+check delete question some error
 clear response for multiple response when redirected back to form
 display cannot fill form if !edit !multipleResponse and submitted once
-view response by of users individually
-finish user form design(IMP) 
-finish template view
-finish basic design (ADMIN)
 clear responses if user thinks whatever filled till now is working
-board can create form and save as template which is visible to all
+view response by of users individually
+
+--NOW
+
+can create form and save as template which is visible to all
 create predefined templates for events we know 
+not render templates in responses
+fix all buttons dont redirect instead refresh 
+-copied popup
+-download popup
+-added to template popup
+
+finish template view --> done
+finish basic design (ADMIN)--> done
 
 Backend
 
@@ -16,9 +26,9 @@ send responses thru iecse mailer on taking email as parameter(not imp)
 board can create form and save as template which is visible to all ---> done | Frontend --> not done
  
 
----NEED DETAILS---
+---NEED DETAILS(SAVED FOR LAST)---
 s3 bucket(IMP)
     csv download
     file upload
-mailer integration for forgot password
+mailer integration for forgot password and send responses to user
 
