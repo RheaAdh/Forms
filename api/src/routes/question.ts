@@ -311,6 +311,8 @@ export async function updateQuestion(req: Request, res: Response) {
 export async function deleteQuestion(req: Request, res: Response) {
     try {
         await Question.findByIdAndDelete(req.body.id)
+        console.log(req.body.id)
+
         await Form.findOneAndUpdate(
             { _id: req.body.formid },
             { $pull: { questions: req.body.id } as any }

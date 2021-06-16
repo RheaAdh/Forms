@@ -48,11 +48,19 @@ const QuestionList: React.FC<props> = ({ formid }) => {
     }
 
     const deleteQuestion = (idx: number) => {
+        console.log("before" + idx)
+        for (let i = 0; i < questionList.length; i++) {
+            console.log(questionList[i])
+        }
+
         setQuestionList((prevList) =>
             prevList.filter((question, i) => idx !== i)
         )
+        console.log("after" + idx)
+        for (let i = 0; i < questionList.length; i++) {
+            console.log(questionList[i])
+        }
     }
-
     return (
         <div className="list-container">
             <div className="list-body">

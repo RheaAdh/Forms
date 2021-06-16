@@ -63,9 +63,6 @@ const AdminLoginPage: React.FC = () => {
             <form id="form" onSubmit={handleFormSubmit}>
                 {forgotPassword ? <h3> Enter your email </h3> : <h3>Login</h3>}
                 <div className="container">
-                    <span className="icon">
-                        <i className="fas fa-at"></i>
-                    </span>
                     <input
                         value={email}
                         onChange={handleEmail}
@@ -75,9 +72,6 @@ const AdminLoginPage: React.FC = () => {
                 </div>
                 {forgotPassword ? null : (
                     <div className="container">
-                        <span className="icon">
-                            <i className="fas fa-lock"></i>
-                        </span>
                         <input
                             value={password}
                             onChange={handlePassword}
@@ -87,14 +81,17 @@ const AdminLoginPage: React.FC = () => {
                     </div>
                 )}
                 <div className="container">
-                    <span className="icon">
-                        <i className="fas fa-lock"></i>
-                    </span>
                     <h4 className="error-message">{errorMessage}</h4>
                 </div>
 
                 <input
                     type="submit"
+                    style={{
+                        border: "none",
+                        cursor: "pointer",
+                        background: "none",
+                        color: "black",
+                    }}
                     value={forgotPassword ? "Confirm email" : "Login"}
                 />
                 {forgotPassword ? null : (
@@ -103,9 +100,9 @@ const AdminLoginPage: React.FC = () => {
                         value="Forgot Password"
                         style={{
                             border: "none",
-                            color: "white",
                             cursor: "pointer",
                             background: "none",
+                            color: "black",
                         }}
                         onClick={(e) => handleForgotPassword()}
                     />

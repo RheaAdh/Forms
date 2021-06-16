@@ -44,10 +44,17 @@ const NewForm = () => {
 
     return (
         <div>
-            <form onSubmit={addForm}>
-                <input type="text" value={title} onChange={handleTitle} />
+            <form onSubmit={addForm} style={{ margin: "1rem" }}>
+                <input
+                    placeholder="Create New Form"
+                    type="text"
+                    value={title}
+                    onChange={handleTitle}
+                />
                 <button type="submit">
-                    <b>Add New Form</b>
+                    <b>
+                        <i className="far fa-plus-square"></i>
+                    </b>
                 </button>
             </form>
             <hr></hr>

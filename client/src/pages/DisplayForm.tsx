@@ -306,7 +306,7 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
             })}
             <b style={{ color: "red" }}>{submitError}</b>
             <br />
-            {!form?.isEditable && !form?.multipleResponses ? (
+            {readonly ? (
                 <div
                     style={{
                         background: "red",

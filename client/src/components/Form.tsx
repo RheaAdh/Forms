@@ -8,7 +8,7 @@ interface props {
 
 const Form: React.FC<props> = ({ form, deleteForm }) => {
     const [active, setActive] = useState(form.isActive)
-    const [link, setLink] = useState(`http://localhost:3000/form/${form._id}`)
+    const [link, setLink] = useState(`http://localhost:3000/login/${form._id}`)
     let history = useHistory()
 
     const handleClick = () => {
@@ -63,7 +63,7 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
     return (
         <div
             style={{
-                backgroundColor: form.color_theme,
+                backgroundColor: "#BEBEBE",
                 cursor: "pointer",
                 margin: 30,
             }}
@@ -71,10 +71,11 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
             <div onClick={handleClick}>
                 <h1>{form.title}</h1>
                 <p>{form.description}</p>
-                <h5>{active ? "Accepting responses" : "Form closed"}</h5>
+                <p>{active ? "Accepting responses" : "Form closed"}</p>
             </div>
             <div>
                 <button
+                    style={{ margin: "2px" }}
                     onClick={(
                         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
                     ) => {
@@ -84,10 +85,12 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
                 >
                     {active ? "Close form" : "Open form"}
                 </button>
-                <button onClick={handleDelete}>Delete Form</button>
+                <button style={{ margin: "2px" }} onClick={handleDelete}>
+                    <i className="fas fa-trash-alt"></i>
+                </button>
                 <CopyToClipboard text={link}>
-                    <button>
-                        <i className="fas fa-copy">Copy Link</i>
+                    <button style={{ margin: "2px" }}>
+                        <i className="fas fa-copy"></i>
                     </button>
                 </CopyToClipboard>
             </div>
