@@ -17,13 +17,13 @@ Frontend
 *we need copy button inside each form in admin/superadmin dashboard which will have something like this http://localhost:3000/form/60a5869152d95e761a715007 which can be used to share link of form 
 
 Backend
-* upload/download files,images,responses as csv
+* upload files left
 * sort/filter responses 
 * testing
 
 
 New Features (Explicit to iecse)
-board can create form and save as template which is visible to all
+board can create form and save as template which is visible to all  --backend: done | frontend:not done
 create predefined templates for events we know 
 send responses thru iecse mailer on taking email as parameter
 clear responses if user thinks whatever filled till now is working

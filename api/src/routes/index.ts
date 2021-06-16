@@ -10,6 +10,9 @@ import {
     getSuperAdminForms,
     closeForm,
     extractFormid,
+    makeTemplate,
+    deleteTemplate,
+    useTemplate,
 } from "./form"
 import {
     addQuestion,
@@ -74,13 +77,12 @@ router.get(
     isValidAdmin,
     getResponsesByQuestionsByForm
 )
-
-
+router.get("/makeTemplate/:formId", makeTemplate)
+router.get("/deleteTemplate/:formId", deleteTemplate)
+router.get("/useTemplate/:formId", useTemplate)
 
 ///////////////////////////SUPERADMIN ONLY////////////////////////////////
 router.get("/getsuperadminforms", isValidSuperAdmin, getSuperAdminForms)
-
-
 
 ///////////////////////////USER,ADMIN AND SUPERADMIN///////////////////////////////
 router.get("/getform/:formid", extractFormid, checkAuthentication, getForm)
@@ -92,9 +94,6 @@ router.get(
     getQuestionsByFormid
 )
 router.post("/submitresponse", checkAuthentication, submitResponse)
-
-
-
 
 //Covert to .csv and download route
 router.get("/download/:formid", downloadResponse)

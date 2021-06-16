@@ -106,34 +106,49 @@ export async function updateForm(req: Request, res: Response) {
 
 //!DELETE ALL THE QUESTIONS/RESPONSES OF THIS FORM AS WELL
 export async function deleteForm(req: Request, res: Response) {
+    console.log("Inside Delete")
     try {
         console.log(req.body.id)
+        let form = await Form.findById(req.body.id)
+        if (!form?.isTemplate) {
+            console.log("Form is not template")
+            let deletedResponses: any
+            deletedResponses = await FormResponse.deleteMany({
+                formId: req.body.id,
+            })
+            // console.log(deletedResponses)
 
-        let deletedResponses: any
-        deletedResponses = await FormResponse.deleteMany({
-            formId: req.body.id,
-        })
-        console.log(deletedResponses)
+            let deletedQuestions: any
+            deletedQuestions = await Question.deleteMany({
+                formid: req.body.id,
+            })
+            // console.log(deletedQuestions)
 
-        let deletedQuestions: any
-        deletedQuestions = await Question.deleteMany({
-            formid: req.body.id,
-        })
-        console.log(deletedQuestions)
-
-        let deletedForm: any
-        deletedForm = await Form.deleteOne({
-            _id: req.body.id,
-        })
-        console.log(deletedForm)
-
-        return res.send({ success: true, msg: deletedForm })
+            let deletedForm: any
+            deletedForm = await Form.deleteOne({
+                _id: req.body.id,
+            })
+            // console.log(deletedForm)
+            return res.send({ success: true, msg: deletedForm })
+        } else {
+            let deletedResponses: any
+            deletedResponses = await FormResponse.deleteMany({
+                formId: req.body.id,
+            })
+            console.log(deletedResponses)
+            form.isDeleted = true
+            await form.save()
+            console.log("Form was template")
+            return res.send({
+                success: true,
+                msg: "Form exits as Template but all responses are deleted",
+            })
+        }
     } catch (error) {
         return res.send({ success: false, msg: error })
     }
 }
 
-//Routes for closing-form  ---> to be implemented using toggle button in formlist correspomding to form
 export async function closeForm(req: Request, res: Response) {
     try {
         let formId = req.params.formId
@@ -174,5 +189,84 @@ export async function extractFormid(
     } else {
         console.log("FormID is invalid")
         return res.send({ success: false, msg: "Form doesn't exists" })
+    }
+}
+
+export async function makeTemplate(req: Request, res: Response) {
+    try {
+        let formId = req.params.formId
+        let form = await Form.findById(formId)
+        if (form) {
+            form.isTemplate = true
+            await form.save()
+            return res.send({ success: true, msg: "Form saved as template" })
+        } else {
+            console.log("FormID is invalid")
+            return res.send({ success: false, msg: "Form doesn't exists" })
+        }
+    } catch (err) {
+        console.log(err)
+        return res.send({ success: false, msg: "Server Error" })
+    }
+}
+export async function deleteTemplate(req: Request, res: Response) {
+    try {
+        let formId = req.params.formId
+        let form = await Form.findById(formId)
+        if (form) {
+            let formId = req.params.formId
+            let form = await Form.findById(formId)
+            if (form?.isTemplate) {
+                if (form.isDeleted) {
+                    //delete form ques
+                    let deletedQuestions: any
+                    deletedQuestions = await Question.deleteMany({
+                        formid: formId,
+                    })
+                    console.log(deletedQuestions)
+                    //delete form
+                    let deletedForm: any
+                    deletedForm = await Form.deleteOne({
+                        _id: formId,
+                    })
+                    res.send({ success: true, msg: "Form Template deleted" })
+                } else {
+                    form.isTemplate = false
+                    await form.save()
+                    return res.send({
+                        success: true,
+                        msg: "Form removed from template",
+                    })
+                }
+            } else {
+                return res.send({
+                    success: false,
+                    msg: "Form is not a template",
+                })
+            }
+        } else {
+            console.log("FormID is invalid")
+            return res.send({ success: false, msg: "Form doesn't exists" })
+        }
+    } catch (err) {
+        console.log(err)
+        return res.send({ success: false, msg: "Server Error" })
+    }
+}
+export async function useTemplate(req: Request, res: Response) {
+    try {
+        let formId = req.params.formId
+        let form: any = await Form.findById(formId)
+        if (form) {
+            form.isDeleted = false
+            await form.save()
+            return res.send({ success: true, msg: "Template ready to be used" })
+        } else {
+            console.log("FormID is invalid")
+            return res.send({ success: false, msg: "Form doesn't exists" })
+        }
+    } catch (err) {
+        console.log(err)
+        return res.send({ success: false, msg: "Server Error" })
     }
 }
