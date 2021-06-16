@@ -283,3 +283,12 @@ export async function useTemplate(req: Request, res: Response) {
         return res.send({ success: false, msg: "Server Error" })
     }
 }
+
+
+export async function viewAllTempalates(req: Request, res: Response) {
+    const forms = await Form.find({
+        isTemplate: true,
+    }).sort({ createdAt: -1 })
+    console.log(forms)
+    res.send({ success: true, data:forms })
+}
