@@ -1,29 +1,24 @@
 Frontend
-
-* make frontend look decent
-* other iecse designs can do similar https://www.figma.com/file/v9QEhA9OnSR5luEL64nHJu/IECSE-Main-website?node-id=0%3A1
-
-* Response page and implementation corresponding to different response routes is left
-
-*Admin dashboard is left
-    *view responses of admin only formlist
-    *create forms/ view only admin forms
-
-* 404 page 
-* link to register in login page and vice versa
-
-* dropdown isnt working
-* Also when both edit and multipleResponse is false then just one (i.e.very first) response is just possible or valid, but if a user wants to fill again it should show message something similar to what is comming from backend in that case
-*we need copy button inside each form in admin/superadmin dashboard which will have something like this http://localhost:3000/form/60a5869152d95e761a715007 which can be used to share link of form 
+check delete question some error(IMP)
+clear response for multiple response when redirected back to form
+display cannot fill form if !edit !multipleResponse and submitted once
+view response by of users individually
+finish user form design(IMP) 
+finish template view
+finish basic design (ADMIN)
+clear responses if user thinks whatever filled till now is working
+board can create form and save as template which is visible to all
+create predefined templates for events we know 
 
 Backend
-* upload files left
-* sort/filter responses 
-* testing
 
+send responses thru iecse mailer on taking email as parameter(not imp)
+board can create form and save as template which is visible to all
+ 
 
-New Features (Explicit to iecse)
-board can create form and save as template which is visible to all  --backend: done | frontend:not done
-create predefined templates for events we know 
-send responses thru iecse mailer on taking email as parameter
-clear responses if user thinks whatever filled till now is working
+---NEED DETAILS---
+s3 bucket(IMP)
+    csv download
+    file upload
+mailer integration for forgot password
+
