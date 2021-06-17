@@ -57,11 +57,13 @@ const AdminLoginPage: React.FC = () => {
     }
 
     return auth?.currentUser ? (
-        <Redirect to="/" />
+        <div>
+            <Redirect to="/" />
+        </div>
     ) : (
         <div className="form-container">
             <form id="form" onSubmit={handleFormSubmit}>
-                {forgotPassword ? <h3> Enter your email </h3> : <h3>Login</h3>}
+                {forgotPassword ? <h3>Enter your email</h3> : <h3>Login</h3>}
                 <div className="container">
                     <input
                         value={email}

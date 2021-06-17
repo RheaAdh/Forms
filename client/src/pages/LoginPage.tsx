@@ -31,6 +31,7 @@ const LoginPage: React.FC = () => {
     return (
         <div className="form-container">
             <form id="form">
+                
                 <h3>Login</h3>
                 <div className="container">
                     {auth?.currentUser ? (

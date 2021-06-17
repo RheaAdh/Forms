@@ -2,15 +2,10 @@ import React, { useState, useEffect, useRef, useMemo } from "react"
 import { Link, Redirect, useParams } from "react-router-dom"
 
 import QuestionList from "../components/QuestionList"
-
 import useFormState from "../hooks/useFormState"
-
 import { useAuth } from "../context/AuthContext"
-
 import DatePicker from "react-datepicker"
-
 import "react-datepicker/dist/react-datepicker.css"
-
 import "../styles/EditFormPage.css"
 
 //TODO:

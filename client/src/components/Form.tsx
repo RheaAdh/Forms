@@ -10,11 +10,10 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
     const [active, setActive] = useState(form.isActive)
     const [link, setLink] = useState(`http://localhost:3000/login/${form._id}`)
     let history = useHistory()
-
+    const [tempState, setTempState] = useState()
     const handleClick = () => {
         history.push(`/editForm/${form._id}`)
     }
-
     const toggleActive = () => {
         fetch(`http://localhost:7000/api/formclose/${form._id}`, {
             method: "PUT",
@@ -57,9 +56,21 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
                 console.error("Error:", error)
             })
     }
-
+    // const handleUseTemplate = () => {
+    //     fetch(`http://localhost:7000/api/makeTemplate/${form._id}`, {
+    //         method: "GET",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //         credentials: "include",
+    //     })
+    //         .then((response) => response.json())
+    //         .catch((error) => {
+    //             console.error("Error:", error)
+    //         })
+    // }
     useEffect(toggleActive, [active])
-
+    // useEffect(handleUseTemplate, [tempState])
     return (
         <div
             style={{
@@ -98,11 +109,10 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
                     <div></div>
                 )}
                 {!form.isTemplate ? (
-                    <a
-                        href={`http://localhost:7000/api/makeTemplate/${form._id}`}
-                    >
-                        <button>Add to templates</button>
-                    </a>
+                    <button>
+                        {/* onClick={handleUseTemplate} */}
+                        Add to templates
+                    </button>
                 ) : (
                     <div></div>
                 )}
