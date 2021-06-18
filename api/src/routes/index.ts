@@ -79,7 +79,7 @@ router.get(
 )
 router.get("/makeTemplate/:formId", makeTemplate)
 router.get("/useTemplate/:formId", useTemplate)
-router.get("/viewAllTemplates",viewAllTempalates)
+router.get("/viewAllTemplates", viewAllTempalates)
 
 ///////////////////////////SUPERADMIN ONLY////////////////////////////////
 router.get("/getsuperadminforms", isValidSuperAdmin, getSuperAdminForms)

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useHistory } from "react-router-dom"
 import { CopyToClipboard } from "react-copy-to-clipboard"
+import { useAuth } from "../context/AuthContext"
 interface props {
     form: any
     deleteForm: any
@@ -10,6 +11,8 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
     const [active, setActive] = useState(form.isActive)
     const [link, setLink] = useState(`http://localhost:3000/login/${form._id}`)
     let history = useHistory()
+    const auth = useAuth()
+
     const handleClick = () => {
         history.push(`/editForm/${form._id}`)
     }
@@ -95,60 +98,56 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
                 <h1>{form.title}</h1>
                 <p>{form.description}</p>
             </div>
+            <div></div>
             {!form.isTemplate ? (
                 <p>{active ? "Accepting responses" : "Form closed"}</p>
             ) : null}
-            <div>
-                {!form.isTemplate ? (
-                    <button
-                        style={{ margin: "2px" }}
-                        onClick={(
-                            event: React.MouseEvent<
-                                HTMLButtonElement,
-                                MouseEvent
-                            >
-                        ) => {
-                            event.stopPropagation()
-                            setActive(!active)
-                        }}
-                    >
-                        {active ? "Close form" : "Open form"}
-                    </button>
-                ) : null}
 
-                {!form.isTemplate ? (
-                    <button style={{ margin: "2px" }} onClick={handleDelete}>
-                        <i className="fas fa-trash-alt"></i>
-                    </button>
-                ) : null}
+            {!form.isTemplate ? (
+                <button
+                    style={{ margin: "2px" }}
+                    onClick={(
+                        event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                    ) => {
+                        event.stopPropagation()
+                        setActive(!active)
+                    }}
+                >
+                    {active ? "Close form" : "Open form"}
+                </button>
+            ) : null}
+            {console.log("-----------------------")}
+            {console.log(auth?.currentUser?.role)}
+            {form.role === "superadmin" &&
+            form.isTemplate &&
+            auth?.currentUser?.role === "admin" ? null : (
+                <button style={{ margin: "2px" }} onClick={handleDelete}>
+                    <i className="fas fa-trash-alt"></i>
+                </button>
+            )}
 
-                {!form.isTemplate ? (
-                    <CopyToClipboard text={link}>
-                        <button style={{ margin: "2px" }}>
-                            <i className="fas fa-copy"> Share</i>
-                        </button>
-                    </CopyToClipboard>
-                ) : (
-                    <div></div>
-                )}
-                {!form.isTemplate ? (
-                    <button onClick={handleMakeTemplate}>
-                        Add to templates
+            {!form.isTemplate ? (
+                <CopyToClipboard text={link}>
+                    <button style={{ margin: "2px" }}>
+                        <i className="fas fa-copy"> Share</i>
                     </button>
-                ) : (
-                    <div></div>
-                )}
+                </CopyToClipboard>
+            ) : (
+                <div></div>
+            )}
+            {!form.isTemplate ? (
+                <button onClick={handleMakeTemplate}>Add to templates</button>
+            ) : (
+                <div></div>
+            )}
 
-                {form.isTemplate ? (
-                    <div>
-                        <button onClick={handleUseTemplate}>
-                            Use template
-                        </button>
-                    </div>
-                ) : (
-                    <div></div>
-                )}
-            </div>
+            {form.isTemplate ? (
+                <div>
+                    <button onClick={handleUseTemplate}>Use template</button>
+                </div>
+            ) : (
+                <div></div>
+            )}
         </div>
     )
 }

@@ -24,6 +24,7 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
     useEffect(() => {
         auth?.getCurrentUser()
     }, [])
+
     useEffect(() => {
         if (formid)
             fetch(`http://localhost:7000/api/getform/${formid}`, {
@@ -91,6 +92,10 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
     useEffect(() => {
         // if form exists and page is readonly, get list of ALL users who have filled the form
         // This is for admin to view responses user-wise
+        console.log("form")
+        console.log(form)
+        console.log("over form")
+
         if (form && readonly)
             fetch(
                 `http://localhost:7000/api/responsesidbyformfilled/${formid}`,
@@ -108,6 +113,7 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                 .catch((err) => console.log(err))
                 .then((data) => {
                     if (data.success) {
+                        // [{1,A},{2,B}...]
                         setUsers(data.data)
                         setCurrentUser(data.data[0])
                     } else {
@@ -117,6 +123,14 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
     }, [form])
 
     useEffect(() => {
+        console.log("curruser00000")
+        console.log(currentUser)
+        console.log("over curruser")
+        console.log("users")
+
+        console.log(users)
+        console.log("over users")
+
         if (currentUser && readonly) {
             // Get responses for current user
             setLoading(true)
@@ -136,6 +150,8 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                     if (data.success) {
                         setResponses(data.data.responses)
                     } else {
+                        console.log("no successssss")
+
                         console.log(data.data)
                     }
                     setLoading(false)
@@ -242,6 +258,7 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
             }}
         >
             <div>
+                {console.log(users.length)}
                 {users.length ? (
                     <select defaultValue={currentUser.username}>
                         {users.map((user: any, i: Number) => {
@@ -306,17 +323,7 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
             })}
             <b style={{ color: "red" }}>{submitError}</b>
             <br />
-            {readonly ? (
-                <div
-                    style={{
-                        background: "red",
-                        width: "100%",
-                        textAlign: "center",
-                    }}
-                >
-                    YOU HAVE ALREADY SUBMITTED THE FORM
-                </div>
-            ) : (
+            {readonly ? null : (
                 <button
                     style={{
                         left: "21.09%;",

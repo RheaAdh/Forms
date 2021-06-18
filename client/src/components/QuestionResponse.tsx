@@ -635,6 +635,7 @@ const QuestionResponse: React.FC<props> = ({
             {question["required"] ? (
                 <span style={{ color: "red" }}>*</span>
             ) : null}
+            {/* SOME ISSUE IN BRINGINGUSER RESPONSES */}
             {types[typeToIdx.indexOf(question["question-type"])]}
             <br />
             <br />
