@@ -1,5 +1,21 @@
 # IECSE Forms
 
+## Features
+<br>Admins can register as "admin"
+<br>Board members hardcode as "superadmin"
+<br>todo:Set AllRegistered=1 to block "/register"
+<br>Login as admin/superadmin from "/login"
+<br>Dashboard only for admins
+<br>Copy link of a form that has to be sent to users "...../login/formid" this redirects users to <br>google login
+<br>Add/delete/edit forms
+<br>View responses of users
+<br>Create templates and use them if needed
+<br>todo:
+<br>Use preexisting templates 
+<br>todo:Download responses as csv
+<br>todo:Send responses to user
+
+
 ## Installations and setup
 - Install MongoDB, Node and npm. 
 - To install any package for the `api` or `client`, run `npm i <package-name>` and also `npm i -D @types<package-name>`. The later with save the types of the package as a dev-dependency, which will be handy for typescript. 
@@ -59,4 +75,4 @@ ResponseSchmea -> FormID, QuestionID, ReponseBody
 ### Misc
 - Auto save form state for a limited amount of time - cookies/session stores
 - Download response as a user
-- Dynamic form themeing (background, colors)
+- Dynamic form themeing (background->dark/light)

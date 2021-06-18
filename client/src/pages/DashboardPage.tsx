@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext"
 import AdminLoginPage from "./AdminLoginPage"
 import { useHistory } from "react-router"
 import TemplatePage from "../pages/TemplatePage"
+import Error from "../components/Error"
 import ResponseList from "../components/ResponseList"
 
 const DashboardPage: React.FC = () => {
@@ -21,9 +22,11 @@ const DashboardPage: React.FC = () => {
     }
 
     const history = useHistory()
+
     useEffect(() => {
         auth?.getCurrentUser().then((res: any) => setLoading(false))
     }, [])
+
     const handleLogout = async () => {
         auth?.logout()
             .then((res) => history.push("/adminlogin"))
@@ -37,16 +40,18 @@ const DashboardPage: React.FC = () => {
     return (
         <div className="dashboard">
             <div className="sidebar">
-                {auth?.currentUser !== null ? (
+                {auth?.currentUser?.role === "admin" ||
+                auth?.currentUser?.role === "superadmin" ? (
                     <p
                         className="btn"
                         id="allForms"
                         onClick={(e) => handleChange(e)}
                     >
-                        All Forms
+                        All Forms / Create Form
                     </p>
                 ) : null}
-                {auth?.currentUser !== null ? (
+                {auth?.currentUser?.role === "admin" ||
+                auth?.currentUser?.role === "superadmin" ? (
                     <p
                         className="btn"
                         id="templates"
@@ -55,7 +60,8 @@ const DashboardPage: React.FC = () => {
                         Templates
                     </p>
                 ) : null}
-                {auth?.currentUser !== null ? (
+                {auth?.currentUser?.role === "admin" ||
+                auth?.currentUser?.role === "superadmin" ? (
                     <p
                         className="btn"
                         id="adminForms"
@@ -73,7 +79,7 @@ const DashboardPage: React.FC = () => {
                         Board Form responses
                     </p>
                 ) : null}
-                {auth?.currentUser === null ? (
+                {auth?.currentUser?.role == null ? (
                     <div>
                         <p
                             className="btn"
@@ -82,16 +88,7 @@ const DashboardPage: React.FC = () => {
                                 history.push("/adminlogin")
                             }}
                         >
-                            Login
-                        </p>
-                        <p
-                            className="btn"
-                            id="admin-login"
-                            onClick={(e) => {
-                                history.push("/register")
-                            }}
-                        >
-                            Register
+                            Login (ADMIN ONLY)
                         </p>
                     </div>
                 ) : (
@@ -101,7 +98,8 @@ const DashboardPage: React.FC = () => {
                 )}
             </div>
             <div className="main-column">
-                {auth?.currentUser?.role !== null ? (
+                {auth?.currentUser?.role === "admin" ||
+                auth?.currentUser?.role === "superadmin" ? (
                     current === "allForms" ? (
                         <FormsPage />
                     ) : current === "adminForms" ? (
@@ -117,7 +115,7 @@ const DashboardPage: React.FC = () => {
                         <p>lmao</p>
                     )
                 ) : (
-                    <ResponseList creatorRole="admin" />
+                    <div>What are you doing here??</div>
                 )}
             </div>
         </div>

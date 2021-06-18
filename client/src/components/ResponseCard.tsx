@@ -26,7 +26,6 @@ const ResponseCard: React.FC<props> = ({ form }) => {
                     Is Active:{form.isActive ? <div>YES</div> : <div>NO</div>}
                 </p>
                 <p>End time:{form.closes}</p>
-                <p>Number of responses:</p>
                 <button
                     onClick={() => {
                         history.push(`/responses/${form._id}`)
