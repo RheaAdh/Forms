@@ -10,7 +10,6 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
     const [active, setActive] = useState(form.isActive)
     const [link, setLink] = useState(`http://localhost:3000/login/${form._id}`)
     let history = useHistory()
-    const [tempState, setTempState] = useState()
     const handleClick = () => {
         history.push(`/editForm/${form._id}`)
     }
@@ -56,19 +55,32 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
                 console.error("Error:", error)
             })
     }
-    // const handleUseTemplate = () => {
-    //     fetch(`http://localhost:7000/api/makeTemplate/${form._id}`, {
-    //         method: "GET",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //         credentials: "include",
-    //     })
-    //         .then((response) => response.json())
-    //         .catch((error) => {
-    //             console.error("Error:", error)
-    //         })
-    // }
+    const handleMakeTemplate = () => {
+        fetch(`http://localhost:7000/api/makeTemplate/${form._id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+        })
+            .then((response) => response.json())
+            .catch((error) => {
+                console.error("Error:", error)
+            })
+    }
+    const handleUseTemplate = () => {
+        fetch(`http://localhost:7000/api/useTemplate/${form._id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+        })
+            .then((response) => response.json())
+            .catch((error) => {
+                console.error("Error:", error)
+            })
+    }
     useEffect(toggleActive, [active])
     // useEffect(handleUseTemplate, [tempState])
     return (
@@ -109,8 +121,7 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
                     <div></div>
                 )}
                 {!form.isTemplate ? (
-                    <button>
-                        {/* onClick={handleUseTemplate} */}
+                    <button onClick={handleMakeTemplate}>
                         Add to templates
                     </button>
                 ) : (
@@ -119,11 +130,9 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
 
                 {form.isTemplate ? (
                     <div>
-                        <a
-                            href={`http://localhost:7000/api/useTemplate/${form._id}`}
-                        >
-                            <button>Use template</button>
-                        </a>
+                        <button onClick={handleUseTemplate}>
+                            Use template
+                        </button>
                     </div>
                 ) : (
                     <div></div>

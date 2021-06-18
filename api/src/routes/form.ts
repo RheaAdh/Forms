@@ -19,11 +19,12 @@ export async function getForms(req: Request, res: Response) {
             //admin
             const myForms = await Form.find({
                 owner: req.session.userId,
+                isTemplate:false
             }).sort({ createdAt: -1 })
             res.send({ success: true, forms: myForms })
         } else {
             //superadmin
-            const forms = await Form.find().sort({ createdAt: -1 })
+            const forms = await Form.find({isTempalte:false}).sort({ createdAt: -1 })
             res.json({ success: true, forms: forms })
         }
     } catch (error) {
