@@ -7,6 +7,8 @@ display cannot fill form if !edit !multipleResponse and submitted once
 clear responses if user thinks whatever filled till now is working
 view response by of users individually
 
+Remove add quesbutton or make template non editable from Frontend and show a message to create a copy of form to edit  (implemented check from backend, frontend is left)
+
 --NOW
 fix all buttons dont redirect to 7000 instead refresh 
 

@@ -18,7 +18,7 @@ export async function getForms(req: Request, res: Response) {
         if (req.session.role === "admin") {
             //admin
             const myForms = await Form.find({
-                role:"admin",
+                role: "admin",
                 isTemplate: false,
             }).sort({ createdAt: -1 })
             res.send({ success: true, forms: myForms })
@@ -82,7 +82,7 @@ export async function addForm(req: any, res: Response) {
             isActive: req.body.isActive,
             isEditable: req.body.isEditable,
             multipleResponses: req.multipleResponses,
-            role:req.session.role
+            role: req.session.role,
         })
         const form = await newForm.save()
         console.log("Form added!")
@@ -113,23 +113,68 @@ export async function deleteForm(req: Request, res: Response) {
     console.log("Inside Delete")
     try {
         console.log(req.body.id)
-        let form = await Form.findById(req.body.id)
-        console.log("Form is not template")
-        let deletedResponses: any
-        deletedResponses = await FormResponse.deleteMany({
-            formId: req.body.id,
-        })
+        let form = await Form.findById(req.body.id).populate("owner")
+        console.log(form)
+        if(!form?.isTemplate)
+        {
+            let deletedResponses: any
+                deletedResponses = await FormResponse.deleteMany({
+                    formId: req.body.id,
+                })
 
-        let deletedQuestions: any
-        deletedQuestions = await Question.deleteMany({
-            formid: req.body.id,
-        })
+                let deletedQuestions: any
+                deletedQuestions = await Question.deleteMany({
+                    formid: req.body.id,
+                })
 
-        let deletedForm: any
-        deletedForm = await Form.deleteOne({
-            _id: req.body.id,
-        })
-        return res.send({ success: true, msg: deletedForm })
+                let deletedForm: any
+                deletedForm = await Form.deleteOne({
+                    _id: req.body.id,
+                })
+                return res.send({ success: true, msg: deletedForm })
+        }
+        else if (form?.owner["role"] == "superadmin") {
+            if (req.session.role == "superadmin") {
+                let deletedResponses: any
+                deletedResponses = await FormResponse.deleteMany({
+                    formId: req.body.id,
+                })
+
+                let deletedQuestions: any
+                deletedQuestions = await Question.deleteMany({
+                    formid: req.body.id,
+                })
+
+                let deletedForm: any
+                deletedForm = await Form.deleteOne({
+                    _id: req.body.id,
+                })
+                return res.send({ success: true, msg: deletedForm })
+            }
+            else
+            {
+                res.send({ success: true, msg: "Form cant be deleted as it is created by superadmin" })
+            }
+        }
+        else
+        {
+            let deletedResponses: any
+                deletedResponses = await FormResponse.deleteMany({
+                    formId: req.body.id,
+                })
+
+                let deletedQuestions: any
+                deletedQuestions = await Question.deleteMany({
+                    formid: req.body.id,
+                })
+
+                let deletedForm: any
+                deletedForm = await Form.deleteOne({
+                    _id: req.body.id,
+                })
+                return res.send({ success: true, msg: deletedForm })
+        }
+
     } catch (error) {
         return res.send({ success: false, msg: error })
     }
