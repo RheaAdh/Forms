@@ -15,7 +15,11 @@ const ResponseCard: React.FC<props> = ({ form }) => {
 
     return (
         <div>
-            <div style={{ backgroundColor: form.color_theme, margin: 30 }}>
+            <div style={{
+                backgroundColor: "#BEBEBE",
+                cursor: "pointer",
+                margin: 30,
+            }}>
                 <h2
                     style={{ cursor: "pointer" }}
                     onClick={(e) => handleClick(e)}

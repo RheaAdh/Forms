@@ -18,13 +18,15 @@ export async function getForms(req: Request, res: Response) {
         if (req.session.role === "admin") {
             //admin
             const myForms = await Form.find({
-                owner: req.session.userId,
-                isTemplate:false
+                role:"admin",
+                isTemplate: false,
             }).sort({ createdAt: -1 })
             res.send({ success: true, forms: myForms })
-        } else {
+        } else if (req.session.role === "superadmin") {
             //superadmin
-            const forms = await Form.find({isTempalte:false}).sort({ createdAt: -1 })
+            const forms = await Form.find({ isTemplate: false }).sort({
+                createdAt: -1,
+            })
             res.json({ success: true, forms: forms })
         }
     } catch (error) {
@@ -43,7 +45,7 @@ export async function getForm(req: Request, res: Response) {
 
 export async function getAdminForms(req: Request, res: Response) {
     try {
-        let adminForms = await Form.find()
+        let adminForms = await Form.find({ isTemplate: false })
             .populate("owner", "role")
             .sort({ createdAt: -1 })
         adminForms = adminForms.filter((form) => {
@@ -57,7 +59,7 @@ export async function getAdminForms(req: Request, res: Response) {
 
 export async function getSuperAdminForms(req: Request, res: Response) {
     try {
-        let superAdminForms = await Form.find()
+        let superAdminForms = await Form.find({ isTemplate: false })
             .populate("owner", "role")
             .sort({ createdAt: -1 })
         superAdminForms = superAdminForms.filter((form) => {
@@ -80,6 +82,7 @@ export async function addForm(req: any, res: Response) {
             isActive: req.body.isActive,
             isEditable: req.body.isEditable,
             multipleResponses: req.multipleResponses,
+            role:req.session.role
         })
         const form = await newForm.save()
         console.log("Form added!")

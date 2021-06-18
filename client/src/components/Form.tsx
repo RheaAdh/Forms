@@ -94,27 +94,38 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
             <div onClick={handleClick}>
                 <h1>{form.title}</h1>
                 <p>{form.description}</p>
-                <p>{active ? "Accepting responses" : "Form closed"}</p>
             </div>
+            {!form.isTemplate ? (
+                <p>{active ? "Accepting responses" : "Form closed"}</p>
+            ) : null}
             <div>
-                <button
-                    style={{ margin: "2px" }}
-                    onClick={(
-                        event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-                    ) => {
-                        event.stopPropagation()
-                        setActive(!active)
-                    }}
-                >
-                    {active ? "Close form" : "Open form"}
-                </button>
-                <button style={{ margin: "2px" }} onClick={handleDelete}>
-                    <i className="fas fa-trash-alt"></i>
-                </button>
+                {!form.isTemplate ? (
+                    <button
+                        style={{ margin: "2px" }}
+                        onClick={(
+                            event: React.MouseEvent<
+                                HTMLButtonElement,
+                                MouseEvent
+                            >
+                        ) => {
+                            event.stopPropagation()
+                            setActive(!active)
+                        }}
+                    >
+                        {active ? "Close form" : "Open form"}
+                    </button>
+                ) : null}
+
+                {!form.isTemplate ? (
+                    <button style={{ margin: "2px" }} onClick={handleDelete}>
+                        <i className="fas fa-trash-alt"></i>
+                    </button>
+                ) : null}
+
                 {!form.isTemplate ? (
                     <CopyToClipboard text={link}>
                         <button style={{ margin: "2px" }}>
-                            <i className="fas fa-copy"></i>
+                            <i className="fas fa-copy"> Share</i>
                         </button>
                     </CopyToClipboard>
                 ) : (

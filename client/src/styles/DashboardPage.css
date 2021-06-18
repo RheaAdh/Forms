@@ -11,6 +11,8 @@
     flex-direction: row;
 }
 .sidebar {
+    font-size: large;
+    font-weight: bold;
     width: 15vw;
     height: 100vh;
     border-right: 1px solid black;
@@ -20,7 +22,7 @@
     position: relative;
 }
 .btn {
-    color: #8b64ea;
+    font-size: bold;
     margin-top: 25px;
     cursor: pointer;
 }

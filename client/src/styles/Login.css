@@ -43,7 +43,7 @@ body {
 
 .error-message {
     font-size: bold;
-    color: black;
+    color: red;
 }
 /*Login*/
 .form-container form input[type="submit"] {
