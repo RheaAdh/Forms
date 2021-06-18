@@ -15,18 +15,13 @@ declare module "express-session" {
         username: String
     }
 }
-declare var process: {
-    env: {
-        REGISTERATION_OPEN: boolean
-    }
-}
 const bcrypt = require("bcryptjs")
 
 //FOR ADMINS
 export async function adminRegister(req: Request, res: Response) {
     console.log(process.env.REGISTERATION_OPEN)
     //ISSUES
-
+    if (process.env.REGISTERATION_OPEN=='1') {
     const { username, password, confirmPassword, email } = req.body
 
     //CHECKING FOR CORRECT EMAIL TYPE
@@ -78,7 +73,7 @@ export async function adminRegister(req: Request, res: Response) {
         role: "admin",
         token: uuidv4(),
     })
-    if (process.env.REGISTERATION_OPEN) {
+    
         try {
             await user.save()
             console.log("New admin created!")
@@ -90,6 +85,7 @@ export async function adminRegister(req: Request, res: Response) {
             return res.send({ success: false, data: error })
         }
     } else {
+        console.log("Registration closed")
         return res.send({
             success: false,
             msg: "Everyone seems to have registered who are you??",
