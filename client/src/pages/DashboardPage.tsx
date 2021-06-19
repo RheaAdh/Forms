@@ -57,7 +57,7 @@ const DashboardPage: React.FC = () => {
                         id="templates"
                         onClick={(e) => handleChange(e)}
                     >
-                        Templates
+                        Templates(Create Copy and work)
                     </p>
                 ) : null}
                 {auth?.currentUser?.role === "admin" ||

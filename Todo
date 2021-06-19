@@ -1,31 +1,13 @@
 Frontend
 
-finish user form design 
 check delete question some error
 clear response for multiple response when redirected back to form
-display cannot fill form if !edit !multipleResponse and submitted once
 clear responses if user thinks whatever filled till now is working
-view response by of users individually
-
-Remove add quesbutton or make template non editable from Frontend and show a message to create a copy of form to edit  (implemented check from backend, frontend is left)
-
---NOW
-fix all buttons dont redirect to 7000 instead refresh 
-
 create predefined templates for events we know 
-not render templates in responses
-
--copied popup
--download popup
--added to template popup
-
-finish template view --> done
-finish basic design (ADMIN)--> done
 
 Backend
 
 send responses thru iecse mailer on taking email as parameter(not imp)
-board can create form and save as template which is visible to all ---> done | Frontend --> not done
  
 
 ---NEED DETAILS(SAVED FOR LAST)---

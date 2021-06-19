@@ -4,13 +4,13 @@ import Question from "./Question"
 import "../styles/QuestionList.css"
 
 interface props {
-    formid: any
+    form: any
 }
-const QuestionList: React.FC<props> = ({ formid }) => {
+const QuestionList: React.FC<props> = ({ form }) => {
     const [questionList, setQuestionList] = useState<any[]>([])
 
     useEffect(() => {
-        fetch(`http://localhost:7000/api/getquestionsbyformid/${formid}`, {
+        fetch(`http://localhost:7000/api/getquestionsbyformid/${form._id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -29,7 +29,7 @@ const QuestionList: React.FC<props> = ({ formid }) => {
         const newQuestion = {
             question_text: "Question",
             question_type: "short-answer",
-            formid: formid,
+            formid: form._id,
         }
         fetch("http://localhost:7000/api/addquestion", {
             method: "POST",
@@ -72,9 +72,12 @@ const QuestionList: React.FC<props> = ({ formid }) => {
                     />
                 ))}
             </div>
-            <button className="add-button" onClick={addQuestion}>
-                Add Question
-            </button>
+            {console.log("ahasdiafiejpf"+form.isTemplate)}
+            {form.isTemplate ? null : (
+                <button className="add-button" onClick={addQuestion}>
+                    Add Question
+                </button>
+            )}
         </div>
     )
 }

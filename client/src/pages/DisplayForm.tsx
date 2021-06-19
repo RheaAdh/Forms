@@ -38,7 +38,7 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                 .then((data) => {
                     if (data.success) {
                         setForm(data.form)
-                        //console.log("GET FORM", data.form)
+                        console.log("GET FORM", data.form)
                     }
                 })
                 .catch((err) => console.log(err))
@@ -115,6 +115,7 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                     if (data.success) {
                         // [{1,A},{2,B}...]
                         setUsers(data.data)
+
                         setCurrentUser(data.data[0])
                     } else {
                         console.log(data.data)
@@ -149,6 +150,9 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                 .then((data) => {
                     if (data.success) {
                         setResponses(data.data.responses)
+                        console.log("ahhhhhhhhhhhhhhh")
+
+                        console.log(responses)
                     } else {
                         console.log("no successssss")
 
@@ -157,7 +161,10 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                     setLoading(false)
                 })
         }
+        console.log("ressssssssssssssssssss")
         console.log(currentUser)
+
+        // console.log(responses)
     }, [currentUser])
 
     const submitStatus = (index: any, status: boolean) => {
@@ -260,20 +267,23 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
             <div>
                 {console.log(users.length)}
                 {users.length ? (
-                    <select defaultValue={currentUser.username}>
+                    <div>
+                        {/* dropdown wasnt working i think some browser issue */}
                         {users.map((user: any, i: Number) => {
                             return (
-                                <option
+                                <button
                                     value={user.username}
                                     onClick={(e) => {
                                         setCurrentUser(user)
+                                        console.log("e=")
+                                        console.log(user)
                                     }}
                                 >
                                     {user.username}
-                                </option>
+                                </button>
                             )
                         })}
-                    </select>
+                    </div>
                 ) : null}
             </div>
             <div
@@ -323,22 +333,28 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
             })}
             <b style={{ color: "red" }}>{submitError}</b>
             <br />
-            {readonly ? null : (
-                <button
-                    style={{
-                        left: "21.09%;",
-                        right: " 72.55%;",
-                        top: "76.3%",
-                        bottom: "20.09%",
-                        background: "#8B64EA",
-                        borderRadius: "5px;",
-                        color: "white",
-                    }}
-                    onClick={handleSubmit}
-                >
-                    Submit
-                </button>
-            )}
+            <div>
+                {form.isActive ? <b>form is open</b> : <b>form is closed</b>}
+            </div>
+
+            {readonly ? null : form.isActive ? (
+                <div>
+                    <button
+                        style={{
+                            left: "21.09%;",
+                            right: " 72.55%;",
+                            top: "76.3%",
+                            bottom: "20.09%",
+                            background: "#8B64EA",
+                            borderRadius: "5px;",
+                            color: "white",
+                        }}
+                        onClick={handleSubmit}
+                    >
+                        Submit
+                    </button>
+                </div>
+            ) : null}
         </div>
     )
 }

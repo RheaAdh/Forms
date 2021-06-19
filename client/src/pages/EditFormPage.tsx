@@ -187,13 +187,13 @@ const EditFormPage: React.FC = () => {
                         console.log(date)
                     }}
                 />
-                <h3>Colour theme: </h3>
+                {/* <h3>Colour theme: </h3>
                 <input
                     type="color"
                     onChange={handleColour}
                     value={colour}
-                ></input>
-                <h3>{form.color_theme}</h3>
+                ></input> */}
+                {/* <h3>{form.color_theme}</h3> */}
                 <h4>
                     <input
                         type="checkbox"
@@ -223,7 +223,7 @@ const EditFormPage: React.FC = () => {
                     Multiple responses
                 </h4>
                 <h2>Questions:</h2>
-                <QuestionList formid={form._id} />
+                <QuestionList form={form} />
             </div>
         ) : (
             <Redirect to="/login" />
