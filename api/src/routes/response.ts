@@ -23,6 +23,15 @@ export const submitResponse = async (req: Request, res: Response) => {
     let { username, userid, formId, responses } = req.body
     let form: any = await Form.findOne({ _id: formId })
     console.log(form)
+
+    var presentDateTime: Date = new Date()
+    console.log("Present time " + presentDateTime)
+    console.log("closing time " + form.closes)
+    //Checking for closing date time
+    if (form.closes <= presentDateTime) {
+        console.log("Form closed")
+        form.isActive = false
+    }
     if (form.isTemplate) {
         return res.send({
             success: false,

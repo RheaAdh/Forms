@@ -194,7 +194,7 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
 
 export async function updateQuestion(req: Request, res: Response) {
     try {
-        let {formid}=req.body
+        let { formid } = req.body
         let form: any
         form = await Form.findById(formid)
         if (form.isTemplate) {
