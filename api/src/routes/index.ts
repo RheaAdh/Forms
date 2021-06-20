@@ -13,6 +13,7 @@ import {
     makeTemplate,
     useTemplate,
     viewAllTempalates,
+    getFormForResponse
 } from "./form"
 import {
     addQuestion,
@@ -32,6 +33,7 @@ import {
     getResponsesByQuestionsByForm,
     getResponseIdByFormFilled,
     getResponseByBothFormidAndResponseid,
+    emailResponse,
 } from "./response"
 import { checkAuthentication } from "./user"
 
@@ -86,6 +88,9 @@ router.get("/getsuperadminforms", isValidSuperAdmin, getSuperAdminForms)
 
 ///////////////////////////USER,ADMIN AND SUPERADMIN///////////////////////////////
 router.get("/getform/:formid", extractFormid, checkAuthentication, getForm)
+
+router.get("/getformforresp/:formid", extractFormid, checkAuthentication,getFormForResponse)
+
 router.get("/getquestions", checkAuthentication, getQuestions)
 router.get("/getquestion/:qid", checkAuthentication, getQuestion)
 router.get(
@@ -94,6 +99,7 @@ router.get(
     getQuestionsByFormid
 )
 router.post("/submitresponse", checkAuthentication, submitResponse)
+router.get("/sendmail",emailResponse)
 
 //Covert to .csv and download route
 router.get("/download/:formid", downloadResponse)

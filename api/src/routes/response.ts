@@ -3,6 +3,11 @@ import mongoose, { Schema, Document } from "mongoose"
 import FormResponse from "../models/response"
 import { Form } from "../models/form"
 import { resolve } from "path"
+import { read } from "fs"
+
+// import nodemailer from "nodemailer"
+const nodemailer = require('nodemailer')
+
 
 //Download csv
 const fileSystem = require("fs")
@@ -468,3 +473,60 @@ export const getResponseByBothFormidAndResponseid = async (
         return res.send({ success: false, data: error })
     }
 }
+
+
+
+//Email Response
+export const emailResponse = async (req:Request,res:Response) =>
+{
+    try{
+    console.log("inside mailer")
+    const output='<h>Test Email</h>'
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+          user: 'iecseforms@gmail.com', // generated ethereal user
+          pass: 'iecse2021', // generated ethereal password
+        },
+        tls:{
+            rejectUnathorized:false
+        }
+      });
+      console.log("transporter "+transporter)
+    
+      // send mail with defined transport object
+      try{
+      let info = await transporter.sendMail({
+        from: '"Admin" <iecseforms@gmail.com>', // sender address
+        to: "abhijeetsinha1503@gmail.com", // list of receivers
+        subject: "Form Response Copy", // Subject line
+        text: "Hello world?", // plain text body
+        html: output, // html body
+
+      });
+      console.log("info is "+info)
+      console.log("Message sent: %s", info.messageId);
+
+      }
+      catch(err)
+      {
+          console.log(err)
+          return res.send("err")
+      }
+      // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+    
+      // Preview only available when sending through an Ethereal account
+    //   console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+      // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+      res.send("Mail sent")
+    }
+    catch(err)
+    {
+        console.log(err)
+        res.send(err)
+    }
+}
+
+    

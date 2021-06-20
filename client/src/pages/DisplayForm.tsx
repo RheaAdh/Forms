@@ -27,7 +27,8 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
 
     useEffect(() => {
         if (formid)
-            fetch(`http://localhost:7000/api/getform/${formid}`, {
+        // /:formid
+            fetch(`http://localhost:7000/api/getformforresp/${formid}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

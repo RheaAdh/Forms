@@ -17,6 +17,7 @@ export interface FormDoc extends Document {
     isActive: boolean
     isTemplate: boolean
     role: string
+    contributors:[Schema.Types.ObjectId]
 }
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
 const form: Schema = new Schema(
@@ -33,6 +34,7 @@ const form: Schema = new Schema(
         multipleResponses: { type: Boolean, default: false },
         isTemplate: { type: Boolean, default: false },
         role: { type: String },
+        contributors:[{type: Schema.Types.ObjectId, ref: "User"}]
     },
     {
         timestamps: true,

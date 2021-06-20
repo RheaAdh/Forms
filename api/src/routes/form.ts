@@ -39,22 +39,35 @@ export async function getForm(req: Request, res: Response) {
         const form = await Form.findById(req.params.formid)
 
         if (form) {
+            return res.json({ success: true, form: form })
+        } else {
+            return res.send({ success: false, msg: "Form doesnt exists" })
+        }
+    } catch (error) {
+        return res.send({ success: false, msg: error })
+    }
+}
+
+export async function getFormForResponse(req: Request, res: Response) {
+    try {
+        console.log("Inside getformresp")
+        const form = await Form.findById(req.params.formid)
+
+        if (form) {
             var presentDateTime: Date = new Date()
             console.log("Present time " + presentDateTime)
             console.log("closing time " + form.closes)
             //Checking for closing date time
-            // if (form.closes <= presentDateTime) {
-            // console.log("Form closed dsfas")
-            // form.isActive = false
-            // }
-            // if(!form.isActive)
-            // {
-            // console.log("Form is closed")
-            // return res.json({ success: false, form: "Form is closed" })
-
-            // }else{
-            return res.json({ success: true, form: form })
-            // }
+            if (form.closes <= presentDateTime) {
+                console.log("Form closed")
+                form.isActive = false
+            }
+            if (!form.isActive) {
+                console.log("Form is closed")
+                return res.json({ success: false, form: "Form is closed" })
+            } else {
+                return res.json({ success: true, form: form })
+            }
         } else {
             return res.send({ success: false, msg: "Form doesnt exists" })
         }
