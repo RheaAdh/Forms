@@ -4,6 +4,7 @@ import * as mongo from "../config/mongo"
 import { Form } from "../models/form"
 import { Question } from "../models/question"
 import FormResponse from "../models/response"
+import { User } from "../models/user"
 declare module "express-session" {
     interface Session {
         isAuth: boolean
@@ -17,10 +18,13 @@ export async function getForms(req: Request, res: Response) {
     try {
         if (req.session.role === "admin") {
             //admin
+            console.log("getForms")
             const myForms = await Form.find({
-                role: "admin",
                 isTemplate: false,
+                editors: req.session.userId,
             }).sort({ createdAt: -1 })
+            console.log("My form is ")
+            console.log(myForms)
             res.send({ success: true, forms: myForms })
         } else if (req.session.role === "superadmin") {
             //superadmin
@@ -36,10 +40,25 @@ export async function getForms(req: Request, res: Response) {
 
 export async function getForm(req: Request, res: Response) {
     try {
+        console.log("inside getForm")
         const form = await Form.findById(req.params.formid)
-
+        console.log(req.session.userId)
+        console.log(form?.owner)
         if (form) {
-            return res.json({ success: true, form: form })
+            console.log("1")
+            if (
+                req.session.role == "superadmin" ||
+                form.editors.indexOf(req.session.userId) != -1 ||
+                String(form.owner) == String(req.session.userId)
+            ) {
+                console.log("2")
+                return res.json({ success: true, form: form })
+            } else {
+                return res.send({
+                    success: false,
+                    msg: "You dont have edit access to the form",
+                })
+            }
         } else {
             return res.send({ success: false, msg: "Form doesnt exists" })
         }
@@ -117,6 +136,7 @@ export async function addForm(req: any, res: Response) {
             multipleResponses: req.multipleResponses,
             role: req.session.role,
         })
+        newForm.editors.push(req.session.userId)
         const form = await newForm.save()
         console.log("Form added!")
         return res.json(form)
@@ -370,4 +390,40 @@ export async function viewAllTempalates(req: Request, res: Response) {
 
     console.log(forms)
     return res.send({ success: true, forms: forms })
+}
+
+export async function updateeditor(req: Request, res: Response) {
+    let formid = req.body.formid
+    let neweditors = req.body.editors
+    console.log(neweditors)
+    try {
+        console.log("updating editor")
+        let form: any = await Form.findById(formid).populate("editors")
+
+        if (form) {
+            console.log(form)
+            form.editors.splice(0, form.editors.length)
+            form.editors.push(form.owner)
+            for (let i = 0; i < neweditors.length; i++) {
+                console.log("value is " + form.editors.indexOf(neweditors[i]))
+                if (form.editors.indexOf(neweditors[i]) == -1) {
+                    if(String(form.editors[i])!=String(form.owner))
+                    {
+                        console.log(form.owner)
+                        console.log(form.editors[i])
+                        console.log("Pushing")
+                        form.editors.push(neweditors[i])
+                    }
+                }
+            }
+            await form.save()
+            return res.send({ success: true, msg: "Editor list updated" })
+        } else {
+            console.log("Form does not exists")
+            return res.send({ success: false, msg: "Server Error" })
+        }
+    } catch (err) {
+        console.log(err)
+        return res.send({ success: false, msg: "Server Error" })
+    }
 }

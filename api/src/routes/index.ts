@@ -13,7 +13,8 @@ import {
     makeTemplate,
     useTemplate,
     viewAllTempalates,
-    getFormForResponse
+    getFormForResponse,
+    updateeditor
 } from "./form"
 import {
     addQuestion,
@@ -103,5 +104,7 @@ router.get("/sendmail",emailResponse)
 
 //Covert to .csv and download route
 router.get("/download/:formid", downloadResponse)
+
+router.post("/updateeditor",updateeditor)
 
 export default router
