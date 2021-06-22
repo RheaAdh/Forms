@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react"
 import { Link, Redirect, useParams } from "react-router-dom"
 
 import QuestionList from "../components/QuestionList"
+import PermissionList from "../components/PermissionList"
 import useFormState from "../hooks/useFormState"
 import { useAuth } from "../context/AuthContext"
 import DatePicker from "react-datepicker"
@@ -40,6 +41,8 @@ const EditFormPage: React.FC = () => {
     const [edit, setEdit] = useState(false)
 
     const [multi, setMulti] = useState(false)
+
+    const [displayPermission, setDisplayPermission] = useState(false)
 
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -222,6 +225,8 @@ const EditFormPage: React.FC = () => {
                     ></input>
                     Multiple responses
                 </h4>
+                <button onClick={()=>{setDisplayPermission(!displayPermission)}}>{displayPermission?"Close":"Set edit permissions"}</button>
+                {displayPermission?<PermissionList formid={form._id} />:""}
                 <h2>Questions:</h2>
                 <QuestionList form={form} />
             </div>

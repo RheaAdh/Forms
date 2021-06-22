@@ -1,0 +1,12 @@
+.permission-component{
+    border: 1px solid black;
+    width: 400px;
+    height: 150px;
+    margin: auto;
+    padding: 20px
+}
+
+.permission-list{
+    overflow: auto;
+    height: 100px;
+}
