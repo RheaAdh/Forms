@@ -78,6 +78,7 @@ export async function getFormForResponse(req: Request, res: Response) {
             if (form.closes <= presentDateTime) {
                 console.log("Form closed")
                 form.isActive = false
+                await form.save()
             }
             if (!form.isActive) {
                 console.log("Form is closed")
