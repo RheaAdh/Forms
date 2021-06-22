@@ -7,12 +7,12 @@ create predefined templates for events we know
 
 Backend
 
-send responses thru iecse mailer on taking email as parameter(not imp)
+send responses thru iecse mailer on taking email as parameter 
  
 
 ---NEED DETAILS(SAVED FOR LAST)---
-s3 bucket(IMP)
-    csv download
+    s3 bucket(IMP)
+    csv download 
     file upload
 mailer integration for forgot password and send responses to user
 
