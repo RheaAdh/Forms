@@ -4,10 +4,11 @@ check delete question some error
 clear response for multiple response when redirected back to form
 clear responses if user thinks whatever filled till now is working
 create predefined templates for events we know 
+show message like requires editor access, form is closed etc whereever required
 
 Backend
 
-send responses thru iecse mailer on taking email as parameter 
+send responses thru iecse mailer on taking email as parameter --(Half done, requires a Frontend link specifc to user to be sent)
  
 
 ---NEED DETAILS(SAVED FOR LAST)---

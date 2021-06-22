@@ -21,59 +21,59 @@ const bcrypt = require("bcryptjs")
 export async function adminRegister(req: Request, res: Response) {
     console.log(process.env.REGISTERATION_OPEN)
     //ISSUES
-    if (process.env.REGISTERATION_OPEN=='1') {
-    const { username, password, confirmPassword, email } = req.body
+    if (process.env.REGISTERATION_OPEN == "1") {
+        const { username, password, confirmPassword, email } = req.body
 
-    //CHECKING FOR CORRECT EMAIL TYPE
-    if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
-        return res.send({
-            success: false,
-            data: "Please enter a valid email type",
-        })
-    }
+        //CHECKING FOR CORRECT EMAIL TYPE
+        if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
+            return res.send({
+                success: false,
+                data: "Please enter a valid email type",
+            })
+        }
 
-    //CHECKING FOR EXISTING USER
-    let user = await User.findOne({ email })
-    if (user) {
-        return res.send({
-            success: false,
-            data:
-                "User exists with same details,try again with a new password if not registered",
-        })
-    }
-    let usernameExists = await User.findOne({ username })
-    if (usernameExists) {
-        return res.send({
-            success: false,
-            data: "Username already exists",
-        })
-    }
-    //USER NOT CREATED
-    if (password.length < 8) {
-        return res.send({
-            success: false,
-            data: "Password must be atleast 8 characters long",
-        })
-    }
+        //CHECKING FOR EXISTING USER
+        let user = await User.findOne({ email })
+        if (user) {
+            return res.send({
+                success: false,
+                data:
+                    "User exists with same details,try again with a new password if not registered",
+            })
+        }
+        let usernameExists = await User.findOne({ username })
+        if (usernameExists) {
+            return res.send({
+                success: false,
+                data: "Username already exists",
+            })
+        }
+        //USER NOT CREATED
+        if (password.length < 8) {
+            return res.send({
+                success: false,
+                data: "Password must be atleast 8 characters long",
+            })
+        }
 
-    //MATCHING CONFIRM PASSWORD AND PASSWORD
-    if (confirmPassword != password) {
-        return res.send({
-            success: false,
-            data: "Password and Confirm Password does not match",
-        })
-    }
+        //MATCHING CONFIRM PASSWORD AND PASSWORD
+        if (confirmPassword != password) {
+            return res.send({
+                success: false,
+                data: "Password and Confirm Password does not match",
+            })
+        }
 
-    //STORING USER IN DB
-    const hashpwd = await bcrypt.hash(req.body.password, 10)
-    user = new User({
-        username,
-        password: hashpwd,
-        email,
-        role: "admin",
-        token: uuidv4(),
-    })
-    
+        //STORING USER IN DB
+        const hashpwd = await bcrypt.hash(req.body.password, 10)
+        user = new User({
+            username,
+            password: hashpwd,
+            email,
+            role: "admin",
+            token: uuidv4(),
+        })
+
         try {
             await user.save()
             console.log("New admin created!")

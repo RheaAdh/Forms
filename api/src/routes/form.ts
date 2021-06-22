@@ -45,13 +45,11 @@ export async function getForm(req: Request, res: Response) {
         console.log(req.session.userId)
         console.log(form?.owner)
         if (form) {
-            console.log("1")
             if (
                 req.session.role == "superadmin" ||
                 form.editors.indexOf(req.session.userId) != -1 ||
                 String(form.owner) == String(req.session.userId)
             ) {
-                console.log("2")
                 return res.json({ success: true, form: form })
             } else {
                 return res.send({
@@ -97,13 +95,28 @@ export async function getFormForResponse(req: Request, res: Response) {
 
 export async function getAdminForms(req: Request, res: Response) {
     try {
-        let adminForms = await Form.find({ isTemplate: false })
-            .populate("owner", "role")
-            .sort({ createdAt: -1 })
-        adminForms = adminForms.filter((form) => {
-            return form?.owner?.role === "admin"
-        })
-        res.send({ success: true, forms: adminForms })
+        if (req.session.role == "superadmin") {
+            let adminForms = await Form.find({
+                isTemplate: false,
+            })
+                .populate("owner", "role")
+                .sort({ createdAt: -1 })
+            adminForms = adminForms.filter((form) => {
+                return form?.owner?.role === "admin"
+            })
+            res.send({ success: true, forms: adminForms })
+        } else {
+            let adminForms = await Form.find({
+                isTemplate: false,
+                editors: req.session.userId,
+            })
+                .populate("owner", "role")
+                .sort({ createdAt: -1 })
+            adminForms = adminForms.filter((form) => {
+                return form?.owner?.role === "admin"
+            })
+            res.send({ success: true, forms: adminForms })
+        }
     } catch (err) {
         return res.send({ success: false, msg: err })
     }
@@ -407,8 +420,7 @@ export async function updateeditor(req: Request, res: Response) {
             for (let i = 0; i < neweditors.length; i++) {
                 console.log("value is " + form.editors.indexOf(neweditors[i]))
                 if (form.editors.indexOf(neweditors[i]) == -1) {
-                    if(String(form.editors[i])!=String(form.owner))
-                    {
+                    if (String(form.editors[i]) != String(form.owner)) {
                         console.log(form.owner)
                         console.log(form.editors[i])
                         console.log("Pushing")

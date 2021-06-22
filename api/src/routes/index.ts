@@ -14,7 +14,7 @@ import {
     useTemplate,
     viewAllTempalates,
     getFormForResponse,
-    updateeditor
+    updateeditor,
 } from "./form"
 import {
     addQuestion,
@@ -90,7 +90,12 @@ router.get("/getsuperadminforms", isValidSuperAdmin, getSuperAdminForms)
 ///////////////////////////USER,ADMIN AND SUPERADMIN///////////////////////////////
 router.get("/getform/:formid", extractFormid, checkAuthentication, getForm)
 
-router.get("/getformforresp/:formid", extractFormid, checkAuthentication,getFormForResponse)
+router.get(
+    "/getformforresp/:formid",
+    extractFormid,
+    checkAuthentication,
+    getFormForResponse
+)
 
 router.get("/getquestions", checkAuthentication, getQuestions)
 router.get("/getquestion/:qid", checkAuthentication, getQuestion)
@@ -100,11 +105,11 @@ router.get(
     getQuestionsByFormid
 )
 router.post("/submitresponse", checkAuthentication, submitResponse)
-router.get("/sendmail",emailResponse)
+router.get("/sendmail", emailResponse)
 
 //Covert to .csv and download route
 router.get("/download/:formid", downloadResponse)
 
-router.post("/updateeditor",updateeditor)
+router.post("/updateeditor", updateeditor)
 
 export default router

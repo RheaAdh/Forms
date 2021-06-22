@@ -307,11 +307,12 @@ export const getResponsesByResIdByFormId = async (
                         success: true,
                         data: formIndividualResponses,
                     })
-                }
-                else
-                {
+                } else {
                     console.log("Requires Access")
-                    res.send({success:false,msg:"Requires Editor access to view responses"})
+                    res.send({
+                        success: false,
+                        msg: "Requires Editor access to view responses",
+                    })
                 }
             } else {
                 return res.send({ success: false, msg: "No Form Found" })
