@@ -7,7 +7,7 @@ export interface FormDoc extends Document {
     questions: [
         {
             _id: any
-            question_text: string
+            questionText: string
         }
     ]
     description: string
@@ -17,7 +17,7 @@ export interface FormDoc extends Document {
     isActive: boolean
     isTemplate: boolean
     role: string
-    editors:[Schema.Types.ObjectId]
+    editors: [Schema.Types.ObjectId]
 }
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
 const form: Schema = new Schema(
@@ -34,7 +34,7 @@ const form: Schema = new Schema(
         multipleResponses: { type: Boolean, default: false },
         isTemplate: { type: Boolean, default: false },
         role: { type: String },
-        editors:[{type: Schema.Types.ObjectId, ref: "User"}]
+        editors: [{ type: Schema.Types.ObjectId, ref: "User" }],
     },
     {
         timestamps: true,

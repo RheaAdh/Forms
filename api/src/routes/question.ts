@@ -22,8 +22,8 @@ export async function addQuestion(req: Request, res: Response) {
     try {
         let {
             formid,
-            question_type,
-            question_text,
+            questionType,
+            questionText,
             description,
             required,
             options,
@@ -41,7 +41,7 @@ export async function addQuestion(req: Request, res: Response) {
         form = await Form.findById(formid)
         const common = {
             formid: formid,
-            question_text: question_text,
+            questionText: questionText,
             description: description,
             required: required,
         }
@@ -54,7 +54,7 @@ export async function addQuestion(req: Request, res: Response) {
         } else {
             let newQuestion
 
-            switch (question_type) {
+            switch (questionType) {
                 case "short-answer": {
                     newQuestion = new shortQuestion({ ...common })
                     break
@@ -202,19 +202,20 @@ export async function updateQuestion(req: Request, res: Response) {
             return res.send({ success: false, msg: "Template cant be editted" })
         } else {
             let moddedBody = { ...req.body }
-            moddedBody["question-type"] = req.body["question-type"]
+            moddedBody["questionType"] = req.body.questionType
+            console.log(req.body)
             let updatedQuestion
             // Update by finding Question, so that question type can be changed
             updatedQuestion = await Question.findOneAndUpdate(
                 { _id: req.body._id },
                 {
-                    "question-type": req.body["question-type"],
+                    questionType: req.body.questionType,
                 },
                 { new: true }
             )
-            console.log("First update", updatedQuestion)
+            //console.log("First update", updatedQuestion)
             // Update by finding exact question type, else options won't get updated
-            switch (moddedBody["question-type"]) {
+            switch (moddedBody["questionType"]) {
                 case "short-answer":
                     updatedQuestion = await shortQuestion.findOneAndUpdate(
                         { _id: req.body._id },

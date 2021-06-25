@@ -1,83 +1,34 @@
 import React, { useState, useEffect } from "react"
 import Question from "./Question"
-
 import "../styles/QuestionList.css"
+import { useCurrentForm } from "../context/CurrentFormContext"
+import { useQuestionsList } from "../context/QuestionListContext"
+import getQuestionsAndResponses from "../context/Actions"
 
-interface props {
-    form: any
-}
-const QuestionList: React.FC<props> = ({ form }) => {
-    const [questionList, setQuestionList] = useState<any[]>([])
-
+const QuestionList: React.FC = () => {
+    const form = useCurrentForm()
+    const questions = useQuestionsList()
     useEffect(() => {
-        fetch(`http://localhost:7000/api/getquestionsbyformid/${form._id}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-        })
-            .then((resp: any) => {
-                return resp.json()
-            })
-            .then((data: any) => {
-                setQuestionList(data.ques)
-            })
-    }, [])
-
-    const addQuestion = () => {
-        const newQuestion = {
-            question_text: "Question",
-            question_type: "short-answer",
-            formid: form._id,
+        const id = form?.currentForm?.id
+        if (id) {
+            getQuestionsAndResponses(id).then((data) =>
+                questions?.questionActions.getQuestions(id, data.ques)
+            )
         }
-        fetch("http://localhost:7000/api/addquestion", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify(newQuestion),
-        })
-            .then((response) => response.json())
-            .then((data) => setQuestionList((prevList) => [...prevList, data]))
-            .catch((error) => {
-                console.log("Error: ", error)
-            })
-        // setList(() => [...list, question]);
-    }
-
-    const deleteQuestion = (idx: number) => {
-        console.log("before" + idx)
-        for (let i = 0; i < questionList.length; i++) {
-            console.log(questionList[i])
-        }
-
-        setQuestionList((prevList) =>
-            prevList.filter((question, i) => idx !== i)
-        )
-        console.log("after" + idx)
-        for (let i = 0; i < questionList.length; i++) {
-            console.log(questionList[i])
-        }
-    }
+    }, [form?.currentForm?.id])
     return (
         <div className="list-container">
             <div className="list-body">
-                {questionList?.map((question, index: number) => (
-                    <Question
-                        question={question}
-                        index={index}
-                        deleteQuestion={deleteQuestion}
-                    />
+                <button
+                    onClick={() => questions?.questionActions?.addQuestion()}
+                >
+                    Add New Question
+                </button>
+                {console.log(questions?.questions)}
+                {questions?.questions.map((question, index: number) => (
+                    <Question question={question} index={index} />
                 ))}
             </div>
-            {console.log("ahasdiafiejpf"+form.isTemplate)}
-            {form.isTemplate ? null : (
-                <button className="add-button" onClick={addQuestion}>
-                    Add Question
-                </button>
-            )}
         </div>
     )
 }

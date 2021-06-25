@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Mongoose } from "mongoose"
-const options = { discriminatorKey: "question-type" }
+const options = { discriminatorKey: "questionType" }
 
 export interface QuesDoc extends Document {
     formid: { type: Schema.Types.ObjectId; ref: "Form" }
@@ -10,9 +10,9 @@ export interface QuesDoc extends Document {
 const questionSchema: Schema = new Schema(
     {
         formid: { type: Schema.Types.ObjectId, ref: "Form" },
-        question_text: { type: String, required: true },
+        questionText: { type: String, required: true },
         required: { type: Boolean, default: false },
-        //question_type: String This is  made by default by the discriminator key
+        //questionType: String This is  made by default by the discriminator key
         userId: { type: Schema.Types.ObjectId, ref: "User" },
     },
     options

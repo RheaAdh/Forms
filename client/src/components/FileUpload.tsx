@@ -1,5 +1,4 @@
 import React, { useState } from "react"
-import axios from "axios"
 
 const FileUpload = () => {
     const [file, setFile] = useState<FileList | null>(null)
@@ -11,15 +10,15 @@ const FileUpload = () => {
             }
             const formData = new FormData()
             formData.append("file", file[0])
-            await axios.post(`/test-upload`, formData, {
+            const resp = await fetch("http://localhost:7000/api/test-upload", {
+                method: "POST",
                 headers: {
-                    "Content-Type": "multipart/form-data",
+                    "Content-type": "multipart/formdata",
                 },
+                body: formData,
             })
-            // handle success
-        } catch (error) {
-            // handle error
-        }
+            const data = await resp.json()
+        } catch (error) {}
     }
 
     return (

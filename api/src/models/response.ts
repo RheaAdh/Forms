@@ -33,7 +33,6 @@ const response: Schema = new Schema(
                 answerType: { type: String, required: true },
                 shortText: { type: String, max: 100, min: 1 },
                 paragraphText: { type: String, max: 500, min: 50 },
-                // emailText: { type: String },
                 selectedOption: { type: String },
                 multipleSelected: { type: [String], default: undefined },
                 selectedOptionsGrid: {

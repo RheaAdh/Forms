@@ -52,16 +52,18 @@ export async function getForm(req: Request, res: Response) {
             ) {
                 return res.json({ success: true, form: form })
             } else {
-                return res.send({
+                return res.status(403).send({
                     success: false,
                     msg: "You dont have edit access to the form",
                 })
             }
         } else {
-            return res.send({ success: false, msg: "Form doesnt exists" })
+            return res
+                .status(404)
+                .send({ success: false, msg: "Form doesnt exists" })
         }
     } catch (error) {
-        return res.send({ success: false, msg: error })
+        return res.status(500).send({ success: false, msg: error })
     }
 }
 
@@ -82,15 +84,19 @@ export async function getFormForResponse(req: Request, res: Response) {
             }
             if (!form.isActive) {
                 console.log("Form is closed")
-                return res.json({ success: false, form: "Form is closed" })
+                return res
+                    .status(400)
+                    .json({ success: false, form: "Form is closed" })
             } else {
                 return res.json({ success: true, form: form })
             }
         } else {
-            return res.send({ success: false, msg: "Form doesnt exists" })
+            return res
+                .status(404)
+                .send({ success: false, msg: "Form doesnt exists" })
         }
     } catch (error) {
-        return res.send({ success: false, msg: error })
+        return res.status(500).send({ success: false, msg: error })
     }
 }
 

@@ -166,14 +166,14 @@ export const downloadResponse = async (req: Request, res: Response) => {
     if (formId.match(/^[0-9a-fA-F]{24}$/)) {
         form = await Form.findOne({ _id: formId }).populate(
             "questions",
-            "question_text"
+            "questionText"
         )
         if (form) {
             console.log("Form is " + form)
             let questions = form.questions
             for (let i in questions) {
                 quesidtotext[String(questions[i]._id)] =
-                    questions[i].question_text
+                    questions[i].questionText
                 console.log(quesidtotext[questions[i]._id])
             }
         } else {

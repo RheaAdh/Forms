@@ -1,190 +1,33 @@
 import React, { useState, useEffect } from "react"
-
-import useFormState from "../hooks/useFormState"
+import { useCurrentForm } from "../context/CurrentFormContext"
+import { questionTypes, useQuestionsList } from "../context/QuestionListContext"
 
 import "../styles/Questions.css"
 interface props {
     question: any
-    deleteQuestion?: any
     index: number
 }
-const Question: React.FC<props> = ({ question, deleteQuestion, index }) => {
-    const questions_types = [
-        "short-answer",
-        "paragraph-answer",
-        "mcq-answer",
-        "checkbox-answer",
-        "dropdown-answer",
-        "linearscale-answer",
-        "multiplechoicegrid-answer",
-        "checkboxgrid-answer",
-        "email-answer",
-        "file-upload",
-        "date-answer",
-        "time-answer",
-    ]
+const Question: React.FC<props> = ({ question, index }) => {
+    const form = useCurrentForm()
+    const questionActions = useQuestionsList()?.questionActions
+    const questions = useQuestionsList()
     const [type, setType] = useState<any>(
-        question ? questions_types.indexOf(question["question-type"]) : 0
+        question ? questionTypes.indexOf(question["questionType"]) : 0
     )
-    const [requiredVal, setRequired] = useState(
-        question ? question.required : false
-    )
-    const [questionText, handleQuestionText] = useFormState(
-        question ? question.question_text : ""
-    )
-
-    //Works up to linear scale
-    const [options, setOptions] = useState(
-        question.options !== undefined ? question.options : [""]
-    )
-    const [rows, setRows] = useState(
-        question.rowLabel !== undefined ? question.rowLabel : [""]
-    )
-    const [cols, setCols] = useState(
-        question.colLabel !== undefined ? question.colLabel : [""]
-    )
-    const [lowRating, setLowRating] = useState<number>(
-        question.lowRating !== undefined ? question.lowRating : 0
-    )
-    const [highRating, setHighRating] = useState<number>(
-        question.highRating !== undefined ? question.highRating : 2
-    )
-    const [lowRatingLabel, setLowRatingLabel] = useState<string>(
-        question.lowRatingLabel !== undefined ? question.lowRatingLabel : ""
-    )
-    const [highRatingLabel, setHighRatingLabel] = useState<string>(
-        question.highRatingLabel !== undefined ? question.highRatingLabel : ""
-    )
-    const addOptions = () => {
-        setOptions(() => [...options, ""])
-    }
-
-    const updateOptions = (
-        i: any,
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        let opt = options
-        opt[i] = event.target.value
-        setOptions(opt)
-        updateQuestion()
-    }
-
-    const addRows = () => {
-        setRows(() => [...rows, ""])
-    }
-
-    const addCols = () => {
-        setCols(() => [...cols, ""])
-    }
-
-    const updateRows = (
-        i: number,
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        let r = rows
-        r[i] = event.target.value
-        setRows(r)
-        updateQuestion()
-    }
-
-    const updateCols = (
-        i: number,
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        let c = cols
-        c[i] = event.target.value
-        setCols(c)
-        updateQuestion()
-    }
-    //
-
-    const updateQuestion = () => {
-        let body = null
-        if (options.length >= 2) {
-            body = JSON.stringify({
-                ...question,
-                question_text: questionText,
-                required: requiredVal,
-                options: options,
-                lowRating: lowRating,
-                highRating: highRating,
-                lowRatingLabel: lowRatingLabel,
-                highRatingLabel: highRatingLabel,
-                "question-type": questions_types[type],
-            })
-        } else {
-            body = JSON.stringify({
-                ...question,
-                question_text: questionText,
-                required: requiredVal,
-                lowRating: lowRating,
-                highRating: highRating,
-                lowRatingLabel: lowRatingLabel,
-                highRatingLabel: highRatingLabel,
-                "question-type": questions_types[type],
-            })
-        }
-        if (rows.length >= 2 && cols.length >= 2) {
-            body = JSON.stringify({
-                ...question,
-                question_text: questionText,
-                required: requiredVal,
-                rowLabel: rows,
-                colLabel: cols,
-                lowRating: lowRating,
-                highRating: highRating,
-                lowRatingLabel: lowRatingLabel,
-                highRatingLabel: highRatingLabel,
-                "question-type": questions_types[type],
-            })
-        }
-        fetch("http://localhost:7000/api/updatequestion", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: body,
-        })
-            .then((response) => response.json())
-            .then((data) => null)
-    }
-
-    const handleClick = () => {
-        fetch("http://localhost:7000/api/deletequestion", {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({
-                id: question._id,
-                formid: question.formid,
-            }),
-        })
-            .then((res: any) => res.json())
-            .then((data) => {
-                if (data.success) {
-                    deleteQuestion(index)
-                    console.log(question._id)
-                } else {
-                    console.log("Something went wrong")
-                }
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-    }
-
     //CALL UPDATE QUESTION EVERY TIME QUESTIONS TITLE CHANGES
-    useEffect(updateQuestion, [
-        questionText,
-        requiredVal,
-        type,
-        lowRating,
-        highRating,
-        lowRatingLabel,
-        highRatingLabel,
+    useEffect(() => {
+        questions?.questionActions?.updateQuestion(question.qid)
+    }, [
+        question.cols,
+        question.highRating,
+        question.highRatingLabel,
+        question.lowRating,
+        question.lowRatingLabel,
+        question.options,
+        question.questionText,
+        question.questionType,
+        question.required,
+        question.rows,
     ])
     const types = [
         <div>
@@ -198,49 +41,73 @@ const Question: React.FC<props> = ({ question, deleteQuestion, index }) => {
         <div>
             <b>Multiple choice</b>
             <ol>
-                {options.map((a: string, i: number) => (
+                {question?.options?.map((a: string, i: number) => (
                     <li key={i}>
                         <input
                             type="text"
-                            onChange={(event) => updateOptions(i, event)}
+                            onChange={(event) =>
+                                questionActions?.updateOptions(
+                                    question.qid,
+                                    i,
+                                    event.target.value
+                                )
+                            }
                             defaultValue={a}
                         />
                     </li>
                 ))}
             </ol>
-            <button onClick={addOptions}>Add option</button>
+            <button onClick={() => questionActions?.addOptions(question.qid)}>
+                Add option
+            </button>
         </div>,
 
         <div>
             <b>Checkbox</b>
             <ol>
-                {options.map((a: string, i: number) => (
+                {question?.options?.map((a: string, i: number) => (
                     <li key={i}>
                         <input
                             type="text"
-                            onChange={(event) => updateOptions(i, event)}
+                            onChange={(event) =>
+                                questionActions?.updateOptions(
+                                    question.qid,
+                                    i,
+                                    event.target.value
+                                )
+                            }
                             defaultValue={a}
                         />
                     </li>
                 ))}
             </ol>
-            <button onClick={addOptions}>Add option</button>
+            <button onClick={() => questionActions?.addOptions(question.qid)}>
+                Add option
+            </button>
         </div>,
 
         <div>
             <b>Dropdown</b>
             <ol>
-                {options.map((a: string, i: number) => (
+                {question?.options?.map((a: string, i: number) => (
                     <li key={i}>
                         <input
                             type="text"
-                            onChange={(event) => updateOptions(i, event)}
+                            onChange={(event) =>
+                                questionActions?.updateOptions(
+                                    question.qid,
+                                    i,
+                                    event.target.value
+                                )
+                            }
                             defaultValue={a}
                         />
                     </li>
                 ))}
             </ol>
-            <button onClick={addOptions}>Add option</button>
+            <button onClick={() => questionActions?.addOptions(question.qid)}>
+                Add option
+            </button>
         </div>,
 
         <div>
@@ -251,9 +118,12 @@ const Question: React.FC<props> = ({ question, deleteQuestion, index }) => {
                         <select
                             name="minVal"
                             onChange={(event) => {
-                                setLowRating(parseInt(event.target.value))
+                                questionActions?.setLowRating(
+                                    question.qid,
+                                    parseInt(event.target.value)
+                                )
                             }}
-                            defaultValue={lowRating}
+                            defaultValue={question.lowRating}
                         >
                             <option value="0">0</option>
                             <option value="1">1</option>
@@ -264,9 +134,12 @@ const Question: React.FC<props> = ({ question, deleteQuestion, index }) => {
                         <select
                             name="maxVal"
                             onChange={(event) => {
-                                setHighRating(parseInt(event.target.value))
+                                questionActions?.setHighRating(
+                                    question.qid,
+                                    parseInt(event.target.value)
+                                )
                             }}
-                            defaultValue={highRating}
+                            defaultValue={question.highRating}
                         >
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -287,9 +160,12 @@ const Question: React.FC<props> = ({ question, deleteQuestion, index }) => {
                 type="text"
                 name=""
                 placeholder="Label (Optional)"
-                defaultValue={lowRatingLabel}
+                defaultValue={question.lowRatingLabel}
                 onChange={(event) => {
-                    setLowRatingLabel(event.target.value)
+                    questionActions?.setLowRatingLabel(
+                        question.qid,
+                        event.target.value
+                    )
                 }}
             />
             <br />
@@ -298,9 +174,12 @@ const Question: React.FC<props> = ({ question, deleteQuestion, index }) => {
                 type="text"
                 name=""
                 placeholder="Label (Optional)"
-                defaultValue={highRatingLabel}
+                defaultValue={question.highRatingLabel}
                 onChange={(event) => {
-                    setHighRatingLabel(event.target.value)
+                    questionActions?.setHighRatingLabel(
+                        question.qid,
+                        event.target.value
+                    )
                 }}
             />
         </div>,
@@ -309,60 +188,108 @@ const Question: React.FC<props> = ({ question, deleteQuestion, index }) => {
             <b>Multiple choice grid</b>
             <p>Rows:</p>
             <ol>
-                {rows.map((a: any, i: number) => (
+                {question?.rows?.map((a: any, i: number) => (
                     <li key={i}>
                         <input
                             type="text"
-                            onChange={(event) => updateRows(i, event)}
+                            onChange={(event) =>
+                                questionActions?.updateRows(
+                                    question.qid,
+                                    i,
+                                    event.target.value
+                                )
+                            }
                             defaultValue={a}
                         />
                     </li>
                 ))}
             </ol>
-            <button onClick={addRows}>Add row</button>
+            <button
+                onClick={() => {
+                    questionActions?.addRows(question.qid)
+                }}
+            >
+                Add row
+            </button>
             <p>Columns:</p>
             <ol>
-                {cols.map((a: any, i: number) => (
+                {question?.cols?.map((a: any, i: number) => (
                     <li key={i}>
                         <input
                             type="text"
-                            onChange={(event) => updateCols(i, event)}
+                            onChange={(event) =>
+                                questionActions?.updateCols(
+                                    question.qid,
+                                    i,
+                                    event.target.value
+                                )
+                            }
                             defaultValue={a}
                         />
                     </li>
                 ))}
             </ol>
-            <button onClick={addCols}>Add column</button>
+            <button
+                onClick={() => {
+                    questionActions?.addCols(question.qid)
+                }}
+            >
+                Add column
+            </button>
         </div>,
 
         <div>
             <b>Checkbox grid</b>
             <p>Rows:</p>
             <ol>
-                {rows.map((a: any, i: number) => (
+                {question?.rows?.map((a: any, i: number) => (
                     <li key={i}>
                         <input
                             type="text"
-                            onChange={(event) => updateRows(i, event)}
+                            onChange={(event) =>
+                                questionActions?.updateRows(
+                                    question.qid,
+                                    i,
+                                    event.target.value
+                                )
+                            }
                             defaultValue={a}
                         />
                     </li>
                 ))}
             </ol>
-            <button onClick={addRows}>Add row</button>
+            <button
+                onClick={() => {
+                    questionActions?.addRows(question.qid)
+                }}
+            >
+                Add row
+            </button>
             <p>Columns:</p>
             <ol>
-                {cols.map((a: any, i: number) => (
+                {question?.cols?.map((a: any, i: number) => (
                     <li key={i}>
                         <input
                             type="text"
-                            onChange={(event) => updateCols(i, event)}
+                            onChange={(event) =>
+                                questionActions?.updateCols(
+                                    question.qid,
+                                    i,
+                                    event.target.value
+                                )
+                            }
                             defaultValue={a}
                         />
                     </li>
                 ))}
             </ol>
-            <button onClick={addCols}>Add column</button>
+            <button
+                onClick={() => {
+                    questionActions?.addCols(question.qid)
+                }}
+            >
+                Add column
+            </button>
         </div>,
 
         <div>
@@ -418,23 +345,28 @@ const Question: React.FC<props> = ({ question, deleteQuestion, index }) => {
     return (
         <div className="question-component">
             <div className="question-meta">
-                {/*<span>Question:</span>*/}
                 <input
                     className="question-text"
                     type="text"
-                    onChange={handleQuestionText}
-                    value={questionText}
+                    onChange={(e) => {
+                        questionActions?.setQuestionText(
+                            question.qid,
+                            e.target.value
+                        )
+                        console.log(questions?.questions)
+                    }}
+                    defaultValue={question?.questionText}
                 />
-
-                {/*This is only for testing, you can remove it*/}
-                {requiredVal ? "*" : ""}
-
                 {/*<span>Type:</span>*/}
                 <select
                     className="question-select"
                     onChange={(e) => {
                         let selectedType: number = parseInt(e.target.value)
                         setType(selectedType)
+                        questions?.questionActions.updateType(
+                            question.qid,
+                            questionTypes[selectedType]
+                        )
                     }}
                     value={type}
                 >
@@ -456,17 +388,23 @@ const Question: React.FC<props> = ({ question, deleteQuestion, index }) => {
             <div className="required">
                 <input
                     type="checkbox"
-                    checked={requiredVal}
+                    checked={question.required}
                     onChange={(e) => {
                         const reqVal = e.target.checked
-                        setRequired(reqVal)
+                        questionActions?.setRequired(question.qid, reqVal)
                     }}
                 />
                 <span>Required</span>
             </div>
 
             {types[type]}
-            <button onClick={handleClick}>Delete Question</button>
+            <button
+                onClick={() => {
+                    questionActions?.deleteQuestion(question.qid)
+                }}
+            >
+                Delete Question
+            </button>
         </div>
     )
 }

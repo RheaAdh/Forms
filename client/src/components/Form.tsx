@@ -116,8 +116,6 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
                     {active ? "Close form" : "Open form"}
                 </button>
             ) : null}
-            {console.log("-----------------------")}
-            {console.log(auth?.currentUser?.role)}
             {form.role === "superadmin" &&
             form.isTemplate &&
             auth?.currentUser?.role === "admin" ? null : (

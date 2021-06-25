@@ -1,4 +1,3 @@
-
 .question-component {
     padding: 15px;
     border: 1px solid gray;
@@ -30,7 +29,7 @@
     font-size: 14px;
 }
 
-.question-type {
+.questionType {
     height: 100%;
     width: 30%;
     margin: none;

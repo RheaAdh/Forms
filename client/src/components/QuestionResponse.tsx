@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from "react"
+import { Question } from "../context/QuestionListContext"
+import { Response, useResponses } from "../context/ResponseListContext"
 
 interface props {
-    question: any
-    handleChange?: any
-    index?: Number
-    submitStatus?: any
-    prevResponse?: any
-    readonly: boolean
+    question: Question
+    index: number
+    prevResponse?: Response
 }
 
 const QuestionResponse: React.FC<props> = ({
     question,
     prevResponse,
-    handleChange,
     index,
-    submitStatus,
-    readonly,
 }) => {
     const typeToIdx = [
         "short-answer",
@@ -29,11 +25,11 @@ const QuestionResponse: React.FC<props> = ({
         "linearscale-answer",
     ]
 
+    const responseList = useResponses()
+
     // For both mcq and checkbox
-    const [optionsChecked, setOptionsChecked] = useState<string[]>([])
 
     // For both mcq grid and checkbox grid
-    const [mcqGrid, setMcqgrid] = useState<any[]>([])
 
     const [emailError, setEmailError] = useState<string | null>(null)
 
@@ -49,136 +45,129 @@ const QuestionResponse: React.FC<props> = ({
     useEffect(() => {
         if (
             arr.length === 0 &&
-            question["question-type"] === "linearscale-answer"
+            question.questionType === "linearscale-answer"
         ) {
-            fillArray(question["lowRating"], question["highRating"])
-        } else if (
-            question["question-type"] === "multiplechoicegrid-answer" ||
-            question["question-type"] === "checkboxgrid-answer"
-        ) {
-            //map to get rid of object id (Since it is an array of objects, mongo adds objectId by default)
-
-            prevResponse?.["selectedOptionsGrid"]
-                ? setMcqgrid(
-                      prevResponse?.["selectedOptionsGrid"]?.map(
-                          (res: any, idx: Number) => {
-                              return { row: res["row"], col: res["col"] }
-                          }
-                      )
-                  )
-                : setMcqgrid([])
-        } else if (
-            question["question-type"] === "mcq-answer" ||
-            question["question-type"] === "checkbox-answer"
-        ) {
-            setOptionsChecked(
-                prevResponse?.["multipleSelected"]
-                    ? prevResponse?.["multipleSelected"]
-                    : []
-            )
-        } else if (question["question-type"] === "dropdown-answer") {
+            question?.lowRating !== undefined &&
+                question?.highRating !== undefined &&
+                fillArray(question.lowRating, question.highRating)
+        } else if (question?.questionType === "dropdown-answer") {
             const answer = {
                 answerType: "dropdown-answer",
-                questionId: question["_id"],
-                selectedOption: question["options"][0],
+                questionId: question.qid,
+                selectedOption: question?.options?.[0],
             }
-            handleChange(index, answer)
         }
     }, [])
 
     const handleShortAnswer = (e: any) => {
-        if ((e?.target.value).length === 0 && question["required"]) {
-            submitStatus(index, false)
-            return
-        } else submitStatus(index, true)
-        const answer = {
-            answerType: "short-answer",
-            questionId: question["_id"],
-            shortText: e?.target.value,
+        var submit: boolean = true
+        if ((e?.target.value).length === 0 && question.required) {
+            submit = false
         }
-        handleChange(index, answer)
+        if (question?.qid) {
+            const answer = {
+                answerType: "short-answer",
+                questionId: question.qid,
+                shortText: e?.target.value,
+                canSubmit: submit,
+                formId: question.formid,
+            }
+            responseList?.responseActions?.updateResponse(index, answer)
+        }
     }
     const handleParagraphAnswer = (e: any) => {
+        var submit: boolean = true
         if ((e?.target.value).length === 0 && question["required"]) {
-            submitStatus(index, false)
-        } else submitStatus(index, true)
+            submit = false
+        }
         const answer = {
-            questionId: question["_id"],
             answerType: "paragraph-answer",
             paragraphText: e?.target.value,
+            formId: question.formid,
+            canSubmit: submit,
+            questionId: question.qid ? question.qid : "",
         }
-        handleChange(index, answer)
+        responseList?.responseActions?.updateResponse(index, answer)
     }
     const handleMcq = (e: any, optionText: string) => {
+        var submit: boolean = false
+        if (question["required"]) submit = true
         const answer = {
             answerType: "mcq-answer",
-            questionId: question["_id"],
             selectedOption: optionText,
+            formId: question.formid,
+            canSubmit: submit,
+            questionId: question.qid ? question.qid : "",
         }
-        if (question["required"]) submitStatus(index, true)
-        handleChange(index, answer)
+        responseList?.responseActions?.updateResponse(index, answer)
     }
 
     const handleCheckbox = (e: any, optionText: string) => {
-        let answer = {}
-        let opt = optionsChecked
+        var submit = true
+        if (prevResponse?.multipleSelected === undefined) return
+        const opt = prevResponse?.multipleSelected.slice()
         if (e.target.checked) {
             opt.push(optionText)
-            setOptionsChecked(opt)
         } else {
             opt.splice(opt.indexOf(optionText), 1)
-            setOptionsChecked(opt)
         }
         if (question["required"]) {
             if (opt.length === 0) {
-                submitStatus(index, false)
-            } else {
-                submitStatus(index, true)
+                submit = true
             }
         }
-        answer = {
+        const answer = {
             answerType: "checkbox-answer",
-            questionId: question["_id"],
             multipleSelected: opt,
+            formId: question.formid,
+            canSubmit: submit,
+            questionId: question.qid ? question.qid : "",
         }
-        handleChange(index, answer)
+        responseList?.responseActions?.updateResponse(index, answer)
     }
 
     const handleDropdown = (e: any) => {
+        var submit = false
         const answer = {
             answerType: "dropdown-answer",
-            questionId: question["_id"],
             selectedOption: e.target.value,
+            formId: question.formid,
+            canSubmit: submit,
+            questionId: question.qid ? question.qid : "",
         }
         if (question["required"]) {
-            submitStatus(index, true)
+            submit = true
         }
-        handleChange(index, answer)
+        responseList?.responseActions?.updateResponse(index, answer)
     }
 
     const handleEmail = (e: any) => {
+        var submit: boolean = true
         if (
             !/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(
                 e.target.value
             )
         ) {
             setEmailError("Please enter a valid email")
-            submitStatus(index, false)
+            submit = false
         } else {
             setEmailError(null)
-            submitStatus(index, true)
         }
         const answer = {
             answerType: "email-answer",
-            questionId: question["_id"],
             emailAnswer: e.target.value,
+            formId: question.formid,
+            canSubmit: submit,
+            questionId: question.qid ? question.qid : "",
         }
-        handleChange(index, answer)
+        responseList?.responseActions?.updateResponse(index, answer)
     }
 
     const handleMcqGrid = (row: string, col: string) => {
-        let mcq = mcqGrid
-        let idx = mcq.findIndex((obj: any, i: Number) => {
+        if (prevResponse?.selectedOptionsGrid === undefined) return
+        const mcq = prevResponse?.selectedOptionsGrid?.slice()
+        var submit = false
+        let idx = mcq.findIndex((obj: any, i: number) => {
             if (obj["row"] === row) {
                 return true
             }
@@ -188,66 +177,68 @@ const QuestionResponse: React.FC<props> = ({
         } else {
             mcq.push({ row: row, col: col })
         }
-        setMcqgrid(mcq)
-        if (
-            question["required"] &&
-            question["rowLabel"]?.length === mcqGrid.length
-        ) {
-            submitStatus(index, true)
+        if (question.required && question.rows?.length === mcq.length) {
+            submit = true
         }
         const answer = {
             answerType: "multiplechoicegrid-answer",
-            questionId: question["_id"],
             selectedOptionsGrid: mcq,
+            formId: question.formid,
+            canSubmit: submit,
+            questionId: question.qid ? question.qid : "",
         }
-        handleChange(index, answer)
+        responseList?.responseActions?.updateResponse(index, answer)
     }
     const handleCheckboxGrid = (e: any, row: string, col: string) => {
-        let mcq = mcqGrid
-
+        if (prevResponse?.selectedOptionsGrid === undefined) return
+        const mcq = prevResponse?.selectedOptionsGrid?.slice()
+        var submit: boolean = false
         if (e.target.checked) {
             // Push new data
             mcq.push({ row: row, col: col })
-            setMcqgrid(mcq)
             if (question["required"]) {
-                submitStatus(index, true)
+                submit = true
             }
         } else {
             //Unchecked, hence find and delete
-            let idx = mcq.findIndex((obj: any, i: Number) => {
+            let idx = mcq.findIndex((obj: any, i: number) => {
                 if (obj["row"] === row && obj["col"] === col) {
                     return true
                 }
             })
             mcq.splice(idx, 1)
-            setMcqgrid(mcq)
             if (mcq.length === 0 && question["required"]) {
-                submitStatus(index, false)
-            }
+                submit = false
+            } else submit = true
         }
 
         const answer = {
             answerType: "checkboxgrid-answer",
-            questionId: question["_id"],
             selectedOptionsGrid: mcq,
+            formId: question.formid,
+            canSubmit: submit,
+            questionId: question.qid ? question.qid : "",
         }
-        handleChange(index, answer)
+        responseList?.responseActions?.updateResponse(index, answer)
     }
     const handleLinearScale = (e: any) => {
+        var submit: boolean = false
         if (question["required"]) {
-            submitStatus(index, true)
+            submit = true
         }
         const answer = {
             answerType: "linearscale-answer",
-            questionId: question["_id"],
             selectedOption: e.target.value,
+            formId: question.formid,
+            canSubmit: submit,
+            questionId: question.qid ? question.qid : "",
         }
-        handleChange(index, answer)
+        responseList?.responseActions?.updateResponse(index, answer)
     }
     const types = [
         //Short
         <div>
-            {readonly === true ? (
+            {responseList?.readOnly === true ? (
                 <input
                     type="text"
                     placeholder="Short Answer"
@@ -265,7 +256,7 @@ const QuestionResponse: React.FC<props> = ({
         </div>,
         //Paragraph
         <div>
-            {readonly === true ? (
+            {responseList?.readOnly === true ? (
                 <textarea
                     placeholder="Paragraph answer"
                     style={{ resize: "none", width: "300px", height: "100px" }}
@@ -284,12 +275,12 @@ const QuestionResponse: React.FC<props> = ({
         // MCQ
         <div>
             <form>
-                {question["options"]?.map((optionText: string, i: Number) => {
+                {question["options"]?.map((optionText: string, i: number) => {
                     return (
-                        // Check if readonly or not. Then in both cases, check whether or not to add default checked attribute.
-                        // disabled attribute needed for readonly
+                        // Check if responseList?.readOnly or not. Then in both cases, check whether or not to add default checked attribute.
+                        // disabled attribute needed for responseList?.readOnly
                         <div key={optionText}>
-                            {readonly ? (
+                            {responseList?.readOnly ? (
                                 prevResponse?.selectedOption === optionText ? (
                                     <input
                                         disabled
@@ -328,10 +319,10 @@ const QuestionResponse: React.FC<props> = ({
         //Checkbox
         <div>
             <form>
-                {question["options"]?.map((optionText: string, i: Number) => {
+                {question["options"]?.map((optionText: string, i: number) => {
                     return (
                         <div key={optionText}>
-                            {readonly ? (
+                            {responseList?.readOnly ? (
                                 prevResponse?.multipleSelected?.includes(
                                     optionText
                                 ) ? (
@@ -381,10 +372,10 @@ const QuestionResponse: React.FC<props> = ({
         </div>,
         //Dropdown
         <div>
-            {readonly ? (
+            {responseList?.readOnly ? (
                 <select defaultValue={prevResponse?.selectedOption} disabled>
                     {question["options"]?.map(
-                        (optionText: string, i: Number) => {
+                        (optionText: string, i: number) => {
                             return (
                                 <option value={optionText}>{optionText}</option>
                             )
@@ -394,9 +385,10 @@ const QuestionResponse: React.FC<props> = ({
             ) : (
                 <select defaultValue={prevResponse?.selectedOption}>
                     {question["options"]?.map(
-                        (optionText: string, i: Number) => {
+                        (optionText: string, i: number) => {
                             return (
                                 <option
+                                    key={i}
                                     value={optionText}
                                     onClick={(e) => handleDropdown(e)}
                                 >
@@ -410,7 +402,7 @@ const QuestionResponse: React.FC<props> = ({
         </div>,
         //Email
         <div>
-            {readonly === true ? (
+            {responseList?.readOnly === true ? (
                 <input
                     readOnly
                     type="text"
@@ -428,28 +420,32 @@ const QuestionResponse: React.FC<props> = ({
         </div>,
         //MCQ grid
         <div>
-            {question["colLabel"]?.map((data: string, i: Number) => {
+            {question.cols?.map((data: string, i: number) => {
                 return (
                     <span key={data} style={{ marginRight: "10px" }}>
                         {data}
                     </span>
                 )
             })}
-            {question["rowLabel"]?.map((row: string, i: Number) => {
+            {question?.rows?.map((row: string, i: number) => {
                 return (
                     <div>
                         <span key={row} style={{ marginRight: "25px" }}>
                             {row}{" "}
                         </span>
-                        {question["colLabel"]?.map((col: string, j: Number) => {
+                        {question?.cols?.map((col: string, j: number) => {
                             // Iterating through rows and columns to return radio element.
                             // Based on previous response, return element with default checked set to true if checked
                             // else leave the attribute out. (Setting to false wasn't working)
 
-                            return mcqGrid?.find((ob) => {
-                                return ob["row"] === row && ob["col"] === col
-                            }) !== undefined ? (
-                                readonly ? (
+                            return prevResponse?.selectedOptionsGrid?.find(
+                                (ob) => {
+                                    return (
+                                        ob["row"] === row && ob["col"] === col
+                                    )
+                                }
+                            ) !== undefined ? (
+                                responseList?.readOnly ? (
                                     <input
                                         type="radio"
                                         key={col}
@@ -474,7 +470,7 @@ const QuestionResponse: React.FC<props> = ({
                                         defaultChecked
                                     />
                                 )
-                            ) : readonly ? (
+                            ) : responseList?.readOnly ? (
                                 <input
                                     disabled
                                     type="radio"
@@ -505,24 +501,28 @@ const QuestionResponse: React.FC<props> = ({
         </div>,
         //CheckboxGrid
         <div>
-            {question["colLabel"]?.map((data: string, i: Number) => {
+            {question?.cols?.map((data: string, i: number) => {
                 return (
                     <span key={data} style={{ marginRight: "10px" }}>
                         {data}
                     </span>
                 )
             })}
-            {question["rowLabel"]?.map((row: string, i: Number) => {
+            {question?.rows?.map((row: string, i: number) => {
                 return (
                     <div>
                         <span key={row} style={{ marginRight: "25px" }}>
                             {row}{" "}
                         </span>
-                        {question["colLabel"]?.map((col: string, i: Number) => {
-                            return mcqGrid?.find((obj) => {
-                                return obj["row"] === row && obj["col"] === col
-                            }) !== undefined ? (
-                                readonly ? (
+                        {question?.cols?.map((col: string, i: number) => {
+                            return prevResponse?.selectedOptionsGrid?.find(
+                                (obj) => {
+                                    return (
+                                        obj["row"] === row && obj["col"] === col
+                                    )
+                                }
+                            ) !== undefined ? (
+                                responseList?.readOnly ? (
                                     <input
                                         disabled
                                         type="checkbox"
@@ -549,7 +549,7 @@ const QuestionResponse: React.FC<props> = ({
                                         defaultChecked={true}
                                     />
                                 )
-                            ) : readonly ? (
+                            ) : responseList?.readOnly ? (
                                 <input
                                     readOnly
                                     type="checkbox"
@@ -582,18 +582,18 @@ const QuestionResponse: React.FC<props> = ({
         </div>,
         //Linear Scale
         <div>
-            {question["lowRatingLabel"] ? (
-                <span>{question["lowRatingLabel"]}</span>
+            {question.lowRatingLabel ? (
+                <span>{question.lowRatingLabel}</span>
             ) : null}
-            {arr.map((num: string, idx: Number) => {
+            {arr.map((num: string, idx: number) => {
                 return (
                     <span key={String(num)}>
-                        {readonly ? (
+                        {responseList?.readOnly ? (
                             <input
                                 readOnly
                                 value={num}
                                 type="radio"
-                                name={question["_id"]}
+                                name={question.qid}
                                 style={{
                                     marginLeft: "15px",
                                     display: "inline",
@@ -608,7 +608,7 @@ const QuestionResponse: React.FC<props> = ({
                                 onChange={(e) => handleLinearScale(e)}
                                 value={num}
                                 type="radio"
-                                name={question["_id"]}
+                                name={question.qid}
                                 style={{
                                     marginLeft: "15px",
                                     display: "inline",
@@ -622,7 +622,7 @@ const QuestionResponse: React.FC<props> = ({
                     </span>
                 )
             })}
-            {question["highRatingLabel"] ? (
+            {question.highRatingLabel ? (
                 <span style={{ marginLeft: "15px" }}>
                     {question["highRatingLabel"]}
                 </span>
@@ -631,12 +631,12 @@ const QuestionResponse: React.FC<props> = ({
     ]
     return (
         <div>
-            <b>{question["question_text"]}</b>
+            <b>{question.questionText}</b>
             {question["required"] ? (
                 <span style={{ color: "red" }}>*</span>
             ) : null}
             {/* SOME ISSUE IN BRINGINGUSER RESPONSES */}
-            {types[typeToIdx.indexOf(question["question-type"])]}
+            {types[typeToIdx.indexOf(question["questionType"])]}
             <br />
             <br />
         </div>
