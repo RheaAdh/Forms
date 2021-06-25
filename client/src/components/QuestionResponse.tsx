@@ -26,11 +26,6 @@ const QuestionResponse: React.FC<props> = ({
     ]
 
     const responseList = useResponses()
-
-    // For both mcq and checkbox
-
-    // For both mcq grid and checkbox grid
-
     const [emailError, setEmailError] = useState<string | null>(null)
 
     // For linear scale
@@ -50,17 +45,11 @@ const QuestionResponse: React.FC<props> = ({
             question?.lowRating !== undefined &&
                 question?.highRating !== undefined &&
                 fillArray(question.lowRating, question.highRating)
-        } else if (question?.questionType === "dropdown-answer") {
-            const answer = {
-                answerType: "dropdown-answer",
-                questionId: question.qid,
-                selectedOption: question?.options?.[0],
-            }
         }
     }, [])
 
     const handleShortAnswer = (e: any) => {
-        var submit: boolean = true
+        var submit: boolean = !question.required
         if ((e?.target.value).length === 0 && question.required) {
             submit = false
         }
@@ -76,7 +65,7 @@ const QuestionResponse: React.FC<props> = ({
         }
     }
     const handleParagraphAnswer = (e: any) => {
-        var submit: boolean = true
+        var submit: boolean = !question.required
         if ((e?.target.value).length === 0 && question["required"]) {
             submit = false
         }
@@ -90,7 +79,7 @@ const QuestionResponse: React.FC<props> = ({
         responseList?.responseActions?.updateResponse(index, answer)
     }
     const handleMcq = (e: any, optionText: string) => {
-        var submit: boolean = false
+        var submit: boolean = !question.required
         if (question["required"]) submit = true
         const answer = {
             answerType: "mcq-answer",
@@ -113,7 +102,7 @@ const QuestionResponse: React.FC<props> = ({
         }
         if (question["required"]) {
             if (opt.length === 0) {
-                submit = true
+                submit = false
             }
         }
         const answer = {
@@ -127,7 +116,7 @@ const QuestionResponse: React.FC<props> = ({
     }
 
     const handleDropdown = (e: any) => {
-        var submit = false
+        var submit = !question.required
         const answer = {
             answerType: "dropdown-answer",
             selectedOption: e.target.value,
@@ -142,7 +131,7 @@ const QuestionResponse: React.FC<props> = ({
     }
 
     const handleEmail = (e: any) => {
-        var submit: boolean = true
+        var submit: boolean = !question.required
         if (
             !/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(
                 e.target.value
@@ -192,7 +181,7 @@ const QuestionResponse: React.FC<props> = ({
     const handleCheckboxGrid = (e: any, row: string, col: string) => {
         if (prevResponse?.selectedOptionsGrid === undefined) return
         const mcq = prevResponse?.selectedOptionsGrid?.slice()
-        var submit: boolean = false
+        var submit: boolean = !question.required
         if (e.target.checked) {
             // Push new data
             mcq.push({ row: row, col: col })
@@ -222,7 +211,7 @@ const QuestionResponse: React.FC<props> = ({
         responseList?.responseActions?.updateResponse(index, answer)
     }
     const handleLinearScale = (e: any) => {
-        var submit: boolean = false
+        var submit: boolean = !question.required
         if (question["required"]) {
             submit = true
         }
@@ -546,7 +535,7 @@ const QuestionResponse: React.FC<props> = ({
                                             display: "inline",
                                             marginRight: "10px",
                                         }}
-                                        defaultChecked={true}
+                                        defaultChecked
                                     />
                                 )
                             ) : responseList?.readOnly ? (

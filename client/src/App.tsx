@@ -22,7 +22,12 @@ function App() {
                 />
                 <Route
                     path="/form/:formid"
-                    render={() => <DisplayForm readonly={false} />}
+                    render={() => (
+                        <DisplayForm
+                            readonly={false}
+                            responseOnlyPage={false}
+                        />
+                    )}
                 />
                 <Route path="/dashboard" render={() => <DashboardPage />} />
                 <Route path="/adminlogin" render={() => <AdminLoginPage />} />
@@ -30,7 +35,15 @@ function App() {
                 <Route path="/register" render={() => <RegisterPage />} />
                 <Route
                     path="/responses/:formid"
-                    render={() => <DisplayForm readonly={true} />}
+                    render={() => (
+                        <DisplayForm readonly={true} responseOnlyPage={false} />
+                    )}
+                />
+                <Route
+                    path="/response/:responseId"
+                    render={() => (
+                        <DisplayForm readonly={true} responseOnlyPage={true} />
+                    )}
                 />
                 <Route
                     path="/resetpassword/:token"

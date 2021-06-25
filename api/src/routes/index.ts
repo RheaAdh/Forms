@@ -35,7 +35,7 @@ import {
     getResponseIdByFormFilled,
     getResponseByBothFormidAndResponseid,
     emailResponse,
-    getResponsebyRespid
+    getResponsebyRespid,
 } from "./response"
 import { checkAuthentication } from "./user"
 
@@ -102,14 +102,14 @@ router.get(
 
 router.get("/getquestions", checkAuthentication, getQuestions)
 router.get("/getquestion/:qid", checkAuthentication, getQuestion)
-router.get(
+router.post(
     "/getquestionsbyformid/:formid",
     checkAuthentication,
     getQuestionsByFormid
 )
 router.post("/submitresponse", checkAuthentication, submitResponse)
 router.get("/sendmail", emailResponse)
-router.get("/response/:respid",getResponsebyRespid)
+router.get("/response/:respid", getResponsebyRespid)
 
 //Covert to .csv and download route
 router.get("/download/:formid", downloadResponse)

@@ -60,7 +60,7 @@ export async function getForm(req: Request, res: Response) {
         } else {
             return res
                 .status(404)
-                .send({ success: false, msg: "Form doesnt exists" })
+                .send({ success: false, msg: "Form does'nt exists" })
         }
     } catch (error) {
         return res.status(500).send({ success: false, msg: error })
@@ -77,7 +77,7 @@ export async function getFormForResponse(req: Request, res: Response) {
             console.log("Present time " + presentDateTime)
             console.log("closing time " + form.closes)
             //Checking for closing date time
-            if (form.closes <= presentDateTime) {
+            if (form.closes !== null && form.closes <= presentDateTime) {
                 console.log("Form closed")
                 form.isActive = false
                 await form.save()

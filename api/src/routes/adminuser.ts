@@ -19,7 +19,7 @@ const bcrypt = require("bcryptjs")
 
 //FOR ADMINS
 export async function adminRegister(req: Request, res: Response) {
-    console.log("Registration Status "+process.env.REGISTERATION_OPEN)
+    console.log("Registration Status " + process.env.REGISTERATION_OPEN)
     //ISSUES
     if (process.env.REGISTERATION_OPEN == "1") {
         const { username, password, confirmPassword, email } = req.body
@@ -283,17 +283,13 @@ export function sessionDetails(req: Request, res: Response) {
     res.send(req.session)
 }
 
-
-export async function getAllAdmins(req:Request,res:Response)
-{
-    try{
-        let admins = await User.find({role:'admin'})
+export async function getAllAdmins(req: Request, res: Response) {
+    try {
+        let admins = await User.find({ role: "admin" })
         console.log(admins)
-        res.send({success: true, msg: "All Admins",data:admins })
-    }
-    catch(err)
-    {
+        res.send({ success: true, msg: "All Admins", data: admins })
+    } catch (err) {
         console.log(err)
-        return res.send({success: false, msg: "Server Error" })
+        return res.send({ success: false, msg: "Server Error" })
     }
 }

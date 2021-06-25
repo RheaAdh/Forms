@@ -21,14 +21,18 @@ export interface Response {
     selectedOption?: string
     multipleSelected?: string[]
     selectedOptionsGrid?: gridOptions[]
-    selectedDate?: Date
-    selectedTime?: Date
+    selectedDate?: Date | null
+    selectedTime?: Date | null
     emailAnswer?: string
     canSubmit: boolean
 }
 
 export interface ResponseActions {
-    getResponse: (formId: string, prevResponses: any) => void
+    getResponse: (
+        formId: string,
+        prevResponses: any,
+        requiredData: boolean[]
+    ) => void
     getUsers: () => Promise<user[]>
     updateResponse: (index: number, response: Response) => void
     setReadOnly: (readOnly: boolean) => void
@@ -66,7 +70,11 @@ export default function ResponseListProvider({
     const [readOnly, setReadOnly] = useState<boolean>(true)
     const [users, setUsers] = useState<user[]>()
 
-    const getResponse = (formId: string, prevResponses: any) => {
+    const getResponse = (
+        formId: string,
+        prevResponses: any,
+        requiredData: boolean[]
+    ) => {
         setFormId(formId)
         setUserid(prevResponses.userid)
         setUsername(prevResponses.username)
@@ -79,7 +87,7 @@ export default function ResponseListProvider({
                 questionId: resp.questionId || resp._id,
                 responseId: resp.responseId,
                 formId: resp.formId || resp.formid,
-                canSubmit: false,
+                canSubmit: !requiredData[i],
                 shortText: resp.shortText !== undefined ? resp.shortText : "",
                 paragraphText:
                     resp.paragraphText !== undefined ? resp.paragraphText : "",
@@ -133,12 +141,14 @@ export default function ResponseListProvider({
     const updateResponse = (index: number, response: Response) => {
         const newResponseList = responses.slice()
         newResponseList[index] = response
+        console.log(response)
         setResponses(newResponseList)
     }
 
     const submit = async () => {
         if (responses.some((res) => res.canSubmit === false)) {
             setSubmitError("Please fill all required details")
+            return { success: false }
         } else setSubmitError(null)
         const body = {
             username: username,
@@ -159,11 +169,20 @@ export default function ResponseListProvider({
     }
 
     const anotherResponse = (questions: any[]) => {
-        getResponse(formId, {
-            userid,
-            username,
-            responses: [],
-            questions: questions,
+        setResponses((prevResponses) => {
+            const newResponses = prevResponses.slice()
+            for (var i: number = 0; i < prevResponses.length; i++) {
+                newResponses[i].shortText = ""
+                newResponses[i].paragraphText = ""
+                newResponses[i].emailAnswer = ""
+                newResponses[i].selectedOption = ""
+                newResponses[i].multipleSelected = []
+                newResponses[i].selectedOptionsGrid = []
+                newResponses[i].canSubmit = !questions[i].required
+                newResponses[i].selectedTime = null
+                newResponses[i].selectedDate = null
+            }
+            return newResponses
         })
         setReadOnly(false)
     }

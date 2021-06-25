@@ -66,8 +66,12 @@ const EditFormPage: React.FC = () => {
                     description: form?.currentForm?.description,
                     isEditable: form?.currentForm?.editable,
                     multipleResponses: form?.currentForm?.mulitipleResponses,
-                    closes: form?.currentForm?.date,
+                    closes:
+                        form?.currentForm?.date === undefined
+                            ? null
+                            : form?.currentForm?.date,
                     title: form?.currentForm?.title,
+                    isActive: form?.currentForm?.isActive,
                 }),
             })
                 .then((response) => response.json())

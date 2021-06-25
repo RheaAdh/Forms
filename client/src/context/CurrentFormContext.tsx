@@ -19,7 +19,11 @@ export interface Form {
     setDate: (date: Date | null) => void
     setEditable: (editable: boolean) => void
     setMultipleResponses: (multiple: boolean) => void
-    setFormDetails: (id: string, toEdit: boolean) => Promise<any>
+    setFormDetails: (
+        id: string,
+        toEdit: boolean,
+        formData?: any
+    ) => Promise<any>
     setActive: (isActive: boolean) => void
 }
 
@@ -96,8 +100,24 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
             return null
         })
     }
-    const setFormDetails = async (id: string, toEdit: boolean) => {
+    const setFormDetails = async (
+        id: string,
+        toEdit: boolean,
+        formData?: any
+    ) => {
         setCurrentForm({ id: id })
+        if (formData !== undefined) {
+            console.log(formData)
+            setTitle(formData.title)
+            setDescription(formData.description)
+            setEditable(formData.isEditable)
+            setMultipleResponses(formData.multipleResponses)
+            setActive(formData.isActive)
+            if (formData.closes) {
+                new Date(formData.closes)
+            } else setDate(null)
+            return { success: true, form: formData }
+        }
         let fetchRoute = ``
         if (toEdit) {
             fetchRoute = `http://localhost:7000/api/getform/${id}`
@@ -112,10 +132,15 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
                 },
                 credentials: "include",
             })
+
             const data = await res.json()
 
             if (!data.success) {
-                return data
+                return {
+                    status: res.status,
+                    success: data.success,
+                    form: data.form,
+                }
             }
             setTitle(data.form.title)
             setDescription(data.form.description)
@@ -124,7 +149,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
             setActive(data.form.isActive)
             if (data.form.closes) {
                 setDate(new Date(data.form.closes))
-            }
+            } else setDate(null)
             return data.form
         } catch (err) {
             console.log(err)

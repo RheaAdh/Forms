@@ -11,7 +11,7 @@ const QuestionList: React.FC = () => {
     useEffect(() => {
         const id = form?.currentForm?.id
         if (id) {
-            getQuestionsAndResponses(id).then((data) =>
+            getQuestionsAndResponses(id, true).then((data) =>
                 questions?.questionActions.getQuestions(id, data.ques)
             )
         }

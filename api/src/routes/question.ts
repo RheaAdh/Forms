@@ -172,6 +172,25 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
     //sending previous response and questions
     try {
         let formid: any = req.params.formid
+        let toEdit: boolean = req.body.toEdit
+        const form = await Form.findById(req.params.formid)
+        if (form === null) {
+            return res
+                .status(404)
+                .json({ success: false, msg: "Form doesn't exist" })
+        }
+        if (form.closes !== null && new Date() >= form.closes && !toEdit) {
+            form.isActive = false
+            await form.save()
+            return res
+                .status(400)
+                .json({ success: false, msg: "Form has closed" })
+        }
+        if (form.isActive === false && !toEdit) {
+            return res
+                .status(400)
+                .json({ success: false, msg: "Form has closed" })
+        }
         const questions = await Question.find({ formid: formid })
         let user = await FormResponse.findOne({
             userid: req.session.userId,

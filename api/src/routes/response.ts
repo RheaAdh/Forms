@@ -32,7 +32,7 @@ export const submitResponse = async (req: Request, res: Response) => {
     console.log("Present time " + presentDateTime)
     console.log("closing time " + form.closes)
     //Checking for closing date time
-    if (form.closes <= presentDateTime) {
+    if (form.closes !== null && form.closes <= presentDateTime) {
         console.log("Form closed")
         form.isActive = false
     }
@@ -547,24 +547,24 @@ export const emailResponse = async (req: Request, res: Response) => {
 }
 
 export const getResponsebyRespid = async (req: Request, res: Response) => {
-    try
-    {
+    try {
         let respid = req.params.respid
         console.log(respid)
-        let resp = await FormResponse.findById({_id:respid}).populate('responses.questionId formId')
-        if(resp)
-        {
+        let resp = await FormResponse.findById({ _id: respid }).populate(
+            "responses.questionId formId"
+        )
+        if (resp) {
             console.log(resp)
-            return res.send({success: false , msg:"Response Found",data:resp})
+            return res.send({
+                success: true,
+                msg: "Response Found",
+                data: resp,
+            })
+        } else {
+            return res.send({ success: false, msg: "Response not found" })
         }
-        else
-        {
-            return res.send({success: false , msg:"Response not found"})
-        }
-    }
-    catch(err)
-    {
+    } catch (err) {
         console.log(err)
-        return res.send({success: false , msg:"Server Error"})
+        return res.send({ success: false, msg: "Server Error" })
     }
 }

@@ -3,37 +3,78 @@ import { Redirect, useParams } from "react-router-dom"
 import QuestionResponse from "../components/QuestionResponse"
 import { useAuth } from "../context/AuthContext"
 import { useCurrentForm } from "../context/CurrentFormContext"
-import getQuestionsAndResponses from "../context/Actions"
+import getQuestionsAndResponses, { getByResponseId } from "../context/Actions"
 import { useResponses, user } from "../context/ResponseListContext"
 import { Question, useQuestionsList } from "../context/QuestionListContext"
 
 interface props {
     readonly: boolean
+    responseOnlyPage: boolean
 }
 
-const DisplayForm: React.FC<props> = ({ readonly }) => {
+const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
     const auth = useAuth()
     const form = useCurrentForm()
     const responseList = useResponses()
     const questions = useQuestionsList()
+    const [formClosed, setFormClosed] = useState<boolean>(false)
+    const [invalidId, setInvalidId] = useState<boolean>(false)
     const [currentUser, setCurrentUser] = useState<user | null>(null)
     const [thankYou, setThankYou] = useState<boolean>(false)
     // HANDLE LOADING
     const [loading, setLoading] = useState<boolean>(true)
-    const { formid }: any = useParams()
+    const { formid, responseId }: any = useParams()
     const [prevSubmission, setPrevSubmission] = useState<boolean>(true)
 
     useEffect(() => {
-        if (auth?.currentUser === null) auth?.getCurrentUser()
-    }, [])
+        if (auth?.currentUser === null && !responseOnlyPage)
+            auth?.getCurrentUser()
+        if (responseOnlyPage && responseId) {
+            getByResponseId(responseId).then((data) => {
+                if (data.success) {
+                    const formId = data.data.formId._id
+                    const formData = data.data.formId
+                    const questionsData = data.data.responses.map(
+                        (q: any) => q.questionId
+                    )
+                    const responses = data.data
+                    form?.setFormDetails(formId, false, formData)
+                    questions?.questionActions?.getQuestions(
+                        formId,
+                        questionsData
+                    )
+                    responseList?.responseActions?.getResponse(
+                        formId,
+                        responses,
+                        questionsData.map((q: any) => q.required)
+                    )
+                    setLoading(false)
+                }
+            })
+        }
+    }, [responseOnlyPage, responseId])
 
     useEffect(() => {
-        if (formid && auth?.currentUser) {
+        if (formid && auth?.currentUser && responseOnlyPage === false) {
             // If readonly is true, then access is admin level, hence edit permission needed to view
             // If readonly is false, it's user level access, hence toEdit is false
-            form?.setFormDetails(formid, readonly)
-            getQuestionsAndResponses(formid).then((data) => {
-                // WRONG FORMID ERROR HANDLING NEEDED
+            form?.setFormDetails(formid, readonly).then((data) => {
+                if (data.status === 400) {
+                    setFormClosed(true)
+                    setLoading(false)
+                    return
+                } else if (data.status === 404) {
+                    setInvalidId(true)
+                }
+            })
+            getQuestionsAndResponses(formid, false).then((data) => {
+                if (data.status === 400) {
+                    setFormClosed(true)
+                    return
+                } else if (data.status === 404) {
+                    setInvalidId(true)
+                    return
+                }
                 questions?.questionActions?.getQuestions(formid, data.ques)
                 if (data.prevResponse === null) {
                     setPrevSubmission(false)
@@ -44,40 +85,46 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                         username: auth?.currentUser?.username,
                     }
                 }
+                // just to check if it's not undefined
+
                 responseList?.responseActions?.getResponse(
                     formid,
-                    data.prevResponse
+                    data.prevResponse,
+                    data.ques.map((q: any) => q.required)
                 )
                 if (!readonly) setLoading(false)
             })
         }
-    }, [formid, auth?.currentUser])
+    }, [formid, auth?.currentUser, responseOnlyPage])
 
     useEffect(() => {
         if (
             readonly &&
             responseList?.formId?.length &&
-            responseList?.users === undefined
+            responseList?.users === undefined &&
+            responseOnlyPage === false
         ) {
             responseList?.responseActions
                 ?.getUsers()
                 .then((data) => setCurrentUser(data[0]))
         }
-    }, [responseList?.formId])
+    }, [responseList?.formId, responseOnlyPage])
     useEffect(() => {
-        if (form?.currentForm?.editable !== undefined)
+        if (
+            form?.currentForm?.editable !== undefined &&
+            responseOnlyPage === false
+        )
             responseList?.responseActions?.setReadOnly(
                 readonly || (!form?.currentForm?.editable && prevSubmission)
             )
-        console.log(
-            readonly,
-            form?.currentForm?.editable,
-            prevSubmission,
-            responseList?.responseActions
-        )
-    }, [readonly, form?.currentForm?.editable, prevSubmission])
+    }, [
+        readonly,
+        form?.currentForm?.editable,
+        prevSubmission,
+        responseOnlyPage,
+    ])
     useEffect(() => {
-        if (currentUser && readonly) {
+        if (currentUser && readonly && responseOnlyPage === false) {
             // Get responses for current user
             setLoading(true)
             fetch(
@@ -95,10 +142,13 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                 .then((data) => {
                     if (data.success) {
                         //CHANGE TO CONTEXT
-                        responseList?.responseActions?.getResponse(
-                            formid,
-                            data.data
-                        )
+                        if (questions?.questions)
+                            // just to check if it's not undefined
+                            responseList?.responseActions?.getResponse(
+                                formid,
+                                data.data,
+                                questions.questions.map((q) => q.required)
+                            )
                     } else {
                         console.log(data.data)
                     }
@@ -109,10 +159,9 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
     if (loading) {
         return <div>Loading</div>
     }
-    if (form === null) {
-        return <div>You got the wrong address</div>
-    }
-    if (auth?.currentUser === null) {
+    if (formClosed) return <>Form is closed</>
+    if (invalidId) return <>You may have got the wrong link</>
+    if (auth?.currentUser === null && responseOnlyPage === false) {
         return <Redirect to={`/login/${formid}`} />
     }
     return thankYou ? (
@@ -121,17 +170,21 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
             <br />
             {/* if form is accepting multiple */}
             {form?.currentForm?.mulitipleResponses ? (
-                <a href={`http://localhost:3000/form/${formid}`}>
-                    <button
-                        onClick={() =>
-                            responseList?.responseActions?.anotherResponse(
-                                questions?.questions ? questions.questions : []
-                            )
-                        }
-                    >
-                        Submit another response?
-                    </button>
-                </a>
+                <button
+                    onClick={() => {
+                        setLoading(true)
+                        responseList?.responseActions?.anotherResponse(
+                            questions?.questions ? questions.questions : []
+                        )
+                        setTimeout(() => {
+                            setLoading(false)
+                            setPrevSubmission(false)
+                            setThankYou(false)
+                        }, 10)
+                    }}
+                >
+                    Submit another response?
+                </button>
             ) : (
                 <div>We accept only 1 response per user</div>
             )}
@@ -198,14 +251,11 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                         right: "64.84%",
                         top: "7.13%",
                         bottom: "83.8%",
-
                         fontFamily: "Catamaran",
                         fontWeight: "bold",
                         fontSize: "60px",
                         lineHeight: "98px",
                         letterSpacing: "0.03em",
-
-                        // color: #000000;
                     }}
                 >
                     {form?.currentForm?.title}
@@ -213,6 +263,24 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
 
                 <p>{form?.currentForm?.description}</p>
             </div>
+            {responseList?.readOnly === false ? (
+                <button
+                    onClick={
+                        () => {
+                            setLoading(true)
+                            responseList?.responseActions?.anotherResponse(
+                                questions?.questions ? questions.questions : []
+                            )
+                            setTimeout(() => {
+                                setLoading(false)
+                            }, 10)
+                        }
+                        // Another response just clears the responses
+                    }
+                >
+                    Click to clear responses
+                </button>
+            ) : null}
             {questions?.questions?.map((q: Question, idx: number) => {
                 return (
                     <QuestionResponse
@@ -225,22 +293,24 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
             })}
             <b style={{ color: "red" }}>{responseList?.submitError}</b>
             <br />
-            <div>
-                {form.currentForm?.isActive ? (
-                    <p>form is open</p>
-                ) : (
-                    <p>form is closed</p>
-                )}
-                {!form?.currentForm?.editable && form?.currentForm?.isActive ? (
-                    <p>This form is not editable</p>
-                ) : null}
-                {form?.currentForm?.mulitipleResponses &&
-                form?.currentForm?.isActive ? (
-                    <p>This form accepts multiple responses</p>
-                ) : null}
-            </div>
-
-            {readonly ? null : form.currentForm?.isActive ? (
+            {!responseOnlyPage ? (
+                <div>
+                    {form?.currentForm?.isActive ? (
+                        <p>form is open</p>
+                    ) : (
+                        <p>form is closed</p>
+                    )}
+                    {!form?.currentForm?.editable &&
+                    form?.currentForm?.isActive ? (
+                        <p>This form is not editable</p>
+                    ) : null}
+                    {form?.currentForm?.mulitipleResponses &&
+                    form?.currentForm?.isActive ? (
+                        <p>This form accepts multiple responses</p>
+                    ) : null}
+                </div>
+            ) : null}
+            {readonly ? null : form?.currentForm?.isActive ? (
                 <div>
                     <button
                         style={{
@@ -255,22 +325,25 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                         }}
                         onClick={() => {
                             if (
-                                form?.currentForm?.isActive &&
-                                form?.currentForm?.mulitipleResponses
+                                form?.currentForm?.mulitipleResponses &&
+                                prevSubmission
                             ) {
+                                setLoading(true)
                                 responseList?.responseActions?.anotherResponse(
                                     questions?.questions
                                         ? questions.questions
                                         : []
                                 )
+                                setTimeout(() => {
+                                    setLoading(false)
+                                    setPrevSubmission(false)
+                                }, 10)
                             } else {
                                 responseList?.responseActions
                                     ?.submit()
                                     .then((data: any) => {
                                         if (data.success) {
                                             setThankYou(true)
-                                        } else {
-                                            console.log(data)
                                         }
                                     })
                             }
@@ -283,11 +356,6 @@ const DisplayForm: React.FC<props> = ({ readonly }) => {
                             <>Submit</>
                         )}
                     </button>
-                    {console.log(
-                        responseList?.readOnly,
-                        form?.currentForm?.mulitipleResponses,
-                        prevSubmission
-                    )}
                 </div>
             ) : null}
         </div>
