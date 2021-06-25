@@ -1,5 +1,5 @@
 import express, { Response, Request } from "express"
-import { isValidAdmin, isValidSuperAdmin } from "./adminuser"
+import { isValidAdmin, isValidSuperAdmin, getAllAdmins } from "./adminuser"
 import {
     deleteForm,
     addForm,
@@ -80,6 +80,8 @@ router.get(
     isValidAdmin,
     getResponsesByQuestionsByForm
 )
+
+router.get("/getadmins", getAllAdmins)
 router.get("/makeTemplate/:formId", makeTemplate)
 router.get("/useTemplate/:formId", useTemplate)
 router.get("/viewAllTemplates", viewAllTempalates)
