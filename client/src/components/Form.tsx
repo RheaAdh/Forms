@@ -17,17 +17,22 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
         history.push(`/editForm/${form._id}`)
     }
     const toggleActive = () => {
-        fetch(`http://localhost:7000/api/formclose/${form._id}`, {
+        fetch(`http://localhost:7000/api/updateform`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
             credentials: "include",
             body: JSON.stringify({
+                _id: form._id,
                 isActive: active,
+                closes: active ? null : new Date(),
             }),
         })
-            .then((response) => response.json())
+            .then((response) => {
+                return response.json()
+            })
+            .then((data) => console.log(data))
             .catch((error) => {
                 console.error("Error:", error)
             })

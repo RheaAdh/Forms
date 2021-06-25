@@ -135,7 +135,7 @@ const EditFormPage: React.FC = () => {
                             onClick={toggleForm}
                             style={{ cursor: "pointer" }}
                         >
-                            Form is active, click to toggle
+                            Form is closed, click to toggle
                         </button>
                     )}
                 </>
