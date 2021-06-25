@@ -1,10 +1,11 @@
 Frontend
 
-check delete question some error
+
 clear response for multiple response when redirected back to form
 clear responses if user thinks whatever filled till now is working
-create predefined templates for events we know 
-show message like requires editor access, form is closed etc whereever required
+create predefined templates for events we know  --- templates is done so now form just needs to be created with no delete option 
+show message like requires editor access, form is closed, registration closed etc whereever required
+frontend link to be attached in mailing response, checkbox to select for email response in each response
 
 Backend
 
