@@ -43,4 +43,4 @@ const form: Schema = new Schema(
 
 //?COMPILE FORM MODEL
 
-export const Form = mongoose.model<FormDoc>("form", form)
+export const Form = mongoose.model<FormDoc>("Form", form)

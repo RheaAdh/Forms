@@ -545,3 +545,26 @@ export const emailResponse = async (req: Request, res: Response) => {
         res.send(err)
     }
 }
+
+export const getResponsebyRespid = async (req: Request, res: Response) => {
+    try
+    {
+        let respid = req.params.respid
+        console.log(respid)
+        let resp = await FormResponse.findById({_id:respid}).populate('responses.questionId formId')
+        if(resp)
+        {
+            console.log(resp)
+            return res.send({success: false , msg:"Response Found",data:resp})
+        }
+        else
+        {
+            return res.send({success: false , msg:"Response not found"})
+        }
+    }
+    catch(err)
+    {
+        console.log(err)
+        return res.send({success: false , msg:"Server Error"})
+    }
+}

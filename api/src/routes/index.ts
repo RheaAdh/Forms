@@ -1,5 +1,5 @@
 import express, { Response, Request } from "express"
-import { isValidAdmin, isValidSuperAdmin } from "./adminuser"
+import { isValidAdmin, isValidSuperAdmin, getAllAdmins } from "./adminuser"
 import {
     deleteForm,
     addForm,
@@ -35,6 +35,7 @@ import {
     getResponseIdByFormFilled,
     getResponseByBothFormidAndResponseid,
     emailResponse,
+    getResponsebyRespid
 } from "./response"
 import { checkAuthentication } from "./user"
 
@@ -80,6 +81,8 @@ router.get(
     isValidAdmin,
     getResponsesByQuestionsByForm
 )
+
+router.get("/getadmins", getAllAdmins)
 router.get("/makeTemplate/:formId", makeTemplate)
 router.get("/useTemplate/:formId", useTemplate)
 router.get("/viewAllTemplates", viewAllTempalates)
@@ -106,6 +109,7 @@ router.get(
 )
 router.post("/submitresponse", checkAuthentication, submitResponse)
 router.get("/sendmail", emailResponse)
+router.get("/response/:respid",getResponsebyRespid)
 
 //Covert to .csv and download route
 router.get("/download/:formid", downloadResponse)
