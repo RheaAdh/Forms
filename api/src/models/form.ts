@@ -14,10 +14,12 @@ export interface FormDoc extends Document {
     owner: any
     closes: Date
     isEditable: boolean
+    multipleResponses: boolean
     isActive: boolean
     isTemplate: boolean
     role: string
     editors: [Schema.Types.ObjectId]
+    dontdelete: boolean
 }
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
 const form: Schema = new Schema(
@@ -35,6 +37,7 @@ const form: Schema = new Schema(
         isTemplate: { type: Boolean, default: false },
         role: { type: String },
         editors: [{ type: Schema.Types.ObjectId, ref: "User" }],
+        dontdelete: { type: Boolean, default: false },
     },
     {
         timestamps: true,

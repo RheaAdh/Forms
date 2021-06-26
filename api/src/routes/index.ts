@@ -107,7 +107,6 @@ router.post(
     getQuestionsByFormid
 )
 router.post("/submitresponse", checkAuthentication, submitResponse)
-// router.get("/sendmail", emailResponse)
 router.get("/response/:respid", getResponsebyRespid)
 
 //Covert to .csv and download route
