@@ -1,20 +1,18 @@
 Frontend
 
-
-clear response for multiple response when redirected back to form
-clear responses if user thinks whatever filled till now is working
+implement design
+there is some bug in google login button for user response
 create predefined templates for events we know  --- templates is done so now form just needs to be created with no delete option 
 show message like requires editor access, form is closed, registration closed etc whereever required
-frontend link to be attached in mailing response, checkbox to select for email response in each response
+checkbox to select for email response in each response
 
 Backend
 
-send responses thru iecse mailer on taking email as parameter --(Half done, requires a Frontend link specifc to user to be sent)
- 
+check when to send mail 
 
 ---NEED DETAILS(SAVED FOR LAST)---
     s3 bucket(IMP)
     csv download 
     file upload
-mailer integration for forgot password and send responses to user
+mailer integration for forgot password 
 

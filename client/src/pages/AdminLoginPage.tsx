@@ -28,6 +28,7 @@ const AdminLoginPage: React.FC = () => {
             console.log(resp)
             if (resp.success) {
                 setToken(resp.data)
+                alert("check your mail")
             } else {
                 setErrorMessage(resp.data)
             }
@@ -51,11 +52,6 @@ const AdminLoginPage: React.FC = () => {
     if (loading) {
         return <div>Loading</div>
     }
-
-    if (token) {
-        return <Redirect to={`/resetpassword/${token}`} />
-    }
-
     return auth?.currentUser ? (
         <div>
             <Redirect to="/" />
@@ -96,6 +92,7 @@ const AdminLoginPage: React.FC = () => {
                     }}
                     value={forgotPassword ? "Confirm email" : "Login"}
                 />
+
                 {forgotPassword ? null : (
                     <input
                         type="button"

@@ -201,10 +201,16 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
             console.log(data)
             return res.json(data)
         } else {
-            let data = { prevResponse: user, ques: questions }
-            console.log(data.prevResponse)
-            console.log(data)
-            return res.send(data)
+            if (form.multipleResponses) {
+                let data = { prevResponse: null, ques: questions }
+                console.log(data)
+                return res.json(data)
+            } else {
+                let data = { prevResponse: user, ques: questions }
+                console.log(data.prevResponse)
+                console.log(data)
+                return res.send(data)
+            }
         }
     } catch (e) {
         return res.send({ success: false, msg: e })

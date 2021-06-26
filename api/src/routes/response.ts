@@ -51,6 +51,7 @@ export const submitResponse = async (req: Request, res: Response) => {
             formId,
         })
         //When form has no submission
+        let newresp
         if (!response) {
             console.log("No resp")
             try {
@@ -60,8 +61,9 @@ export const submitResponse = async (req: Request, res: Response) => {
                     formId,
                     responses,
                 })
-                await formResponse.save()
+                newresp = await formResponse.save()
                 console.log("Response added!")
+                emailResponse(newresp, req.session)
                 res.send({ success: true, data: "Response submitted" })
             } catch (error) {
                 res.send({ success: false, data: error })
@@ -69,7 +71,7 @@ export const submitResponse = async (req: Request, res: Response) => {
         } else if (form.isEditable) {
             //When form has a submission and editing is allowed
             try {
-                let resp = await FormResponse.findOneAndUpdate(
+                let newresp = await FormResponse.findOneAndUpdate(
                     {
                         userid: req.session.userId,
                         formId,
@@ -84,8 +86,9 @@ export const submitResponse = async (req: Request, res: Response) => {
                     }
                 )
                 console.log("RESP is ")
-                console.log(resp)
+                console.log(newresp)
                 console.log("Response Updated when editing was allowed")
+                emailResponse(newresp, req.session)
                 res.send({ success: true, data: "Response Updated" })
             } catch (err) {
                 res.send({ success: false, data: err })
@@ -99,10 +102,11 @@ export const submitResponse = async (req: Request, res: Response) => {
                     formId,
                     responses,
                 })
-                await formResponse.save()
+                newresp = await formResponse.save()
                 console.log("Response added!")
                 console.log("Submitting another Response by the user")
                 res.send({ success: true, data: "Response submitted " })
+                emailResponse(newresp, req.session)
             } catch (error) {
                 res.send({ success: false, data: error })
             }
@@ -498,11 +502,11 @@ export const getResponseByBothFormidAndResponseid = async (
 }
 
 //Email Response
-export const emailResponse = async (req: Request, res: Response) => {
+
+async function emailResponse(resp: any, receiver: any) {
     try {
         console.log("inside mailer")
-        const output =
-            "<h>Link to Response:</h><br/>http://localhost:3000/form/60d0a92b5433950f5b23e352"
+        const output = `<p>Hello ${receiver.username}</p>Link to your recently submitted form response:http://localhost:3000/response/${resp.id}<p>Regards<br>IECSE</p>`
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
@@ -515,13 +519,12 @@ export const emailResponse = async (req: Request, res: Response) => {
                 rejectUnathorized: false,
             },
         })
-        console.log("transporter " + transporter)
 
         // send mail with defined transport object
         try {
             let info = await transporter.sendMail({
                 from: '"Admin" <iecseforms@gmail.com>', // sender address
-                to: "abhijeetsinha1503@gmail.com", // list of receivers
+                to: `${receiver.email}`, // list of receivers
                 subject: "Form Response", // Subject line
                 text: "Your Response to recently filled form", // plain text body
                 html: output, // html body
@@ -530,17 +533,9 @@ export const emailResponse = async (req: Request, res: Response) => {
             console.log("Message sent: %s", info.messageId)
         } catch (err) {
             console.log(err)
-            return res.send("err")
         }
-        // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-
-        // Preview only available when sending through an Ethereal account
-        //   console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-        // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-        res.send("Mail sent")
     } catch (err) {
         console.log(err)
-        res.send(err)
     }
 }
 

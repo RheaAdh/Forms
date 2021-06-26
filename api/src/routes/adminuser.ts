@@ -4,6 +4,7 @@ import * as mongo from "../config/mongo"
 import { User } from "../models/user"
 import { v4 as uuidv4 } from "uuid"
 import { hash } from "bcryptjs"
+const nodemailer = require("nodemailer")
 uuidv4()
 
 declare module "express-session" {
@@ -201,6 +202,43 @@ export async function adminLogout(
     })
 }
 
+async function emailResponse(token: any, receiver: any) {
+    try {
+        console.log("inside forgot mailer")
+        console.log(receiver.username)
+
+        const output = `<p>Hello ${receiver.username}</p>Link for reset password: http://localhost:3000/resetpassword/${token}<p>Regards<br>IECSE</p>`
+        let transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: "iecseforms@gmail.com", // generated ethereal user
+                pass: "iecse2021", // generated ethereal password
+            },
+            tls: {
+                rejectUnathorized: false,
+            },
+        })
+
+        // send mail with defined transport object
+        try {
+            let info = await transporter.sendMail({
+                from: '"Admin" <iecseforms@gmail.com>', // sender address
+                to: `${receiver.email}`, // list of receivers
+                subject: "Reset Password", // Subject line
+                text: "Reset Password Link", // plain text body
+                html: output, // html body
+            })
+            console.log("info is " + info)
+            console.log("Message sent: %s", info.messageId)
+        } catch (err) {
+            console.log(err)
+        }
+    } catch (err) {
+        console.log(err)
+    }
+}
 export async function adminForgotPassword(
     req: Request,
     res: Response,
@@ -222,13 +260,16 @@ export async function adminForgotPassword(
         })
     }
 
-    let usertoken = user.token
-    //let link = `http://localhost:7000/resetpassword/${usertoken}` (To be used when mailer backend is ready)
+    let token = user.token
+    // let link = `http://localhost:7000/resetpassword/${token}`
+    console.log(user)
+
+    emailResponse(token, user)
 
     //send email with this link
     return res.send({
         success: true,
-        data: usertoken,
+        data: token,
     })
 }
 
