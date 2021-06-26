@@ -3,7 +3,11 @@ import { Redirect, useParams } from "react-router-dom"
 import QuestionResponse from "../components/QuestionResponse"
 import { useAuth } from "../context/AuthContext"
 import { useCurrentForm } from "../context/CurrentFormContext"
-import getQuestionsAndResponses, { getByResponseId } from "../context/Actions"
+import getQuestionsAndResponses, {
+    getByResponseId,
+    downloadResponse,
+} from "../context/Actions"
+import CsvDownloader from "react-csv-downloader"
 import { useResponses, user } from "../context/ResponseListContext"
 import { Question, useQuestionsList } from "../context/QuestionListContext"
 
@@ -25,35 +29,44 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
     const [loading, setLoading] = useState<boolean>(true)
     const { formid, responseId }: any = useParams()
     const [prevSubmission, setPrevSubmission] = useState<boolean>(true)
+    const [dataForDownload, setDataForDownload] = useState<any[]>()
+    const [columnsForDownload, setColumnsForDownload] = useState<any[]>()
 
     useEffect(() => {
         if (auth?.currentUser === null && !responseOnlyPage)
             auth?.getCurrentUser()
         if (responseOnlyPage && responseId) {
             getByResponseId(responseId).then((data) => {
-                if (data.success) {
-                    const formId = data.data.formId._id
-                    const formData = data.data.formId
-                    const questionsData = data.data.responses.map(
-                        (q: any) => q.questionId
-                    )
-                    const responses = data.data
-                    form?.setFormDetails(formId, false, formData)
-                    questions?.questionActions?.getQuestions(
-                        formId,
-                        questionsData
-                    )
-                    responseList?.responseActions?.getResponse(
-                        formId,
-                        responses,
-                        questionsData.map((q: any) => q.required)
-                    )
-                    setLoading(false)
+                if (!data.success) {
+                    console.log(data)
+                    return
+                }
+
+                const formId = data.data.formId._id
+                const formData = data.data.formId
+                const questionsData = data.data.responses.map(
+                    (q: any) => q.questionId
+                )
+                const responses = data.data
+                form?.setFormDetails(formId, false, formData)
+                questions?.questionActions?.getQuestions(formId, questionsData)
+                responseList?.responseActions?.getResponse(
+                    formId,
+                    responses,
+                    questionsData.map((q: any) => q.required)
+                )
+                setLoading(false)
+            })
+        }
+        if (readonly === true && formid && responseOnlyPage === false) {
+            downloadResponse(formid).then((data) => {
+                if (data) {
+                    setColumnsForDownload(data.columns)
+                    setDataForDownload(data.dataForDownload)
                 }
             })
         }
-    }, [responseOnlyPage, responseId])
-
+    }, [responseOnlyPage, responseId, formid, readonly])
     useEffect(() => {
         if (formid && auth?.currentUser && responseOnlyPage === false) {
             // If readonly is true, then access is admin level, hence edit permission needed to view
@@ -61,7 +74,6 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
             form?.setFormDetails(formid, readonly).then((data) => {
                 if (data.status === 400) {
                     setFormClosed(true)
-                    setLoading(false)
                     return
                 } else if (data.status === 404) {
                     setInvalidId(true)
@@ -85,8 +97,6 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
                         username: auth?.currentUser?.username,
                     }
                 }
-                // just to check if it's not undefined
-
                 responseList?.responseActions?.getResponse(
                     formid,
                     data.prevResponse,
@@ -104,9 +114,9 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
             responseList?.users === undefined &&
             responseOnlyPage === false
         ) {
-            responseList?.responseActions
-                ?.getUsers()
-                .then((data) => setCurrentUser(data[0]))
+            responseList?.responseActions?.getUsers().then((data) => {
+                setCurrentUser(data[0])
+            })
         }
     }, [responseList?.formId, responseOnlyPage])
     useEffect(() => {
@@ -192,9 +202,7 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
             <br />
             {/* if form is editable */}
             {form?.currentForm?.editable ? (
-                <a href={`http://localhost:3000/form/${formid}`}>
-                    <button>Edit form?</button>
-                </a>
+                <button onClick={() => setThankYou(false)}>Edit form?</button>
             ) : (
                 <div>You cannot edit this form</div>
             )}
@@ -217,6 +225,16 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
             }}
         >
             <div>
+                {readonly === true ? (
+                    <CsvDownloader
+                        filename={form?.currentForm?.title || ""}
+                        extension={".csv"}
+                        columns={columnsForDownload}
+                        datas={dataForDownload ? dataForDownload : []}
+                        text={"Click  to download responses"}
+                    />
+                ) : null}
+                <br />
                 {responseList?.users?.length ? (
                     <select defaultValue={currentUser?.username}>
                         {responseList?.users.map((user: any, i: Number) => {

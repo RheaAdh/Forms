@@ -14,7 +14,6 @@ export interface user {
 export interface Response {
     answerType: string
     questionId: string
-    responseId?: string
     formId: string
     shortText?: string
     paragraphText?: string
@@ -85,7 +84,6 @@ export default function ResponseListProvider({
             responses.map((resp: any, i: number) => ({
                 answerType: resp.answerType || resp.questionType,
                 questionId: resp.questionId || resp._id,
-                responseId: resp.responseId,
                 formId: resp.formId || resp.formid,
                 canSubmit: !requiredData[i],
                 shortText: resp.shortText !== undefined ? resp.shortText : "",

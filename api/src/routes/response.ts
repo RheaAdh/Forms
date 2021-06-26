@@ -260,18 +260,16 @@ export const downloadResponse = async (req: Request, res: Response) => {
 
         //Converting data to .csv and writting to a file
         if (data) {
+            res.send({ success: true, data: data })
             var ws = fileSystem.createWriteStream(
                 "./src/responsedownload/data.csv"
             )
             fastcsv
                 .write(data, { headers: true })
                 .on("finish", function () {
-                    res.send("Downloaded")
-
                     //!!!!!Download .csv file
                     //Need help
                     //!!!!!Below res.download()  is not working properly
-
                     // res.download('./src/responsedownload/data.csv')
                 })
                 .pipe(ws)
