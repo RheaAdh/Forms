@@ -60,7 +60,7 @@ export async function getForm(req: Request, res: Response) {
         } else {
             return res
                 .status(404)
-                .send({ success: false, msg: "Form does'nt exists" })
+                .send({ success: false, msg: "Form doesn't exists" })
         }
     } catch (error) {
         return res.status(500).send({ success: false, msg: error })

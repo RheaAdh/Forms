@@ -31,7 +31,7 @@ const s3 = new AWS.S3()
 // Define POST route
 app.post("/test-upload", (request, response) => {
     alert("uploaded")
-    return response.send({
+    return response.status(200).send({
         success: true,
         data:
             "https://www.google.com/search?q=pikachu&safe=active&sxsrf=ALeKk03kk8dCdl9Vze0tJELyZvVF6PY5ZQ:1623918614005&tbm=isch&source=iu&ictx=1&fir=Z_PZg83XP8JNZM%252CQF_QcLXEHnA6mM%252C_&vet=1&usg=AI4_-kQ6sHVC75U4ODWDhu6UFNub7rpMPA&sa=X&ved=2ahUKEwiYvIahoJ7xAhU1heYKHT9QDXcQ_h16BAgyEAE",

@@ -3,7 +3,7 @@ import * as mongo from "../config/mongo"
 import test from "../models/Test"
 
 export function helloWorld(req: Request, res: Response) {
-    res.send({ data: "Hello World!" })
+    res.status(200).send({ data: "Hello World!" })
 }
 
 export async function dbTesting(req: Request, res: Response) {
@@ -15,5 +15,5 @@ export async function dbTesting(req: Request, res: Response) {
     console.log("Added a value")
     const getTest: any = await test.find({})
     console.log(getTest)
-    res.send(getTest)
+    res.status(200).send(getTest)
 }
