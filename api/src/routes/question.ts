@@ -50,7 +50,9 @@ export async function addQuestion(req: Request, res: Response) {
         console.log("isTemplate is " + form.isTemplate)
         if (form.isTemplate) {
             console.log("Template cant be editted")
-            return res.send({ success: false, msg: "Template cant be editted" })
+            return res
+                .status(400)
+                .send({ success: false, msg: "Template cant be editted" })
         } else {
             let newQuestion
 
@@ -143,28 +145,31 @@ export async function addQuestion(req: Request, res: Response) {
             form.questions.push(newQuestion)
             await form.save()
             console.log("Form saved!!")
-            return res.json(newQuestion)
+            return res.status(200).json(newQuestion)
         }
     } catch (error) {
-        return res.send({ success: false, msg: error })
+        console.log(error)
+        return res.status(500).send({ success: false, msg: "Server Error" })
     }
 }
 
 export async function getQuestions(req: Request, res: Response) {
     try {
         const questions = await Question.find().exec()
-        return res.json(questions)
+        return res.status(200).json(questions)
     } catch (e) {
-        return res.send({ success: false, msg: e })
+        console.log(e)
+        return res.status(500).send({ success: false, msg: "Server Error" })
     }
 }
 
 export async function getQuestion(req: Request, res: Response) {
     try {
         const question = await Question.findById(req.params.qid)
-        return res.json(question)
+        return res.status(200).json(question)
     } catch (e) {
-        return res.send({ success: false, msg: e })
+        console.log(e)
+        return res.status(500).send({ success: false, msg: "Server Error" })
     }
 }
 
@@ -213,7 +218,8 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
             }
         }
     } catch (e) {
-        return res.send({ success: false, msg: e })
+        console.log(e)
+        return res.status(500).send({ success: false, msg: "Server Error" })
     }
 }
 
@@ -224,7 +230,9 @@ export async function updateQuestion(req: Request, res: Response) {
         form = await Form.findById(formid)
         if (form.isTemplate) {
             console.log("Template cant be editted")
-            return res.send({ success: false, msg: "Template cant be editted" })
+            return res
+                .status(400)
+                .send({ success: false, msg: "Template cant be editted" })
         } else {
             let moddedBody = { ...req.body }
             moddedBody["questionType"] = req.body.questionType
@@ -343,10 +351,11 @@ export async function updateQuestion(req: Request, res: Response) {
                 default:
                     updatedQuestion = { data: { msg: "Something went wrong" } }
             }
-            return res.send(updatedQuestion)
+            return res.status(200).send(updatedQuestion)
         }
     } catch (error) {
-        return res.send({ success: false, data: error })
+        console.log(error)
+        return res.status(500).send({ success: false, data: "Server Error" })
     }
 }
 
@@ -359,17 +368,21 @@ export async function deleteQuestion(req: Request, res: Response) {
             { _id: req.body.formid },
             { $pull: { questions: req.body.id } as any }
         )
-        return res.send({ success: true, data: "Deleted successfully" })
+        return res
+            .status(200)
+            .send({ success: true, data: "Deleted successfully" })
     } catch (error) {
-        return res.send({ success: false, data: "You messed up.... again" })
+        console.log(error)
+        return res.status(500).send({ success: false, data: "Server Error" })
     }
 }
 
 export async function getMyQuestions(req: Request, res: Response) {
     try {
         const questions = await Question.find({ userId: req.session.userId })
-        return res.json(questions)
+        return res.status(200).json(questions)
     } catch (err) {
-        return res.send({ success: false, msg: err })
+        console.log(err)
+        return res.status(500).send({ success: false, msg: "Server Error" })
     }
 }

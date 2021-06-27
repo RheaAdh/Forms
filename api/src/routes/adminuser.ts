@@ -27,7 +27,7 @@ export async function adminRegister(req: Request, res: Response) {
 
         //CHECKING FOR CORRECT EMAIL TYPE
         if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
-            return res.send({
+            return res.status(400).send({
                 success: false,
                 data: "Please enter a valid email type",
             })
@@ -36,7 +36,7 @@ export async function adminRegister(req: Request, res: Response) {
         //CHECKING FOR EXISTING USER
         let user = await User.findOne({ email })
         if (user) {
-            return res.send({
+            return res.status(400).send({
                 success: false,
                 data:
                     "User exists with same details,try again with a new password if not registered",
@@ -44,14 +44,14 @@ export async function adminRegister(req: Request, res: Response) {
         }
         let usernameExists = await User.findOne({ username })
         if (usernameExists) {
-            return res.send({
+            return res.status(400).send({
                 success: false,
                 data: "Username already exists",
             })
         }
         //USER NOT CREATED
         if (password.length < 8) {
-            return res.send({
+            return res.status(400).send({
                 success: false,
                 data: "Password must be atleast 8 characters long",
             })
@@ -59,7 +59,7 @@ export async function adminRegister(req: Request, res: Response) {
 
         //MATCHING CONFIRM PASSWORD AND PASSWORD
         if (confirmPassword != password) {
-            return res.send({
+            return res.status(400).send({
                 success: false,
                 data: "Password and Confirm Password does not match",
             })
@@ -78,16 +78,19 @@ export async function adminRegister(req: Request, res: Response) {
         try {
             await user.save()
             console.log("New admin created!")
-            return res.send({
+            return res.status(200).send({
                 success: true,
                 data: "Successfully registered a new admin",
             })
         } catch (error) {
-            return res.send({ success: false, data: error })
+            console.log(error)
+            return res
+                .status(500)
+                .send({ success: false, data: "Server Error" })
         }
     } else {
         console.log("Registration closed")
-        return res.send({
+        return res.status(400).send({
             success: false,
             msg: "Everyone seems to have registered who are you??",
         })
@@ -102,9 +105,10 @@ export async function adminLogin(req: Request, res: Response) {
         user = await User.findOne({ email })
     } catch (error) {
         console.error("error")
+        res.status(500).send({ success: false, msg: "Server Error" })
     }
     if (!user) {
-        return res.send({
+        return res.status(400).send({
             success: false,
             data: "User doesnt exist, Please register to Login",
         })
@@ -112,7 +116,7 @@ export async function adminLogin(req: Request, res: Response) {
 
     const validCred = await bcrypt.compare(password, user.password)
     if (!validCred) {
-        return res.send({
+        return res.status(400).send({
             success: false,
             data: "Invalid Credentials, Please try again",
         })
@@ -124,7 +128,7 @@ export async function adminLogin(req: Request, res: Response) {
     req.session.username = user.username
 
     if (user.role == "superadmin") {
-        return res.send({
+        return res.status(200).send({
             success: true,
             data: "Successfully LoggedIn, Redirect SuperAdmin Dashboard",
             user: {
@@ -135,7 +139,7 @@ export async function adminLogin(req: Request, res: Response) {
             },
         })
     } else if (user.role == "admin") {
-        return res.send({
+        return res.status(200).send({
             success: true,
             data: "Successfully LoggedIn, Redirect Admin Dashboard",
             user: {
@@ -157,7 +161,7 @@ export async function isValidAdmin(
     if (req.session.isAuth) {
         next()
     } else {
-        return res.send({
+        return res.status(400).send({
             success: false,
             data: "You are not LoggedIn, Please Login to view",
         })
@@ -177,13 +181,15 @@ export async function isValidSuperAdmin(
         if (req.session.role == "superadmin") {
             next()
         } else {
-            return res.send({
+            return res.status(400).send({
                 success: false,
                 data: "Superadmin access required",
             })
         }
     } else {
-        return res.send({ success: false, data: "Please Login to view" })
+        return res
+            .status(400)
+            .send({ success: false, data: "Please Login to view" })
     }
 }
 
@@ -197,7 +203,9 @@ export async function adminLogout(
             console.log(err)
         } else {
             //session deleted
-            return res.send({ success: true, data: "Successfully LoggedOut" })
+            return res
+                .status(200)
+                .send({ success: true, data: "Successfully LoggedOut" })
         }
     })
 }
@@ -207,7 +215,7 @@ async function emailResponse(token: any, receiver: any) {
         console.log("inside forgot mailer")
         console.log(receiver.username)
 
-        const output = `<p>Hello ${receiver.username}</p>Link for reset password: http://localhost:3000/resetpassword/${token}<p>Regards<br>IECSE</p>`
+        const output = `<p>Hello ${receiver.username}</p>Link for reset password: http://localhost:3000/resetpassword/${token}<p>Regards,<br>IECSE</p>`
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
@@ -250,11 +258,12 @@ export async function adminForgotPassword(
     try {
         user = await User.findOne({ email: email })
     } catch (error) {
-        console.error("error")
+        console.error(error)
+        return res.status(500).send({ success: false, msg: "Server Error" })
     }
 
     if (!user) {
-        return res.send({
+        return res.status(400).send({
             success: false,
             data: "User doesnt exist",
         })
@@ -267,7 +276,7 @@ export async function adminForgotPassword(
     emailResponse(token, user)
 
     //send email with this link
-    return res.send({
+    return res.status(200).send({
         success: true,
         data: token,
     })
@@ -303,34 +312,34 @@ export async function adminResetPassword(
                 { token: compareToken },
                 { $set: { token: uuidv4() } }
             )
-            return res.send({
+            return res.status(200).send({
                 success: true,
                 data: "Successfully created new password",
             })
         } else {
-            return res.send({
+            return res.status(400).send({
                 success: false,
                 msg: "confirm and new pass not matching",
             })
         }
     } else {
-        return res.send({ success: false, msg: "min len 8" })
+        return res.status(400).send({ success: false, msg: "min len 8" })
     }
 }
 
 export function sessionDetails(req: Request, res: Response) {
-    // console.log("SessionID : ", req.sessionID)
-    // console.log("Session: ", req.session)
-    res.send(req.session)
+    res.status(200).send(req.session)
 }
 
 export async function getAllAdmins(req: Request, res: Response) {
     try {
         let admins = await User.find({ role: "admin" })
         console.log(admins)
-        res.send({ success: true, msg: "All Admins", data: admins })
+        return res
+            .status(200)
+            .send({ success: true, msg: "All Admins", data: admins })
     } catch (err) {
         console.log(err)
-        return res.send({ success: false, msg: "Server Error" })
+        return res.status(400).send({ success: false, msg: "Server Error" })
     }
 }

@@ -37,7 +37,7 @@ const form: Schema = new Schema(
         isTemplate: { type: Boolean, default: false },
         role: { type: String },
         editors: [{ type: Schema.Types.ObjectId, ref: "User" }],
-        dontdelete: { type: Boolean, default: false },
+        dontdelete: { type: Boolean, default: false },     //To be used only with default Templates
     },
     {
         timestamps: true,
