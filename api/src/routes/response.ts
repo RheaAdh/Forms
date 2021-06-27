@@ -24,7 +24,7 @@ declare module "express-session" {
 }
 export const submitResponse = async (req: Request, res: Response) => {
     console.log("POST REQUEST WAS MADE for submit response")
-    let { username, userid, formId, responses } = req.body
+    let { username, userid, formId, responses, sendMail } = req.body
     let form: any = await Form.findOne({ _id: formId })
     console.log(form)
 
@@ -37,7 +37,7 @@ export const submitResponse = async (req: Request, res: Response) => {
         form.isActive = false
     }
     if (form.isTemplate) {
-        return res.send({
+        return res.status(400).send({
             success: false,
             msg: "Cannot submit response in a template,try creating form",
         })
@@ -63,10 +63,11 @@ export const submitResponse = async (req: Request, res: Response) => {
                 })
                 newresp = await formResponse.save()
                 console.log("Response added!")
-                emailResponse(newresp, req.session)
+                if (sendMail) emailResponse(newresp, req.session)
                 res.send({ success: true, data: "Response submitted" })
             } catch (error) {
-                res.send({ success: false, data: error })
+                console.log(error)
+                res.status(500).send({ success: false, data: "Server Error" })
             }
         } else if (form.isEditable) {
             //When form has a submission and editing is allowed
@@ -88,34 +89,52 @@ export const submitResponse = async (req: Request, res: Response) => {
                 console.log("RESP is ")
                 console.log(newresp)
                 console.log("Response Updated when editing was allowed")
-                emailResponse(newresp, req.session)
+                if (sendMail) emailResponse(newresp, req.session)
                 res.send({ success: true, data: "Response Updated" })
             } catch (err) {
-                res.send({ success: false, data: err })
+                console.log(err)
+                res.status(200).send({ success: false, data: "Server Error" })
             }
         } //when for has submission but editing is not allowed but multiple response by single user is allowed
         else if (form.multipleResponses) {
             try {
-                const formResponse = new FormResponse({
-                    username,
-                    userid,
+                let responseCount = await FormResponse.find({
+                    userid: req.session.userId,
                     formId,
-                    responses,
-                })
-                newresp = await formResponse.save()
-                console.log("Response added!")
-                console.log("Submitting another Response by the user")
-                res.send({ success: true, data: "Response submitted " })
-                emailResponse(newresp, req.session)
+                }).count()
+                if (responseCount <= Number(process.env.LIMIT_MULTIPLE_RESP)) {
+                    const formResponse = new FormResponse({
+                        username,
+                        userid,
+                        formId,
+                        responses,
+                    })
+                    newresp = await formResponse.save()
+                    console.log("Response added!")
+                    console.log("Submitting another Response by the user")
+                    res.status(200).send({
+                        success: true,
+                        data: "Response submitted ",
+                    })
+
+                    emailResponse(newresp, req.session)
+                } else {
+                    console.log("Response Limit Reached")
+                    return res.status(400).send({
+                        success: false,
+                        msg: `Maximum Response Limit ${process.env.LIMIT_MULTIPLE_RESP} reached, try contacting Admin for further details`,
+                    })
+                }
             } catch (error) {
-                res.send({ success: false, data: error })
+                console.log("Server Error")
+                res.status(500).send({ success: false, data: "Server Error" })
             }
         } //when form has submission but neither edit is allowed nor multiple responses
         else {
             console.log(
                 "Form is noneditable and multiple responses are also not allowed"
             )
-            res.send({
+            res.status(400).send({
                 success: false,
                 data:
                     "Form is noneditable and multiple responses are also not allowed",
@@ -123,7 +142,7 @@ export const submitResponse = async (req: Request, res: Response) => {
         }
     } else {
         console.log("Form is not active")
-        res.send({
+        res.status(400).send({
             success: false,
             data: "Form is closed, Please try contacting Admin",
         })
@@ -136,9 +155,10 @@ export const getResponsesByForm = async (req: Request, res: Response) => {
         let formResponses = await FormResponse.findOne({
             formId: formId,
         })
-        res.send(formResponses)
+        res.status(200).send(formResponses)
     } catch (error) {
-        res.send("error")
+        console.log(error)
+        res.status(500).send("Server Error")
     }
 }
 export const getFormsByCreator = async (req: Request, res: Response) => {
@@ -146,9 +166,10 @@ export const getFormsByCreator = async (req: Request, res: Response) => {
         let creatorId = req.params.creatorId
         let usersForms: any
         usersForms = await Form.find({ owner: creatorId })
-        res.send(usersForms)
+        res.status(200).send(usersForms)
     } catch (error) {
-        return res.send({ sucess: false, msg: error })
+        console.log(error)
+        return res.status(500).send({ sucess: false, msg: "Server Error" })
     }
 }
 
@@ -181,7 +202,7 @@ export const downloadResponse = async (req: Request, res: Response) => {
                 console.log(quesidtotext[questions[i]._id])
             }
         } else {
-            res.send({ success: false, data: "No Form found" })
+            res.status(400).send({ success: false, data: "No Form found" })
         }
 
         // console.log("form is ")
@@ -259,7 +280,6 @@ export const downloadResponse = async (req: Request, res: Response) => {
             }
             data.push(datarow)
         }
-        console.log("final")
         console.log(data)
 
         //Converting data to .csv and writting to a file
@@ -270,21 +290,19 @@ export const downloadResponse = async (req: Request, res: Response) => {
             fastcsv
                 .write(data, { headers: true })
                 .on("finish", function () {
-                    res.send("Downloaded")
-
                     //!!!!!Download .csv file
                     //Need help
                     //!!!!!Below res.download()  is not working properly
-
                     // res.download('./src/responsedownload/data.csv')
                 })
                 .pipe(ws)
+            return res.send({ success: true, data: data })
         } else {
-            res.send({ success: false, data: "No Form found" })
+            res.status(400).send({ success: false, data: "No Form found" })
         }
     } else {
         console.log("Invalid form id")
-        return res.send({ success: false, data: "InValid Form Id" })
+        return res.status(400).send({ success: false, data: "InValid Form Id" })
     }
 }
 
@@ -307,24 +325,31 @@ export const getResponsesByResIdByFormId = async (
                     String(form.owner) == String(req.session.userId)
                 ) {
                     console.log("Accessed Responses")
-                    return res.send({
+                    return res.status(200).send({
                         success: true,
                         data: formIndividualResponses,
                     })
                 } else {
                     console.log("Requires Access")
-                    res.send({
+                    return res.status(403).send({
                         success: false,
                         msg: "Requires Editor access to view responses",
                     })
                 }
             } else {
-                return res.send({ success: false, msg: "No Form Found" })
+                return res
+                    .status(404)
+                    .send({ success: false, msg: "No Form Found" })
             }
         } else {
-            return res.send({ success: false, msg: "No Responses Found" })
+            return res
+                .status(404)
+                .send({ success: false, msg: "No Responses Found" })
         }
     } catch (error) {
+        if (error.path === "_id") {
+            return res.status(404).send({ success: false, msg: "Invalid link" })
+        }
         return res.send({ success: false, data: error })
     }
 }
@@ -349,9 +374,10 @@ export const getResponseIdByFormFilled = async (
             })
         }
 
-        return res.send({ success: true, data: ans })
+        return res.status(200).send({ success: true, data: ans })
     } catch (error) {
-        return res.send({ success: false, data: error })
+        console.log(error)
+        return res.status(500).send({ success: false, data: error })
     }
 }
 export const getResponsesByQuestionsByForm = async (
@@ -473,9 +499,10 @@ export const getResponsesByQuestionsByForm = async (
                 }
             }
         }
-        return res.send(ans)
+        return res.status(200).send(ans)
     } catch (error) {
-        return res.send({ success: false, data: error })
+        console.log(error)
+        return res.status(500).send({ success: false, data: error })
     }
 }
 
@@ -495,11 +522,12 @@ export const getResponseByBothFormidAndResponseid = async (
             _id: responseId,
             formId: req.params.formId,
         })
-        return res.send({ success: true, data: formIndividualResponsesForForm })
+        return res
+            .status(200)
+            .send({ success: true, data: formIndividualResponsesForForm })
     } catch (error) {
         console.log(error)
-
-        return res.send({ success: false, data: error })
+        return res.status(500).send({ success: false, data: error })
     }
 }
 
@@ -508,7 +536,7 @@ export const getResponseByBothFormidAndResponseid = async (
 async function emailResponse(resp: any, receiver: any) {
     try {
         console.log("inside mailer")
-        const output = `<p>Hello ${receiver.username}</p>Link to your recently submitted form response:http://localhost:3000/response/${resp.id}<p>Regards<br>IECSE</p>`
+        const output = `<p>Hello ${receiver.username}</p>Link to your recently submitted form response:http://localhost:3000/response/${resp.id}<p>Regards,<br>IECSE</p>`
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
@@ -550,16 +578,21 @@ export const getResponsebyRespid = async (req: Request, res: Response) => {
         )
         if (resp) {
             console.log(resp)
-            return res.send({
+            return res.status(200).send({
                 success: true,
                 msg: "Response Found",
                 data: resp,
             })
         } else {
-            return res.send({ success: false, msg: "Response not found" })
+            return res
+                .status(404)
+                .send({ success: false, msg: "Response not found" })
         }
     } catch (err) {
+        if (err.path === "_id") {
+            return res.status(404).send({ success: false, msg: "Invalid link" })
+        }
         console.log(err)
-        return res.send({ success: false, msg: "Server Error" })
+        return res.status(500).send({ success: false, msg: "Server Error" })
     }
 }

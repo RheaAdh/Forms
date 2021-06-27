@@ -104,21 +104,21 @@ export async function userLogout(req: any, res: any) {
                 console.log(err)
             } else {
                 //session deleted
-                return res.send({
+                return res.status(200).send({
                     success: true,
                     data: "Successfully LoggedOut",
                 })
             }
         })
     } else {
-        return res.send({ success: false, data: "Login Required" })
+        return res.status(400).send({ success: false, data: "Login Required" })
     }
 }
 
 //TO VIEW LOGGED-IN USER
 export async function getUser(req: any, res: any) {
     console.log(req.user)
-    return res.send(req.user)
+    return res.status(200).send(req.user)
 }
 
 //MIDDLEWARE FOR CHECKING USER LOGIN
@@ -128,7 +128,7 @@ export async function checkAuthentication(req: any, res: any, next: any) {
         next()
     } else {
         console.log("Login to access")
-        res.send({ success: false, data: "Please Login to view" })
+        res.status(400).send({ success: false, data: "Please Login to view" })
     }
 }
 

@@ -11,8 +11,6 @@ export const questionTypes = [
     "checkboxgrid-answer",
     "email-answer",
     "file-upload",
-    "date-answer",
-    "time-answer",
 ]
 
 export interface Question {
