@@ -27,6 +27,21 @@ const EditFormPage: React.FC = () => {
     const auth = useAuth()
     const form = useCurrentForm()
 
+    const [allAdmins, setAdmins] = useState<any[]>([])
+
+    useEffect(
+        ()=>{
+        fetch(`http://localhost:7000/api/getadmins`)
+            .then((resp: any) => {
+              return resp.json();
+            })
+
+            .then((data: any) => {
+              console.log("Admins:",data);
+              setAdmins(data.data);
+            });
+        },[])
+
     useEffect(() => {
         if (!auth?.currentUser) auth?.getCurrentUser().then((res: any) => {})
         if (formid) {
@@ -191,7 +206,7 @@ const EditFormPage: React.FC = () => {
                     {displayPermission ? "Close" : "Set edit permissions"}
                 </button>
                 {displayPermission ? (
-                    <PermissionList formid={form?.currentForm?.id} />
+                    <PermissionList formid={form?.currentForm?.id} editors={[]} admins={allAdmins} />
                 ) : (
                     ""
                 )}
