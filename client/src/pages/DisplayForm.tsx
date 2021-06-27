@@ -4,8 +4,9 @@ import QuestionResponse from "../components/QuestionResponse"
 import { useAuth } from "../context/AuthContext"
 import { useCurrentForm } from "../context/CurrentFormContext"
 import getQuestionsAndResponses, {
-    getByResponseId,
+    getByResponseIdPublic,
     downloadResponse,
+    getByResponseId,
 } from "../context/Actions"
 import CsvDownloader from "react-csv-downloader"
 import { useResponses, user } from "../context/ResponseListContext"
@@ -15,33 +16,41 @@ interface props {
     readonly: boolean
     responseOnlyPage: boolean
 }
-
+// This component can be used for 3 pages, to view all responses, to view a response for a responseId, to view a normal form
+// that can take submissions
 const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
     const auth = useAuth()
     const form = useCurrentForm()
     const responseList = useResponses()
     const questions = useQuestionsList()
-    const [formClosed, setFormClosed] = useState<boolean>(false)
-    const [invalidId, setInvalidId] = useState<boolean>(false)
+
+    // Local state current user, stores {username, responseid} of the user whose response is
+    // being viewed right now. This is for admin level use only
     const [currentUser, setCurrentUser] = useState<user | null>(null)
+
     const [thankYou, setThankYou] = useState<boolean>(false)
-    // HANDLE LOADING
     const [loading, setLoading] = useState<boolean>(true)
+    const [error, setError] = useState<string | null>(null)
     const { formid, responseId }: any = useParams()
-    const [prevSubmission, setPrevSubmission] = useState<boolean>(true)
     const [dataForDownload, setDataForDownload] = useState<any[]>()
     const [columnsForDownload, setColumnsForDownload] = useState<any[]>()
+    const [sendMail, setSendMail] = useState<boolean>(false)
 
     useEffect(() => {
+        //Get current logged in user
         if (auth?.currentUser === null && !responseOnlyPage)
             auth?.getCurrentUser()
+        // Get response for response ID if this is a response only type page (/response/:responseId)
         if (responseOnlyPage && responseId) {
-            getByResponseId(responseId).then((data) => {
+            getByResponseIdPublic(responseId).then((data) => {
                 if (!data.success) {
+                    if (data.status === 404) {
+                        setError(data.msg)
+                        return setLoading(false)
+                    }
                     console.log(data)
                     return
                 }
-
                 const formId = data.data.formId._id
                 const formData = data.data.formId
                 const questionsData = data.data.responses.map(
@@ -53,11 +62,13 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
                 responseList?.responseActions?.getResponse(
                     formId,
                     responses,
-                    questionsData.map((q: any) => q.required)
+                    questionsData.map((q: any) => q.required),
+                    readonly
                 )
                 setLoading(false)
             })
         }
+        // Admin level access, fetch all responses for csv data
         if (readonly === true && formid && responseOnlyPage === false) {
             downloadResponse(formid).then((data) => {
                 if (data) {
@@ -67,29 +78,28 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
             })
         }
     }, [responseOnlyPage, responseId, formid, readonly])
+
     useEffect(() => {
         if (formid && auth?.currentUser && responseOnlyPage === false) {
-            // If readonly is true, then access is admin level, hence edit permission needed to view
-            // If readonly is false, it's user level access, hence toEdit is false
+            // If readonly is true, then access is admin level in case this is not a response only page;
+            // hence admin permission needed to view. If readonly is false, it's user level access
             form?.setFormDetails(formid, readonly).then((data) => {
                 if (data.status === 400) {
-                    setFormClosed(true)
+                    setError("Form is closed")
+                    setLoading(false)
                     return
                 } else if (data.status === 404) {
-                    setInvalidId(true)
+                    setError("Form doesn't exist")
+                    setLoading(false)
+                    return
                 }
             })
-            getQuestionsAndResponses(formid, false).then((data) => {
-                if (data.status === 400) {
-                    setFormClosed(true)
-                    return
-                } else if (data.status === 404) {
-                    setInvalidId(true)
+            getQuestionsAndResponses(formid, readonly).then((data) => {
+                if (data.status === 400 || data.status === 404) {
                     return
                 }
                 questions?.questionActions?.getQuestions(formid, data.ques)
                 if (data.prevResponse === null) {
-                    setPrevSubmission(false)
                     data.prevResponse = {
                         responses: [],
                         questions: data.ques,
@@ -97,126 +107,114 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
                         username: auth?.currentUser?.username,
                     }
                 }
-                responseList?.responseActions?.getResponse(
-                    formid,
-                    data.prevResponse,
-                    data.ques.map((q: any) => q.required)
-                )
+                // No need to fetch responses in case of admin level access, just setting formid is enough
+                if (!readonly) {
+                    responseList?.responseActions?.getResponse(
+                        formid,
+                        data.prevResponse,
+                        data.ques.map((q: any) => q.required),
+                        readonly
+                    )
+                } else responseList?.responseActions?.setFormId(formid)
                 if (!readonly) setLoading(false)
             })
         }
     }, [formid, auth?.currentUser, responseOnlyPage])
 
     useEffect(() => {
+        // Get list of all users and corresponding response IDs for current form
+        // This is for /responses/:formid page
         if (
             readonly &&
             responseList?.formId?.length &&
-            responseList?.users === undefined &&
             responseOnlyPage === false
         ) {
             responseList?.responseActions?.getUsers().then((data) => {
                 setCurrentUser(data[0])
+                setLoading(false)
             })
         }
     }, [responseList?.formId, responseOnlyPage])
     useEffect(() => {
-        if (
-            form?.currentForm?.editable !== undefined &&
-            responseOnlyPage === false
-        )
-            responseList?.responseActions?.setReadOnly(
-                readonly || (!form?.currentForm?.editable && prevSubmission)
-            )
-    }, [
-        readonly,
-        form?.currentForm?.editable,
-        prevSubmission,
-        responseOnlyPage,
-    ])
-    useEffect(() => {
         if (currentUser && readonly && responseOnlyPage === false) {
-            // Get responses for current user
-            setLoading(true)
-            fetch(
-                `http://localhost:7000/api/resbyresponseid/${currentUser.responseid}`,
-                {
-                    method: "GET",
-                    headers: {
-                        "Content-type": "application/json",
-                    },
-                    credentials: "include",
+            // Get response for current user, when current user changes
+            getByResponseId(currentUser.responseid).then((data) => {
+                if (data.status === 404 || data.status === 403) {
+                    return setError(data.msg)
                 }
-            )
-                .then((resp) => resp.json())
-                .catch((err) => console.log(err))
-                .then((data) => {
-                    if (data.success) {
-                        //CHANGE TO CONTEXT
-                        if (questions?.questions)
-                            // just to check if it's not undefined
-                            responseList?.responseActions?.getResponse(
-                                formid,
-                                data.data,
-                                questions.questions.map((q) => q.required)
-                            )
-                    } else {
-                        console.log(data.data)
-                    }
-                    setLoading(false)
-                })
+                if (!data.success) {
+                    console.log(data)
+                    return
+                }
+                if (questions)
+                    responseList?.responseActions?.getResponse(
+                        formid,
+                        data.data,
+                        questions.questions.map((q) => q.required),
+                        readonly
+                    )
+                setLoading(true)
+            })
         }
     }, [currentUser])
     if (loading) {
         return <div>Loading</div>
     }
-    if (formClosed) return <>Form is closed</>
-    if (invalidId) return <>You may have got the wrong link</>
+    if (error) {
+        return <div>{error}</div>
+    }
     if (auth?.currentUser === null && responseOnlyPage === false) {
         return <Redirect to={`/login/${formid}`} />
     }
-    return thankYou ? (
-        <div>
-            <b>Your response has been submitted!</b>
-            <br />
-            {/* if form is accepting multiple */}
-            {form?.currentForm?.mulitipleResponses ? (
+
+    if (thankYou) {
+        return (
+            <div>
+                <b>Your response has been submitted!</b>
+                <br />
+                {/* if form is accepting multiple */}
+                {form?.currentForm?.mulitipleResponses ? (
+                    <button
+                        onClick={() => {
+                            setLoading(true)
+                            responseList?.responseActions?.anotherResponse(
+                                questions?.questions ? questions.questions : []
+                            )
+                            setTimeout(() => {
+                                setLoading(false)
+                                setThankYou(false)
+                            }, 10)
+                        }}
+                    >
+                        Submit another response?
+                    </button>
+                ) : (
+                    <div>We accept only 1 response per user</div>
+                )}
+
+                <br />
+                {/* if form is editable */}
+                {form?.currentForm?.editable ? (
+                    <button onClick={() => setThankYou(false)}>
+                        Edit form?
+                    </button>
+                ) : (
+                    <div>You cannot edit this form</div>
+                )}
+
+                <br />
                 <button
                     onClick={() => {
-                        setLoading(true)
-                        responseList?.responseActions?.anotherResponse(
-                            questions?.questions ? questions.questions : []
-                        )
-                        setTimeout(() => {
-                            setLoading(false)
-                            setPrevSubmission(false)
-                            setThankYou(false)
-                        }, 10)
+                        auth?.logout()
                     }}
                 >
-                    Submit another response?
+                    Logout
                 </button>
-            ) : (
-                <div>We accept only 1 response per user</div>
-            )}
+            </div>
+        )
+    }
 
-            <br />
-            {/* if form is editable */}
-            {form?.currentForm?.editable ? (
-                <button onClick={() => setThankYou(false)}>Edit form?</button>
-            ) : (
-                <div>You cannot edit this form</div>
-            )}
-
-            <br />
-            <button
-                onClick={() => {
-                    auth?.logout()
-                }}
-            >
-                Logout
-            </button>
-        </div>
-    ) : (
+    return (
         <div
             style={{
                 backgroundColor: "#E5E5E5",
@@ -225,7 +223,7 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
             }}
         >
             <div>
-                {readonly === true ? (
+                {readonly === true && responseOnlyPage === false ? (
                     <CsvDownloader
                         filename={form?.currentForm?.title || ""}
                         extension={".csv"}
@@ -237,9 +235,10 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
                 <br />
                 {responseList?.users?.length ? (
                     <select defaultValue={currentUser?.username}>
-                        {responseList?.users.map((user: any, i: Number) => {
+                        {responseList?.users.map((user: any, i: number) => {
                             return (
                                 <option
+                                    key={i}
                                     value={user.username}
                                     onClick={(e) => {
                                         setCurrentUser(user)
@@ -342,42 +341,30 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
                             cursor: "pointer",
                         }}
                         onClick={() => {
-                            if (
-                                form?.currentForm?.mulitipleResponses &&
-                                prevSubmission
-                            ) {
-                                setLoading(true)
-                                responseList?.responseActions?.anotherResponse(
-                                    questions?.questions
-                                        ? questions.questions
-                                        : []
-                                )
-                                setTimeout(() => {
-                                    setLoading(false)
-                                    setPrevSubmission(false)
-                                }, 10)
-                            } else {
-                                responseList?.responseActions
-                                    ?.submit()
-                                    .then((data: any) => {
-                                        if (data.success) {
-                                            setThankYou(true)
-                                        }
-                                    })
-                            }
+                            responseList?.responseActions
+                                ?.submit(sendMail)
+                                .then((data: any) => {
+                                    if (data.success) {
+                                        setThankYou(true)
+                                    }
+                                })
                         }}
                     >
-                        {form?.currentForm?.mulitipleResponses &&
-                        prevSubmission ? (
-                            <>Submit another response</>
-                        ) : (
-                            <>Submit</>
-                        )}
+                        Submit
                     </button>
                 </div>
+            ) : null}
+            {!readonly && form?.currentForm?.isActive ? (
+                <>
+                    <input
+                        type="checkbox"
+                        defaultChecked={sendMail}
+                        onChange={() => setSendMail(!sendMail)}
+                    ></input>
+                    Send me a mail of my response
+                </>
             ) : null}
         </div>
     )
 }
-
 export default DisplayForm

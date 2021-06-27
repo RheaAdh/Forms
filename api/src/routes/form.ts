@@ -60,7 +60,7 @@ export async function getForm(req: Request, res: Response) {
         } else {
             return res
                 .status(404)
-                .send({ success: false, msg: "Form does'nt exists" })
+                .send({ success: false, msg: "Form doesn't exists" })
         }
     } catch (error) {
         return res.status(500).send({ success: false, msg: error })
@@ -168,10 +168,16 @@ export async function addForm(req: any, res: Response) {
 export async function updateForm(req: Request, res: Response) {
     try {
         let updatedForm: any
+        let isActive: boolean = req.body.isActive
+        if (!isActive && new Date() < new Date(req.body.closes)) {
+            isActive = true
+        }
+
         updatedForm = await Form.findOneAndUpdate(
             { _id: req.body._id },
             {
                 ...req.body,
+                isActive,
             },
             { new: true }
         )
@@ -288,7 +294,9 @@ export async function extractFormid(
         next()
     } else {
         console.log("FormID is invalid")
-        return res.send({ success: false, msg: "Form doesn't exists" })
+        return res
+            .status(404)
+            .send({ success: false, msg: "Form doesn't exists" })
     }
 }
 

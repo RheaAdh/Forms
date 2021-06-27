@@ -24,7 +24,7 @@ declare module "express-session" {
 }
 export const submitResponse = async (req: Request, res: Response) => {
     console.log("POST REQUEST WAS MADE for submit response")
-    let { username, userid, formId, responses } = req.body
+    let { username, userid, formId, responses, sendMail } = req.body
     let form: any = await Form.findOne({ _id: formId })
     console.log(form)
 
@@ -63,7 +63,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                 })
                 newresp = await formResponse.save()
                 console.log("Response added!")
-                emailResponse(newresp, req.session)
+                if (sendMail) emailResponse(newresp, req.session)
                 res.send({ success: true, data: "Response submitted" })
             } catch (error) {
                 res.send({ success: false, data: error })
@@ -88,7 +88,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                 console.log("RESP is ")
                 console.log(newresp)
                 console.log("Response Updated when editing was allowed")
-                emailResponse(newresp, req.session)
+                if (sendMail) emailResponse(newresp, req.session)
                 res.send({ success: true, data: "Response Updated" })
             } catch (err) {
                 res.send({ success: false, data: err })
@@ -106,7 +106,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                 console.log("Response added!")
                 console.log("Submitting another Response by the user")
                 res.send({ success: true, data: "Response submitted " })
-                emailResponse(newresp, req.session)
+                if (sendMail) emailResponse(newresp, req.session)
             } catch (error) {
                 res.send({ success: false, data: error })
             }
@@ -264,7 +264,6 @@ export const downloadResponse = async (req: Request, res: Response) => {
 
         //Converting data to .csv and writting to a file
         if (data) {
-            res.send({ success: true, data: data })
             var ws = fileSystem.createWriteStream(
                 "./src/responsedownload/data.csv"
             )
@@ -277,12 +276,13 @@ export const downloadResponse = async (req: Request, res: Response) => {
                     // res.download('./src/responsedownload/data.csv')
                 })
                 .pipe(ws)
+            return res.send({ success: true, data: data })
         } else {
-            res.send({ success: false, data: "No Form found" })
+            return res.send({ success: false, data: "No Form found" })
         }
     } else {
         console.log("Invalid form id")
-        return res.send({ success: false, data: "InValid Form Id" })
+        return res.status(404).send({ success: false, msg: "InValid link" })
     }
 }
 
@@ -311,18 +311,25 @@ export const getResponsesByResIdByFormId = async (
                     })
                 } else {
                     console.log("Requires Access")
-                    res.send({
+                    return res.status(403).send({
                         success: false,
                         msg: "Requires Editor access to view responses",
                     })
                 }
             } else {
-                return res.send({ success: false, msg: "No Form Found" })
+                return res
+                    .status(404)
+                    .send({ success: false, msg: "No Form Found" })
             }
         } else {
-            return res.send({ success: false, msg: "No Responses Found" })
+            return res
+                .status(404)
+                .send({ success: false, msg: "No Responses Found" })
         }
     } catch (error) {
+        if (error.path === "_id") {
+            return res.status(404).send({ success: false, msg: "Invalid link" })
+        }
         return res.send({ success: false, data: error })
     }
 }
@@ -554,10 +561,15 @@ export const getResponsebyRespid = async (req: Request, res: Response) => {
                 data: resp,
             })
         } else {
-            return res.send({ success: false, msg: "Response not found" })
+            return res
+                .status(404)
+                .send({ success: false, msg: "Response not found" })
         }
     } catch (err) {
+        if (err.path === "_id") {
+            return res.status(404).send({ success: false, msg: "Invalid link" })
+        }
         console.log(err)
-        return res.send({ success: false, msg: "Server Error" })
+        return res.status(500).send({ success: false, msg: "Server Error" })
     }
 }

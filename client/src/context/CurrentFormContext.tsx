@@ -14,6 +14,7 @@ interface Props {
 }
 export interface Form {
     currentForm: CurrentForm | null
+    updateForm: () => void
     setTitle: (title: string) => void
     setDescription: (description: string) => void
     setDate: (date: Date | null) => void
@@ -134,12 +135,11 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
             })
 
             const data = await res.json()
-
             if (!data.success) {
                 return {
                     status: res.status,
                     success: data.success,
-                    form: data.form,
+                    msg: data.msg,
                 }
             }
             setTitle(data.form.title)
@@ -156,9 +156,47 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
             return null
         }
     }
+    const updateForm = async () => {
+        if (
+            currentForm?.description === undefined ||
+            currentForm?.editable === undefined ||
+            currentForm?.mulitipleResponses === undefined ||
+            currentForm?.date === undefined ||
+            currentForm?.title === undefined ||
+            currentForm?.isActive === undefined
+        ) {
+            return
+        }
+        if (form?.currentForm?.id)
+            fetch("http://localhost:7000/api/updateform", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    _id: currentForm.id,
+                    description: currentForm?.description,
+                    isEditable: currentForm?.editable,
+                    multipleResponses: currentForm?.mulitipleResponses,
+                    closes: currentForm?.date,
+                    title: currentForm?.title,
+                    isActive: currentForm?.isActive,
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    // Success
+                })
+                .catch((error) => {
+                    console.error("Error:", error)
+                })
+    }
+
     const form: Form = {
         currentForm,
         setFormDetails,
+        updateForm,
         setTitle,
         setDescription,
         setDate,

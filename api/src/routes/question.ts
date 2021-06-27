@@ -172,21 +172,21 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
     //sending previous response and questions
     try {
         let formid: any = req.params.formid
-        let toEdit: boolean = req.body.toEdit
+        let admin: boolean = req.body.admin
         const form = await Form.findById(req.params.formid)
         if (form === null) {
             return res
                 .status(404)
                 .json({ success: false, msg: "Form doesn't exist" })
         }
-        if (form.closes !== null && new Date() >= form.closes && !toEdit) {
+        if (form.closes !== null && new Date() >= form.closes && !admin) {
             form.isActive = false
             await form.save()
             return res
                 .status(400)
                 .json({ success: false, msg: "Form has closed" })
         }
-        if (form.isActive === false && !toEdit) {
+        if (form.isActive === false && !admin) {
             return res
                 .status(400)
                 .json({ success: false, msg: "Form has closed" })
@@ -199,17 +199,17 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
         if (!user) {
             let data = { prevResponse: null, ques: questions }
             console.log(data)
-            return res.json(data)
+            return res.json({ success: true, data })
         } else {
             if (form.multipleResponses) {
                 let data = { prevResponse: null, ques: questions }
                 console.log(data)
-                return res.json(data)
+                return res.json({ success: true, data })
             } else {
                 let data = { prevResponse: user, ques: questions }
                 console.log(data.prevResponse)
                 console.log(data)
-                return res.send(data)
+                return res.send({ success: true, data })
             }
         }
     } catch (e) {

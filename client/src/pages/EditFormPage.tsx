@@ -40,12 +40,12 @@ const EditFormPage: React.FC = () => {
 
     useEffect(() => {
         if (
-            form?.currentForm?.id?.length &&
+            form?.currentForm?.title?.length &&
             auth?.currentUser?.userid?.length
         ) {
             setLoading(false)
         }
-    }, [form?.currentForm?.id, auth?.currentUser?.userid])
+    }, [form?.currentForm?.title, auth?.currentUser?.userid])
 
     //SHOW AND HIDE EDIT FORM TITLE LOGIC
     useEffect(() => {
@@ -53,43 +53,20 @@ const EditFormPage: React.FC = () => {
             if (null !== inputRef.current) inputRef.current.focus()
         }
     }, [showEditTitle])
-    const updateForm = () => {
-        if (form?.currentForm?.id)
-            fetch("http://localhost:7000/api/updateform", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    _id: form.currentForm.id,
-                    description: form?.currentForm?.description,
-                    isEditable: form?.currentForm?.editable,
-                    multipleResponses: form?.currentForm?.mulitipleResponses,
-                    closes:
-                        form?.currentForm?.date === undefined
-                            ? null
-                            : form?.currentForm?.date,
-                    title: form?.currentForm?.title,
-                    isActive: form?.currentForm?.isActive,
-                }),
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    // Success
-                })
-                .catch((error) => {
-                    console.error("Error:", error)
-                })
-    }
 
-    useEffect(updateForm, [
-        form?.currentForm?.description,
-        form?.currentForm?.editable,
-        form?.currentForm?.mulitipleResponses,
-        form?.currentForm?.date,
-        form?.currentForm?.title,
-    ])
+    useEffect(
+        () => {
+            form?.updateForm()
+        },
+        // es-lint disable next line
+        [
+            form?.currentForm?.description,
+            form?.currentForm?.editable,
+            form?.currentForm?.mulitipleResponses,
+            form?.currentForm?.date,
+            form?.currentForm?.title,
+        ]
+    )
 
     const handleTitleClick = () => {
         setShowEditTitle(true)

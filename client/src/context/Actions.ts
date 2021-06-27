@@ -1,4 +1,4 @@
-const getQuestionsAndResponses = async (formId: string, toEdit: boolean) => {
+const getQuestionsAndResponses = async (formId: string, admin: boolean) => {
     const res = await fetch(
         `http://localhost:7000/api/getquestionsbyformid/${formId}`,
         {
@@ -6,19 +6,34 @@ const getQuestionsAndResponses = async (formId: string, toEdit: boolean) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ toEdit }),
+            body: JSON.stringify({ admin }),
             credentials: "include",
         }
     )
     const data = await res.json()
+    console.log(data)
     return {
-        ques: data.ques,
-        prevResponse: data.prevResponse,
+        ...data.data,
         status: res.status,
     }
 }
 
 export const getByResponseId = async (responseId: string) => {
+    const res = await fetch(
+        `http://localhost:7000/api/resbyresponseid/${responseId}`,
+        {
+            method: "GET",
+            headers: {
+                "Content-type": "application/json",
+            },
+            credentials: "include",
+        }
+    )
+    const data = await res.json()
+    return { status: res.status, ...data }
+}
+
+export const getByResponseIdPublic = async (responseId: string) => {
     const res = await fetch(
         `http://localhost:7000/api/response/${responseId}`,
         {
@@ -28,8 +43,9 @@ export const getByResponseId = async (responseId: string) => {
             },
         }
     )
+
     const data = await res.json()
-    return data
+    return { status: res.status, ...data }
 }
 
 export const downloadResponse = async (formId: string) => {
@@ -41,10 +57,9 @@ export const downloadResponse = async (formId: string) => {
         credentials: "include",
     })
     const data = await res.json()
-    if (data.length === 0) {
+    if (data.data.length === 0) {
         return null
     }
-    console.log(data)
     const columns = []
     for (var i = 0; i < Object.keys(data.data[0]).length; i++) {
         columns.push({ id: i, displayName: Object.keys(data.data[0])[i] })
@@ -57,7 +72,6 @@ export const downloadResponse = async (formId: string) => {
         }
         dataForDownload.push(newObj)
     }
-    console.log(columns, dataForDownload)
     return { columns, dataForDownload }
 }
 

@@ -20,8 +20,6 @@ export interface Response {
     selectedOption?: string
     multipleSelected?: string[]
     selectedOptionsGrid?: gridOptions[]
-    selectedDate?: Date | null
-    selectedTime?: Date | null
     emailAnswer?: string
     canSubmit: boolean
 }
@@ -30,13 +28,14 @@ export interface ResponseActions {
     getResponse: (
         formId: string,
         prevResponses: any,
-        requiredData: boolean[]
+        requiredData: boolean[],
+        readOnly: boolean
     ) => void
     getUsers: () => Promise<user[]>
     updateResponse: (index: number, response: Response) => void
-    setReadOnly: (readOnly: boolean) => void
+    setFormId: (formiId: string) => void
     anotherResponse: (questions: any[]) => void
-    submit: () => Promise<any>
+    submit: (sendMail: boolean) => Promise<any>
 }
 
 interface Props {
@@ -72,11 +71,14 @@ export default function ResponseListProvider({
     const getResponse = (
         formId: string,
         prevResponses: any,
-        requiredData: boolean[]
+        requiredData: boolean[],
+        readOnly: boolean
     ) => {
         setFormId(formId)
         setUserid(prevResponses.userid)
         setUsername(prevResponses.username)
+        setReadOnly(readOnly)
+        console.log(prevResponses)
         let responses = prevResponses.responses.length
             ? prevResponses.responses
             : prevResponses.questions
@@ -101,8 +103,6 @@ export default function ResponseListProvider({
                     resp.selectedOptionsGrid !== undefined
                         ? resp.selectedOptionsGrid
                         : [{} as gridOptions],
-                selectedDate: resp.selectedDate,
-                selectedTime: resp.selectedTime,
                 emailAnswer:
                     resp.emailAnswer !== undefined ? resp.emailAnswer : "",
             }))
@@ -143,7 +143,7 @@ export default function ResponseListProvider({
         setResponses(newResponseList)
     }
 
-    const submit = async () => {
+    const submit = async (sendMail: boolean) => {
         if (responses.some((res) => res.canSubmit === false)) {
             setSubmitError("Please fill all required details")
             return { success: false }
@@ -153,6 +153,7 @@ export default function ResponseListProvider({
             userid: userid,
             formId: formId,
             responses: responses.filter((resp: any) => JSON.stringify(resp)),
+            sendMail,
         }
         const res = await fetch("http://localhost:7000/api/submitresponse", {
             method: "POST",
@@ -177,8 +178,6 @@ export default function ResponseListProvider({
                 newResponses[i].multipleSelected = []
                 newResponses[i].selectedOptionsGrid = []
                 newResponses[i].canSubmit = !questions[i].required
-                newResponses[i].selectedTime = null
-                newResponses[i].selectedDate = null
             }
             return newResponses
         })
@@ -189,7 +188,7 @@ export default function ResponseListProvider({
         getResponse,
         getUsers,
         updateResponse,
-        setReadOnly,
+        setFormId,
         submit,
         anotherResponse,
     }

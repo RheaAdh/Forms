@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import DatePicker from "react-datepicker"
 import { Question } from "../context/QuestionListContext"
 import { Response, useResponses } from "../context/ResponseListContext"
 
@@ -224,6 +225,19 @@ const QuestionResponse: React.FC<props> = ({
         }
         responseList?.responseActions?.updateResponse(index, answer)
     }
+    const handleDateAndTime = (date: Date, isDate: boolean) => {
+        var submit: boolean = !question.required
+        if (date) submit = true
+        const answer = {
+            answerType: isDate ? "date-answer" : "time-answer",
+            selectedDate: date,
+            formId: question.formid,
+            canSubmit: submit,
+            questionId: question.qid ? question.qid : "",
+        }
+        responseList?.responseActions?.updateResponse(index, answer)
+    }
+
     const types = [
         //Short
         <div>
@@ -366,7 +380,9 @@ const QuestionResponse: React.FC<props> = ({
                     {question["options"]?.map(
                         (optionText: string, i: number) => {
                             return (
-                                <option value={optionText}>{optionText}</option>
+                                <option key={optionText} value={optionText}>
+                                    {optionText}
+                                </option>
                             )
                         }
                     )}
@@ -418,10 +434,8 @@ const QuestionResponse: React.FC<props> = ({
             })}
             {question?.rows?.map((row: string, i: number) => {
                 return (
-                    <div>
-                        <span key={row} style={{ marginRight: "25px" }}>
-                            {row}{" "}
-                        </span>
+                    <div key={i}>
+                        <span style={{ marginRight: "25px" }}>{row} </span>
                         {question?.cols?.map((col: string, j: number) => {
                             // Iterating through rows and columns to return radio element.
                             // Based on previous response, return element with default checked set to true if checked
@@ -499,10 +513,8 @@ const QuestionResponse: React.FC<props> = ({
             })}
             {question?.rows?.map((row: string, i: number) => {
                 return (
-                    <div>
-                        <span key={row} style={{ marginRight: "25px" }}>
-                            {row}{" "}
-                        </span>
+                    <div key={row}>
+                        <span style={{ marginRight: "25px" }}>{row} </span>
                         {question?.cols?.map((col: string, i: number) => {
                             return prevResponse?.selectedOptionsGrid?.find(
                                 (obj) => {
