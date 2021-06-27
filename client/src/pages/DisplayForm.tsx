@@ -138,6 +138,7 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
     useEffect(() => {
         if (currentUser && readonly && responseOnlyPage === false) {
             // Get response for current user, when current user changes
+            if (!loading) setLoading(true)
             getByResponseId(currentUser.responseid).then((data) => {
                 if (data.status === 404 || data.status === 403) {
                     return setError(data.msg)
@@ -153,7 +154,7 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
                         questions.questions.map((q) => q.required),
                         readonly
                     )
-                setLoading(true)
+                setLoading(false)
             })
         }
     }, [currentUser])
