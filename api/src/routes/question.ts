@@ -50,7 +50,9 @@ export async function addQuestion(req: Request, res: Response) {
         console.log("isTemplate is " + form.isTemplate)
         if (form.isTemplate) {
             console.log("Template cant be editted")
-            return res.status(400).send({ success: false, msg: "Template cant be editted" })
+            return res
+                .status(400)
+                .send({ success: false, msg: "Template cant be editted" })
         } else {
             let newQuestion
 
@@ -228,7 +230,9 @@ export async function updateQuestion(req: Request, res: Response) {
         form = await Form.findById(formid)
         if (form.isTemplate) {
             console.log("Template cant be editted")
-            return res.status(400).send({ success: false, msg: "Template cant be editted" })
+            return res
+                .status(400)
+                .send({ success: false, msg: "Template cant be editted" })
         } else {
             let moddedBody = { ...req.body }
             moddedBody["questionType"] = req.body.questionType
@@ -364,7 +368,9 @@ export async function deleteQuestion(req: Request, res: Response) {
             { _id: req.body.formid },
             { $pull: { questions: req.body.id } as any }
         )
-        return res.status(200).send({ success: true, data: "Deleted successfully" })
+        return res
+            .status(200)
+            .send({ success: true, data: "Deleted successfully" })
     } catch (error) {
         console.log(error)
         return res.status(500).send({ success: false, data: "Server Error" })

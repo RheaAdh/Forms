@@ -64,7 +64,10 @@ export const submitResponse = async (req: Request, res: Response) => {
                 newresp = await formResponse.save()
                 console.log("Response added!")
                 emailResponse(newresp, req.session)
-                res.status(200).send({ success: true, data: "Response submitted" })
+                res.status(200).send({
+                    success: true,
+                    data: "Response submitted",
+                })
             } catch (error) {
                 console.log(error)
                 res.status(500).send({ success: false, data: "Server Error" })
@@ -90,7 +93,10 @@ export const submitResponse = async (req: Request, res: Response) => {
                 console.log(newresp)
                 console.log("Response Updated when editing was allowed")
                 emailResponse(newresp, req.session)
-                res.status(200).send({ success: true, data: "Response Updated" })
+                res.status(200).send({
+                    success: true,
+                    data: "Response Updated",
+                })
             } catch (err) {
                 console.log(err)
                 res.status(200).send({ success: false, data: "Server Error" })
@@ -98,17 +104,34 @@ export const submitResponse = async (req: Request, res: Response) => {
         } //when for has submission but editing is not allowed but multiple response by single user is allowed
         else if (form.multipleResponses) {
             try {
-                const formResponse = new FormResponse({
-                    username,
-                    userid,
+                let responseCount = await FormResponse.find({
+                    userid: req.session.userId,
                     formId,
-                    responses,
-                })
-                newresp = await formResponse.save()
-                console.log("Response added!")
-                console.log("Submitting another Response by the user")
-                res.status(200).send({ success: true, data: "Response submitted " })
-                emailResponse(newresp, req.session)
+                }).count()
+                if (responseCount <= Number(process.env.LIMIT_MULTIPLE_RESP)) {
+                    const formResponse = new FormResponse({
+                        username,
+                        userid,
+                        formId,
+                        responses,
+                    })
+                    newresp = await formResponse.save()
+                    console.log("Response added!")
+                    console.log("Submitting another Response by the user")
+                    res.status(200).send({
+                        success: true,
+                        data: "Response submitted ",
+                    })
+                    emailResponse(newresp, req.session)
+                } else {
+                    console.log("Response Limit Reached")
+                    return res
+                        .status(400)
+                        .send({
+                            success: false,
+                            msg: `Maximum Response Limit ${process.env.LIMIT_MULTIPLE_RESP} reached, try contacting Admin for further details`,
+                        })
+                }
             } catch (error) {
                 console.log("Server Error")
                 res.status(500).send({ success: false, data: "Server Error" })
@@ -323,10 +346,14 @@ export const getResponsesByResIdByFormId = async (
                     })
                 }
             } else {
-                return res.status(400).send({ success: false, msg: "No Form Found" })
+                return res
+                    .status(400)
+                    .send({ success: false, msg: "No Form Found" })
             }
         } else {
-            return res.status(400).send({ success: false, msg: "No Responses Found" })
+            return res
+                .status(400)
+                .send({ success: false, msg: "No Responses Found" })
         }
     } catch (error) {
         console.log(error)
@@ -502,7 +529,9 @@ export const getResponseByBothFormidAndResponseid = async (
             _id: responseId,
             formId: req.params.formId,
         })
-        return res.status(200).send({ success: true, data: formIndividualResponsesForForm })
+        return res
+            .status(200)
+            .send({ success: true, data: formIndividualResponsesForForm })
     } catch (error) {
         console.log(error)
         return res.status(500).send({ success: false, data: error })
@@ -562,7 +591,9 @@ export const getResponsebyRespid = async (req: Request, res: Response) => {
                 data: resp,
             })
         } else {
-            return res.status(400).send({ success: false, msg: "Response not found" })
+            return res
+                .status(400)
+                .send({ success: false, msg: "Response not found" })
         }
     } catch (err) {
         console.log(err)

@@ -84,7 +84,9 @@ export async function adminRegister(req: Request, res: Response) {
             })
         } catch (error) {
             console.log(error)
-            return res.status(500).send({ success: false, data: "Server Error" })
+            return res
+                .status(500)
+                .send({ success: false, data: "Server Error" })
         }
     } else {
         console.log("Registration closed")
@@ -185,7 +187,9 @@ export async function isValidSuperAdmin(
             })
         }
     } else {
-        return res.status(400).send({ success: false, data: "Please Login to view" })
+        return res
+            .status(400)
+            .send({ success: false, data: "Please Login to view" })
     }
 }
 
@@ -199,7 +203,9 @@ export async function adminLogout(
             console.log(err)
         } else {
             //session deleted
-            return res.status(200).send({ success: true, data: "Successfully LoggedOut" })
+            return res
+                .status(200)
+                .send({ success: true, data: "Successfully LoggedOut" })
         }
     })
 }
@@ -253,7 +259,7 @@ export async function adminForgotPassword(
         user = await User.findOne({ email: email })
     } catch (error) {
         console.error(error)
-        return res.status(500).send({success:false,msg:"Server Error"})
+        return res.status(500).send({ success: false, msg: "Server Error" })
     }
 
     if (!user) {
@@ -329,7 +335,9 @@ export async function getAllAdmins(req: Request, res: Response) {
     try {
         let admins = await User.find({ role: "admin" })
         console.log(admins)
-        return res.status(200).send({ success: true, msg: "All Admins", data: admins })
+        return res
+            .status(200)
+            .send({ success: true, msg: "All Admins", data: admins })
     } catch (err) {
         console.log(err)
         return res.status(400).send({ success: false, msg: "Server Error" })
