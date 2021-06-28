@@ -34,7 +34,7 @@ export interface ResponseActions {
     getUsers: () => Promise<user[]>
     updateResponse: (index: number, response: Response) => void
     setFormId: (formiId: string) => void
-    anotherResponse: (questions: any[]) => void
+    clearResponse: (questions: any[]) => void
     submit: (sendMail: boolean) => Promise<any>
 }
 
@@ -78,7 +78,6 @@ export default function ResponseListProvider({
         setUserid(prevResponses.userid)
         setUsername(prevResponses.username)
         setReadOnly(readOnly)
-        console.log(prevResponses)
         let responses = prevResponses.responses.length
             ? prevResponses.responses
             : prevResponses.questions
@@ -139,7 +138,6 @@ export default function ResponseListProvider({
     const updateResponse = (index: number, response: Response) => {
         const newResponseList = responses.slice()
         newResponseList[index] = response
-        console.log(response)
         setResponses(newResponseList)
     }
 
@@ -167,7 +165,7 @@ export default function ResponseListProvider({
         return data
     }
 
-    const anotherResponse = (questions: any[]) => {
+    const clearResponse = (questions: any[]) => {
         setResponses((prevResponses) => {
             const newResponses = prevResponses.slice()
             for (var i: number = 0; i < prevResponses.length; i++) {
@@ -190,7 +188,7 @@ export default function ResponseListProvider({
         updateResponse,
         setFormId,
         submit,
-        anotherResponse,
+        clearResponse,
     }
 
     const responseList: ResponseList = {

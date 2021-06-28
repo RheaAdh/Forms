@@ -25,7 +25,7 @@ const QuestionList: React.FC = () => {
                     Add New Question
                 </button>
                 {questions?.questions.map((question, index: number) => (
-                    <Question question={question} index={index} />
+                    <Question key={index} question={question} index={index} />
                 ))}
             </div>
         </div>

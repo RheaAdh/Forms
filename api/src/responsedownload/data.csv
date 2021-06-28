@@ -1,6 +1,3 @@
-Name,Question
-superadmin,hiiii
-superadmin,hello
-superadmin,new1
-tejas,does multiple response work though?
-tejas,seems like it does
+Name,Short Ques Type,Short Ques Type [undefined],Para Ques Type,Para Ques Type [undefined],MCQ,MCQ [undefined],Checkbox,Drop down ,Drop down  [undefined],Linear Scale Ques,Linear Scale Ques [undefined],This needs fixing [undefined],This needs fixing [a],This needs fixing
+tejas,,,,,,,A,,,,,,c,
+Tejas Hegde,,,dont' mail me my response,,,,B,,,5,,,c,

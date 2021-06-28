@@ -6,8 +6,9 @@ export interface CurrentForm {
     title?: string
     description?: string
     editable?: boolean
-    mulitipleResponses?: boolean
+    multipleResponses?: boolean
     isActive?: boolean
+    editors?: string[]
 }
 interface Props {
     children: ReactElement
@@ -18,7 +19,7 @@ export interface Form {
     setTitle: (title: string) => void
     setDescription: (description: string) => void
     setDate: (date: Date | null) => void
-    setEditable: (editable: boolean) => void
+    setEditable: (admin: boolean) => void
     setMultipleResponses: (multiple: boolean) => void
     setFormDetails: (
         id: string,
@@ -26,6 +27,7 @@ export interface Form {
         formData?: any
     ) => Promise<any>
     setActive: (isActive: boolean) => void
+    setEditors: (editor: string[]) => void
 }
 
 const CurrentFormContext = React.createContext<Form | null>(null)
@@ -35,78 +37,22 @@ export const useCurrentForm = () => {
 }
 
 export default function CurrentFormProvider({ children }: Props): ReactElement {
-    const [currentForm, setCurrentForm] = useState<CurrentForm | null>(null)
+    const [id, setId] = useState<string>("")
+    const [title, setTitle] = useState<string>()
+    const [description, setDescription] = useState<string>()
+    const [date, setDate] = useState<Date | null>()
+    const [editable, setEditable] = useState<boolean>()
+    const [multipleResponses, setMultipleResponses] = useState<boolean>()
+    const [editors, setEditors] = useState<string[]>()
+    const [isActive, setActive] = useState<boolean>()
 
-    const setTitle = (title: string) => {
-        setCurrentForm((prevForm) => {
-            if (prevForm)
-                return {
-                    ...prevForm,
-                    title: title,
-                }
-            return null
-        })
-    }
-
-    const setDescription = (description: string) => {
-        setCurrentForm((prevForm) => {
-            if (prevForm)
-                return {
-                    ...prevForm,
-                    description: description,
-                }
-            return null
-        })
-    }
-
-    const setDate = (date: Date | null) => {
-        setCurrentForm((prevForm) => {
-            if (prevForm)
-                return {
-                    ...prevForm,
-                    date: date ? date : null,
-                }
-            return null
-        })
-    }
-    const setEditable = (editable: boolean) => {
-        setCurrentForm((prevForm) => {
-            if (prevForm)
-                return {
-                    ...prevForm,
-                    editable: editable,
-                }
-            return null
-        })
-    }
-    const setMultipleResponses = (multiple: boolean) => {
-        setCurrentForm((prevForm) => {
-            if (prevForm) {
-                return {
-                    ...prevForm,
-                    mulitipleResponses: multiple,
-                }
-            }
-            return null
-        })
-    }
-    const setActive = (isActive: boolean) => {
-        setCurrentForm((prevForm) => {
-            if (prevForm) {
-                return {
-                    ...prevForm,
-                    isActive: isActive,
-                }
-            }
-            return null
-        })
-    }
     const setFormDetails = async (
         id: string,
-        toEdit: boolean,
+        admin: boolean,
         formData?: any
     ) => {
-        setCurrentForm({ id: id })
+        setId(id)
+        // if data has already been fetched
         if (formData !== undefined) {
             console.log(formData)
             setTitle(formData.title)
@@ -114,13 +60,14 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
             setEditable(formData.isEditable)
             setMultipleResponses(formData.multipleResponses)
             setActive(formData.isActive)
+            setEditors(formData.editors)
             if (formData.closes) {
                 new Date(formData.closes)
             } else setDate(null)
             return { success: true, form: formData }
         }
         let fetchRoute = ``
-        if (toEdit) {
+        if (admin) {
             fetchRoute = `http://localhost:7000/api/getform/${id}`
         } else {
             fetchRoute = `http://localhost:7000/api/getformforresp/${id}`
@@ -147,6 +94,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
             setEditable(data.form.isEditable)
             setMultipleResponses(data.form.multipleResponses)
             setActive(data.form.isActive)
+            setEditors(data.form.editors)
             if (data.form.closes) {
                 setDate(new Date(data.form.closes))
             } else setDate(null)
@@ -158,12 +106,13 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
     }
     const updateForm = async () => {
         if (
-            currentForm?.description === undefined ||
-            currentForm?.editable === undefined ||
-            currentForm?.mulitipleResponses === undefined ||
-            currentForm?.date === undefined ||
-            currentForm?.title === undefined ||
-            currentForm?.isActive === undefined
+            description === undefined ||
+            editable === undefined ||
+            multipleResponses === undefined ||
+            date === undefined ||
+            title === undefined ||
+            isActive === undefined ||
+            editors === undefined
         ) {
             return
         }
@@ -175,13 +124,14 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
                 },
                 credentials: "include",
                 body: JSON.stringify({
-                    _id: currentForm.id,
-                    description: currentForm?.description,
-                    isEditable: currentForm?.editable,
-                    multipleResponses: currentForm?.mulitipleResponses,
-                    closes: currentForm?.date,
-                    title: currentForm?.title,
-                    isActive: currentForm?.isActive,
+                    _id: id,
+                    description: description,
+                    isEditable: editable,
+                    multipleResponses: multipleResponses,
+                    closes: date,
+                    title: title,
+                    isActive: isActive,
+                    editors: editors,
                 }),
             })
                 .then((response) => response.json())
@@ -191,6 +141,17 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
                 .catch((error) => {
                     console.error("Error:", error)
                 })
+    }
+
+    const currentForm: CurrentForm = {
+        id,
+        date,
+        isActive,
+        title,
+        description,
+        editable,
+        multipleResponses,
+        editors,
     }
 
     const form: Form = {
@@ -203,6 +164,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         setEditable,
         setMultipleResponses,
         setActive,
+        setEditors,
     }
 
     return (

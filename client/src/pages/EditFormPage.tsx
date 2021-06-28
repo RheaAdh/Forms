@@ -12,6 +12,7 @@ import "react-datepicker/dist/react-datepicker.css"
 
 import "../styles/EditFormPage.css"
 import { useCurrentForm } from "../context/CurrentFormContext"
+import autoAdjustHeight from "../util"
 
 const EditFormPage: React.FC = () => {
     const { formid }: any = useParams()
@@ -28,19 +29,6 @@ const EditFormPage: React.FC = () => {
     const form = useCurrentForm()
 
     const [allAdmins, setAdmins] = useState<any[]>([])
-
-    useEffect(
-        ()=>{
-        fetch(`http://localhost:7000/api/getadmins`)
-            .then((resp: any) => {
-              return resp.json();
-            })
-
-            .then((data: any) => {
-              console.log("Admins:",data);
-              setAdmins(data.data);
-            });
-        },[])
 
     useEffect(() => {
         if (!auth?.currentUser) auth?.getCurrentUser().then((res: any) => {})
@@ -77,9 +65,10 @@ const EditFormPage: React.FC = () => {
         [
             form?.currentForm?.description,
             form?.currentForm?.editable,
-            form?.currentForm?.mulitipleResponses,
+            form?.currentForm?.multipleResponses,
             form?.currentForm?.date,
             form?.currentForm?.title,
+            form?.currentForm?.editors,
         ]
     )
 
@@ -97,54 +86,41 @@ const EditFormPage: React.FC = () => {
         return <div>Loading</div>
     }
     //console.log(form?.closes)
-    return form ? (
-        auth?.currentUser &&
-        (auth?.currentUser.role === "admin" ||
-            auth?.currentUser.role === "superadmin") ? (
-            <div className="edit-form-page">
+    return (
+        <div className="edit-form-page">
+            <div className="edit-form-container">
                 <Link to="/">
                     <button>Back</button>
                 </Link>
-                {showEditTitle ? (
-                    <input
-                        onBlur={() => setShowEditTitle(false)}
-                        type="text"
-                        defaultValue={form?.currentForm?.title}
-                        onChange={(e) => form?.setTitle(e.target.value)}
-                        ref={inputRef}
-                    ></input>
-                ) : (
-                    <div onClick={handleTitleClick}>
-                        <h1>{form.currentForm?.title}</h1>
-                    </div>
-                )}
-                <>
-                    {form?.currentForm?.isActive ? (
-                        <button
-                            onClick={toggleForm}
-                            style={{ cursor: "pointer" }}
-                        >
-                            Form is active, click to toggle
-                        </button>
+                <div className="edit-form-component">
+                    {showEditTitle ? (
+                        <input
+                            onBlur={() => setShowEditTitle(false)}
+                            type="text"
+                            defaultValue={form?.currentForm?.title}
+                            onChange={(e) => form?.setTitle(e.target.value)}
+                            ref={inputRef}
+                        ></input>
                     ) : (
-                        <button
-                            onClick={toggleForm}
-                            style={{ cursor: "pointer" }}
-                        >
-                            Form is closed, click to toggle
-                        </button>
+                        <h1 onClick={handleTitleClick}>
+                            {form?.currentForm?.title}
+                        </h1>
                     )}
-                </>
-                <h3>Description:</h3>
-                <textarea
-                    value={form?.currentForm?.description}
-                    onChange={(e) => form.setDescription(e.target.value)}
-                    rows={5}
-                    cols={80}
-                    className="description"
-                ></textarea>
-
-                <h4>Closing date :</h4>
+                    <button>
+                        {form?.currentForm?.isActive
+                            ? `Form is active, click to toggle`
+                            : `Form has closed, click to toggle`}
+                    </button>
+                    <h3>Description:</h3>
+                    <textarea
+                        value={form?.currentForm?.description}
+                        onChange={(e) => {
+                            autoAdjustHeight(e)
+                            form?.setDescription(e.target.value)
+                        }}
+                    ></textarea>
+                </div>
+                <h3>Closing date :</h3>
                 <DatePicker
                     selected={form?.currentForm?.date}
                     showTimeSelect
@@ -166,7 +142,7 @@ const EditFormPage: React.FC = () => {
                     Editable
                     <input
                         type="checkbox"
-                        checked={form?.currentForm?.mulitipleResponses || false}
+                        checked={form?.currentForm?.multipleResponses || false}
                         onChange={(e) => {
                             const multiVal = e.target.checked
                             form?.setMultipleResponses(multiVal)
@@ -182,19 +158,11 @@ const EditFormPage: React.FC = () => {
                 >
                     {displayPermission ? "Close" : "Set edit permissions"}
                 </button>
-                {displayPermission ? (
-                    <PermissionList formid={form?.currentForm?.id} editors={[]} admins={allAdmins} />
-                ) : (
-                    ""
-                )}
+                {displayPermission ? <PermissionList /> : ""}
                 <h2>Questions:</h2>
                 <QuestionList />
             </div>
-        ) : (
-            <Redirect to="/login" />
-        )
-    ) : (
-        <div>loading</div>
+        </div>
     )
 }
 

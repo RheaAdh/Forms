@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import DatePicker from "react-datepicker"
+import autoAdjustHeight from "../util"
 import { Question } from "../context/QuestionListContext"
 import { Response, useResponses } from "../context/ResponseListContext"
 
@@ -225,18 +225,6 @@ const QuestionResponse: React.FC<props> = ({
         }
         responseList?.responseActions?.updateResponse(index, answer)
     }
-    const handleDateAndTime = (date: Date, isDate: boolean) => {
-        var submit: boolean = !question.required
-        if (date) submit = true
-        const answer = {
-            answerType: isDate ? "date-answer" : "time-answer",
-            selectedDate: date,
-            formId: question.formid,
-            canSubmit: submit,
-            questionId: question.qid ? question.qid : "",
-        }
-        responseList?.responseActions?.updateResponse(index, answer)
-    }
 
     const types = [
         //Short
@@ -261,16 +249,18 @@ const QuestionResponse: React.FC<props> = ({
         <div>
             {responseList?.readOnly === true ? (
                 <textarea
-                    placeholder="Paragraph answer"
-                    style={{ resize: "none", width: "300px", height: "100px" }}
+                    onChange={(e) => autoAdjustHeight(e)}
+                    placeholder="Paragraph Answer"
                     readOnly
                     defaultValue={prevResponse?.paragraphText}
                 ></textarea>
             ) : (
                 <textarea
-                    placeholder="Paragraph answer"
-                    style={{ resize: "none", width: "300px", height: "100px" }}
-                    onChange={(e) => handleParagraphAnswer(e)}
+                    placeholder="Paragraph Answer"
+                    onChange={(e) => {
+                        handleParagraphAnswer(e)
+                        autoAdjustHeight(e)
+                    }}
                     defaultValue={prevResponse?.paragraphText}
                 ></textarea>
             )}
@@ -282,38 +272,57 @@ const QuestionResponse: React.FC<props> = ({
                     return (
                         // Check if responseList?.readOnly or not. Then in both cases, check whether or not to add default checked attribute.
                         // disabled attribute needed for responseList?.readOnly
-                        <div key={optionText}>
+                        <div className="radio-checkbox" key={optionText}>
                             {responseList?.readOnly ? (
                                 prevResponse?.selectedOption === optionText ? (
-                                    <input
-                                        disabled
-                                        type="radio"
-                                        name="mcq-answer"
-                                        defaultChecked
-                                    />
+                                    <>
+                                        <input
+                                            disabled
+                                            type="radio"
+                                            name="mcq-answer"
+                                            defaultChecked
+                                            id={optionText + String(i)}
+                                        />
+                                    </>
                                 ) : (
-                                    <input
-                                        disabled
-                                        type="radio"
-                                        name="mcq-answer"
-                                    />
+                                    <>
+                                        <input
+                                            disabled
+                                            type="radio"
+                                            name="mcq-answer"
+                                            id={optionText + String(i)}
+                                        />
+                                    </>
                                 )
                             ) : prevResponse?.selectedOption === optionText ? (
-                                <input
-                                    type="radio"
-                                    name="mcq-answer"
-                                    onClick={(e) => handleMcq(e, optionText)}
-                                    defaultChecked
-                                />
+                                <>
+                                    <input
+                                        type="radio"
+                                        name="mcq-answer"
+                                        onClick={(e) =>
+                                            handleMcq(e, optionText)
+                                        }
+                                        defaultChecked
+                                        id={optionText + String(i)}
+                                    />
+                                </>
                             ) : (
-                                <input
-                                    type="radio"
-                                    name="mcq-answer"
-                                    onClick={(e) => handleMcq(e, optionText)}
-                                />
+                                <>
+                                    <input
+                                        type="radio"
+                                        name="mcq-answer"
+                                        onClick={(e) =>
+                                            handleMcq(e, optionText)
+                                        }
+                                        id={optionText + String(i)}
+                                    />
+                                </>
                             )}
-                            {optionText}
-                            {/* <label htmlFor={optionText}>{optionText}</label> */}
+                            <span className="styled-radio-checkbox"></span>
+
+                            <label htmlFor={optionText + String(i)}>
+                                {optionText}
+                            </label>
                         </div>
                     )
                 })}
@@ -324,12 +333,13 @@ const QuestionResponse: React.FC<props> = ({
             <form>
                 {question["options"]?.map((optionText: string, i: number) => {
                     return (
-                        <div key={optionText}>
+                        <div key={optionText} className="radio-checkbox">
                             {responseList?.readOnly ? (
                                 prevResponse?.multipleSelected?.includes(
                                     optionText
                                 ) ? (
                                     <input
+                                        id={optionText + String(i)}
                                         type="checkbox"
                                         disabled
                                         name="checkbox-answer"
@@ -338,6 +348,7 @@ const QuestionResponse: React.FC<props> = ({
                                     />
                                 ) : (
                                     <input
+                                        id={optionText + String(i)}
                                         type="checkbox"
                                         disabled
                                         name="checkbox-answer"
@@ -348,6 +359,7 @@ const QuestionResponse: React.FC<props> = ({
                                   optionText
                               ) ? (
                                 <input
+                                    id={optionText + String(i)}
                                     type="checkbox"
                                     name="checkbox-answer"
                                     value={optionText}
@@ -358,6 +370,7 @@ const QuestionResponse: React.FC<props> = ({
                                 />
                             ) : (
                                 <input
+                                    id={optionText + String(i)}
                                     type="checkbox"
                                     name="checkbox-answer"
                                     value={optionText}
@@ -366,8 +379,10 @@ const QuestionResponse: React.FC<props> = ({
                                     }
                                 />
                             )}
-                            {optionText}
-                            {/* <label htmlFor={optionText}>{optionText}</label> */}
+                            <span className="styled-radio-checkbox"></span>
+                            <label htmlFor={optionText + String(i)}>
+                                {optionText}
+                            </label>
                         </div>
                     )
                 })}
@@ -434,8 +449,8 @@ const QuestionResponse: React.FC<props> = ({
             })}
             {question?.rows?.map((row: string, i: number) => {
                 return (
-                    <div key={i}>
-                        <span style={{ marginRight: "25px" }}>{row} </span>
+                    <div key={i} className="radio-checkbox">
+                        <span>{row} </span>
                         {question?.cols?.map((col: string, j: number) => {
                             // Iterating through rows and columns to return radio element.
                             // Based on previous response, return element with default checked set to true if checked
@@ -497,7 +512,7 @@ const QuestionResponse: React.FC<props> = ({
                                 />
                             )
                         })}
-                        <br />
+                        <span className="styled-radio-checkbox"></span>
                     </div>
                 )
             })}
@@ -513,8 +528,8 @@ const QuestionResponse: React.FC<props> = ({
             })}
             {question?.rows?.map((row: string, i: number) => {
                 return (
-                    <div key={row}>
-                        <span style={{ marginRight: "25px" }}>{row} </span>
+                    <div key={row} className="radio-checkbox">
+                        <p>{row}</p>
                         {question?.cols?.map((col: string, i: number) => {
                             return prevResponse?.selectedOptionsGrid?.find(
                                 (obj) => {
@@ -524,59 +539,58 @@ const QuestionResponse: React.FC<props> = ({
                                 }
                             ) !== undefined ? (
                                 responseList?.readOnly ? (
+                                    <>
+                                        <input
+                                            disabled
+                                            type="checkbox"
+                                            key={col}
+                                            name={row + col}
+                                            id={row + col}
+                                            defaultChecked
+                                        />
+                                        <span className="styled-radio-checkbox"></span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <input
+                                            onClick={(e) =>
+                                                handleCheckboxGrid(e, row, col)
+                                            }
+                                            type="checkbox"
+                                            key={col}
+                                            name={row + col}
+                                            id={row + col}
+                                            defaultChecked
+                                        />
+                                        <span className="styled-radio-checkbox"></span>
+                                    </>
+                                )
+                            ) : responseList?.readOnly ? (
+                                <>
                                     <input
-                                        disabled
+                                        readOnly
                                         type="checkbox"
                                         key={col}
-                                        name={row}
-                                        style={{
-                                            display: "inline",
-                                            marginRight: "10px",
-                                        }}
-                                        defaultChecked
+                                        name={row + col}
+                                        id={row + col}
                                     />
-                                ) : (
+                                    <span className="styled-radio-checkbox"></span>
+                                </>
+                            ) : (
+                                <>
                                     <input
-                                        onClick={(e) =>
+                                        onChange={(e) =>
                                             handleCheckboxGrid(e, row, col)
                                         }
                                         type="checkbox"
                                         key={col}
-                                        name={row}
-                                        style={{
-                                            display: "inline",
-                                            marginRight: "10px",
-                                        }}
-                                        defaultChecked
+                                        name={row + col}
+                                        id={row + col}
                                     />
-                                )
-                            ) : responseList?.readOnly ? (
-                                <input
-                                    readOnly
-                                    type="checkbox"
-                                    key={col}
-                                    name={row}
-                                    style={{
-                                        display: "inline",
-                                        marginRight: "10px",
-                                    }}
-                                />
-                            ) : (
-                                <input
-                                    onChange={(e) =>
-                                        handleCheckboxGrid(e, row, col)
-                                    }
-                                    type="checkbox"
-                                    key={col}
-                                    name={row}
-                                    style={{
-                                        display: "inline",
-                                        marginRight: "10px",
-                                    }}
-                                />
+                                    <span className="styled-radio-checkbox"></span>
+                                </>
                             )
                         })}
-                        <br />
                     </div>
                 )
             })}
@@ -631,15 +645,12 @@ const QuestionResponse: React.FC<props> = ({
         </div>,
     ]
     return (
-        <div>
+        <div className="display-form-component">
             <b>{question.questionText}</b>
             {question["required"] ? (
                 <span style={{ color: "red" }}>*</span>
             ) : null}
-            {/* SOME ISSUE IN BRINGINGUSER RESPONSES */}
             {types[typeToIdx.indexOf(question["questionType"])]}
-            <br />
-            <br />
         </div>
     )
 }

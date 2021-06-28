@@ -32,7 +32,9 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
             .then((response) => {
                 return response.json()
             })
-            .then((data) => console.log(data))
+            .then((data) => {
+                return null
+            })
             .catch((error) => {
                 console.error("Error:", error)
             })
@@ -92,13 +94,7 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
     useEffect(toggleActive, [active])
     // useEffect(handleUseTemplate, [tempState])
     return (
-        <div
-            style={{
-                backgroundColor: "#BEBEBE",
-                cursor: "pointer",
-                margin: 30,
-            }}
-        >
+        <div className="display-form-component">
             <div onClick={handleClick}>
                 <h1>{form.title}</h1>
                 <p>{form.description}</p>

@@ -16,7 +16,7 @@ const DashboardPage: React.FC = () => {
     // Sidenav
     const handleChange = (e: any) => {
         let element = document.getElementById(current)
-        element?.setAttribute("style", "color : black;")
+        element?.setAttribute("style", "color : var(--fontColor);")
         e.target.style.color = "red"
         setCurrent(e.target.id)
     }
@@ -38,85 +38,87 @@ const DashboardPage: React.FC = () => {
     }
 
     return (
-        <div className="dashboard">
-            <div className="sidebar">
-                {auth?.currentUser?.role === "admin" ||
-                auth?.currentUser?.role === "superadmin" ? (
-                    <p
-                        className="btn"
-                        id="allForms"
-                        onClick={(e) => handleChange(e)}
-                    >
-                        All Forms / Create Form
-                    </p>
-                ) : null}
-                {auth?.currentUser?.role === "admin" ||
-                auth?.currentUser?.role === "superadmin" ? (
-                    <p
-                        className="btn"
-                        id="templates"
-                        onClick={(e) => handleChange(e)}
-                    >
-                        Templates(Create Copy and work)
-                    </p>
-                ) : null}
-                {auth?.currentUser?.role === "admin" ||
-                auth?.currentUser?.role === "superadmin" ? (
-                    <p
-                        className="btn"
-                        id="adminForms"
-                        onClick={(e) => handleChange(e)}
-                    >
-                        Mancomm Form Responses
-                    </p>
-                ) : null}
-                {auth?.currentUser?.role === "superadmin" ? (
-                    <p
-                        className="btn"
-                        id="superAdminForms"
-                        onClick={(e) => handleChange(e)}
-                    >
-                        Board Form responses
-                    </p>
-                ) : null}
-                {auth?.currentUser?.role == null ? (
-                    <div>
-                        <p
+        <div className="dashboard-page">
+            <div className="dashboard">
+                <div className="sidebar">
+                    {auth?.currentUser?.role === "admin" ||
+                    auth?.currentUser?.role === "superadmin" ? (
+                        <button
                             className="btn"
-                            id="admin-login"
-                            onClick={(e) => {
-                                history.push("/adminlogin")
-                            }}
+                            id="allForms"
+                            onClick={(e) => handleChange(e)}
                         >
-                            Login (ADMIN ONLY)
-                        </p>
-                    </div>
-                ) : (
-                    <p className="btn" id="logout" onClick={handleLogout}>
-                        Logout
-                    </p>
-                )}
-            </div>
-            <div className="main-column">
-                {auth?.currentUser?.role === "admin" ||
-                auth?.currentUser?.role === "superadmin" ? (
-                    current === "allForms" ? (
-                        <FormsPage />
-                    ) : current === "adminForms" ? (
-                        <ResponseList creatorRole="admin" />
-                    ) : current === "superAdminForms" &&
-                      auth?.currentUser?.role === "superadmin" ? (
-                        <ResponseList creatorRole="superadmin" />
-                    ) : current === "admin-login" ? (
-                        <AdminLoginPage />
-                    ) : current === "templates" ? (
-                        <TemplatePage />
+                            All Forms / Create Form
+                        </button>
+                    ) : null}
+                    {auth?.currentUser?.role === "admin" ||
+                    auth?.currentUser?.role === "superadmin" ? (
+                        <button
+                            className="btn"
+                            id="templates"
+                            onClick={(e) => handleChange(e)}
+                        >
+                            Templates(Create Copy and work)
+                        </button>
+                    ) : null}
+                    {auth?.currentUser?.role === "admin" ||
+                    auth?.currentUser?.role === "superadmin" ? (
+                        <button
+                            className="btn"
+                            id="adminForms"
+                            onClick={(e) => handleChange(e)}
+                        >
+                            Mancomm Form Responses
+                        </button>
+                    ) : null}
+                    {auth?.currentUser?.role === "superadmin" ? (
+                        <button
+                            className="btn"
+                            id="superAdminForms"
+                            onClick={(e) => handleChange(e)}
+                        >
+                            Board Form responses
+                        </button>
+                    ) : null}
+                    {auth?.currentUser?.role == null ? (
+                        <div>
+                            <button
+                                className="btn"
+                                id="admin-login"
+                                onClick={(e) => {
+                                    history.push("/adminlogin")
+                                }}
+                            >
+                                Login (ADMIN ONLY)
+                            </button>
+                        </div>
                     ) : (
-                        <p>lmao</p>
-                    )
-                ) : (
-                    <div>What are you doing here??</div>
-                )}
+                        <p className="btn" id="logout" onClick={handleLogout}>
+                            Logout
+                        </p>
+                    )}
+                </div>
+                <div className="main-column">
+                    {auth?.currentUser?.role === "admin" ||
+                    auth?.currentUser?.role === "superadmin" ? (
+                        current === "allForms" ? (
+                            <FormsPage />
+                        ) : current === "adminForms" ? (
+                            <ResponseList creatorRole="admin" />
+                        ) : current === "superAdminForms" &&
+                          auth?.currentUser?.role === "superadmin" ? (
+                            <ResponseList creatorRole="superadmin" />
+                        ) : current === "admin-login" ? (
+                            <AdminLoginPage />
+                        ) : current === "templates" ? (
+                            <TemplatePage />
+                        ) : (
+                            <p>lmao</p>
+                        )
+                    ) : (
+                        <div>What are you doing here??</div>
+                    )}
+                </div>
             </div>
         </div>
     )

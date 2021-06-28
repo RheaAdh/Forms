@@ -11,6 +11,7 @@ import getQuestionsAndResponses, {
 import CsvDownloader from "react-csv-downloader"
 import { useResponses, user } from "../context/ResponseListContext"
 import { Question, useQuestionsList } from "../context/QuestionListContext"
+import "../styles/DisplayForm.css"
 
 interface props {
     readonly: boolean
@@ -170,15 +171,15 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
 
     if (thankYou) {
         return (
-            <div>
+            <div className="display-form-page">
                 <b>Your response has been submitted!</b>
                 <br />
                 {/* if form is accepting multiple */}
-                {form?.currentForm?.mulitipleResponses ? (
+                {form?.currentForm?.multipleResponses ? (
                     <button
                         onClick={() => {
                             setLoading(true)
-                            responseList?.responseActions?.anotherResponse(
+                            responseList?.responseActions?.clearResponse(
                                 questions?.questions ? questions.questions : []
                             )
                             setTimeout(() => {
@@ -216,131 +217,73 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
     }
 
     return (
-        <div
-            style={{
-                backgroundColor: "#E5E5E5",
-                height: "100vh",
-                overflowY: "auto",
-            }}
-        >
-            <div>
-                {readonly === true && responseOnlyPage === false ? (
-                    <CsvDownloader
-                        filename={form?.currentForm?.title || ""}
-                        extension={".csv"}
-                        columns={columnsForDownload}
-                        datas={dataForDownload ? dataForDownload : []}
-                        text={"Click  to download responses"}
-                    />
-                ) : null}
-                <br />
-                {responseList?.users?.length ? (
-                    <select defaultValue={currentUser?.username}>
-                        {responseList?.users.map((user: any, i: number) => {
-                            return (
-                                <option
-                                    key={i}
-                                    value={user.username}
-                                    onClick={(e) => {
-                                        setCurrentUser(user)
-                                    }}
-                                >
-                                    {user.username}
-                                </option>
-                            )
-                        })}
-                    </select>
-                ) : null}
-            </div>
-            <div
-                style={{
-                    left: " 21.04%",
-                    right: "16.51%",
-                    top: " 5.37%",
-                    bottom: "66.76%",
-                    background: "rgba(190, 190, 190, 0.1)",
-                    borderRadius: "20px",
-                    backdropFilter: " blur(99.6667px)",
-                }}
-            >
-                <h1
-                    style={{
-                        left: "23.49%",
-                        right: "64.84%",
-                        top: "7.13%",
-                        bottom: "83.8%",
-                        fontFamily: "Catamaran",
-                        fontWeight: "bold",
-                        fontSize: "60px",
-                        lineHeight: "98px",
-                        letterSpacing: "0.03em",
-                    }}
-                >
-                    {form?.currentForm?.title}
-                </h1>
+        <div className="display-form-page">
+            <div className="display-form-container">
+                <div>
+                    {readonly === true && responseOnlyPage === false ? (
+                        <CsvDownloader
+                            filename={form?.currentForm?.title || ""}
+                            extension={".csv"}
+                            columns={columnsForDownload}
+                            datas={dataForDownload ? dataForDownload : []}
+                            text={"Click  to download responses"}
+                        />
+                    ) : null}
+                    <br />
+                    {responseList?.users?.length ? (
+                        <select defaultValue={currentUser?.username}>
+                            {responseList?.users.map((user: any, i: number) => {
+                                return (
+                                    <option
+                                        key={i}
+                                        value={user.username}
+                                        onClick={(e) => {
+                                            setCurrentUser(user)
+                                        }}
+                                    >
+                                        {user.username}
+                                    </option>
+                                )
+                            })}
+                        </select>
+                    ) : null}
+                </div>
+                <div className="display-form-component form-header">
+                    <h2>{form?.currentForm?.title}</h2>
 
-                <p>{form?.currentForm?.description}</p>
-            </div>
-            {responseList?.readOnly === false ? (
-                <button
-                    onClick={
-                        () => {
+                    <p>{form?.currentForm?.description}</p>
+                </div>
+                {responseList?.readOnly === false ? (
+                    <button
+                        onClick={() => {
                             setLoading(true)
-                            responseList?.responseActions?.anotherResponse(
+                            responseList?.responseActions?.clearResponse(
                                 questions?.questions ? questions.questions : []
                             )
                             setTimeout(() => {
                                 setLoading(false)
                             }, 10)
-                        }
-                        // Another response just clears the responses
-                    }
-                >
-                    Click to clear responses
-                </button>
-            ) : null}
-            {questions?.questions?.map((q: Question, idx: number) => {
-                return (
-                    <QuestionResponse
-                        question={q}
-                        prevResponse={responseList?.responses?.[idx]}
-                        index={idx}
-                        key={q.qid}
-                    />
-                )
-            })}
-            <b style={{ color: "red" }}>{responseList?.submitError}</b>
-            <br />
-            {!responseOnlyPage ? (
-                <div>
-                    {form?.currentForm?.isActive ? (
-                        <p>form is open</p>
-                    ) : (
-                        <p>form is closed</p>
-                    )}
-                    {!form?.currentForm?.editable &&
-                    form?.currentForm?.isActive ? (
-                        <p>This form is not editable</p>
-                    ) : null}
-                    {form?.currentForm?.mulitipleResponses &&
-                    form?.currentForm?.isActive ? (
-                        <p>This form accepts multiple responses</p>
-                    ) : null}
-                </div>
-            ) : null}
-            {readonly ? null : form?.currentForm?.isActive ? (
-                <div>
-                    <button
-                        style={{
-                            left: "21.09%",
-                            right: " 72.55%",
-                            top: "76.3%",
-                            bottom: "20.09%",
-                            background: "#8B64EA",
-                            borderRadius: "5px",
-                            color: "white",
-                            cursor: "pointer",
                         }}
+                    >
+                        Click to clear responses
+                    </button>
+                ) : null}
+                {questions?.questions?.map((q: Question, idx: number) => {
+                    return (
+                        <QuestionResponse
+                            question={q}
+                            prevResponse={responseList?.responses?.[idx]}
+                            index={idx}
+                            key={q.qid}
+                        />
+                    )
+                })}
+                {responseList?.submitError && (
+                    <b style={{ color: "red" }}>{responseList?.submitError}</b>
+                )}
+                {readonly ? null : form?.currentForm?.isActive ? (
+                    <button
+                        className="form-submit-btn"
                         onClick={() => {
                             responseList?.responseActions
                                 ?.submit(sendMail)
@@ -353,18 +296,18 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
                     >
                         Submit
                     </button>
-                </div>
-            ) : null}
-            {!readonly && form?.currentForm?.isActive ? (
-                <>
-                    <input
-                        type="checkbox"
-                        defaultChecked={sendMail}
-                        onChange={() => setSendMail(!sendMail)}
-                    ></input>
-                    Send me a mail of my response
-                </>
-            ) : null}
+                ) : null}
+                {!readonly && form?.currentForm?.isActive ? (
+                    <p>
+                        <input
+                            type="checkbox"
+                            defaultChecked={sendMail}
+                            onChange={() => setSendMail(!sendMail)}
+                        ></input>
+                        Send me a mail of my response
+                    </p>
+                ) : null}
+            </div>
         </div>
     )
 }
