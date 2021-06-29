@@ -8,7 +8,11 @@ interface Admin {
     username: string
 }
 
-const PermissionList: React.FC = () => {
+interface props {
+    close: any
+}
+
+const PermissionList: React.FC<props> = ({close}) => {
     const form = useCurrentForm()
     const currentUsername = useAuth()?.currentUser?.username
     const [admins, setAdmins] = useState<Admin[]>([])
@@ -38,6 +42,9 @@ const PermissionList: React.FC = () => {
     }
     return (
         <div className="permission-component">
+            <div className="permission-content">
+            <button onClick={close}>Close</button>
+            <br></br>
             <span>Search:</span>
             <input
                 type="text"
@@ -70,6 +77,7 @@ const PermissionList: React.FC = () => {
                     ) : null
                 )}
             </ul>
+            </div>
         </div>
     )
 }

@@ -153,12 +153,12 @@ const EditFormPage: React.FC = () => {
                 </h4>
                 <button
                     onClick={() => {
-                        setDisplayPermission(!displayPermission)
+                        setDisplayPermission(true)
                     }}
                 >
-                    {displayPermission ? "Close" : "Set edit permissions"}
+                    Set edit permissions
                 </button>
-                {displayPermission ? <PermissionList /> : ""}
+                {displayPermission ? <PermissionList close={()=>{setDisplayPermission(false)}}/> : ""}
                 <h2>Questions:</h2>
                 <QuestionList />
             </div>
