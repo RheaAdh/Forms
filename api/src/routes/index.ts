@@ -99,6 +99,12 @@ router.get(
     getFormForResponse
 )
 
+router.get(
+    "/getformforresp/anonymous/:formid",
+    checkAuthentication,
+    getFormForResponse
+)
+
 router.get("/getquestions", checkAuthentication, getQuestions)
 router.get("/getquestion/:qid", checkAuthentication, getQuestion)
 router.post(

@@ -2,6 +2,7 @@ import express from "express"
 const Router = express.Router()
 import passport from "passport"
 import { User } from "../models/user"
+import { Form } from "../models/form"
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy
 
@@ -123,13 +124,38 @@ export async function getUser(req: any, res: any) {
 
 //MIDDLEWARE FOR CHECKING USER LOGIN
 export async function checkAuthentication(req: any, res: any, next: any) {
-    if (req.isAuthenticated() || req.session.isAuth) {
-        console.log("Allowed to access")
-        next()
-    } else {
-        console.log("Login to access")
-        res.status(400).send({ success: false, data: "Please Login to view" })
+    try
+    {
+        let form = await Form.findById(req.params.formid)
+    if(form)
+    {
+        if(form.anonymous)
+        {
+            next();
+        }
+        else
+        {
+            if (req.isAuthenticated() || req.session.isAuth) {
+                console.log("Allowed to access")
+                next()
+            } else {
+                console.log("Login to access")
+                res.status(400).send({ success: false, data: "Please Login to view" })
+            }
+        }
     }
+    else
+    {
+        console.log("Form not found");
+        res.status(404).send({success:false,msg:"Form not found"});    
+    }
+    }
+    catch
+    {
+        console.log("Server Error");
+        res.status(500).send({success:false,msg:"Server Error"});
+    }
+    
 }
 
 export default Router

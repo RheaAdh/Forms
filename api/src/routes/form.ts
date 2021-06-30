@@ -280,7 +280,7 @@ export async function closeForm(req: Request, res: Response) {
     }
 }
 
-export let fid: any
+export let fid: any //FormID global variable
 export async function extractFormid(
     req: Request,
     res: Response,

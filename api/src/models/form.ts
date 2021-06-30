@@ -20,13 +20,13 @@ export interface FormDoc extends Document {
     role: string
     editors: [Schema.Types.ObjectId]
     dontdelete: boolean
+    anonymous: boolean
 }
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
 const form: Schema = new Schema(
     {
         title: { type: String, required: true },
         color_theme: String,
-        //array of question ids
         questions: [{ type: Schema.Types.ObjectId, ref: "question" }],
         owner: { type: Schema.Types.ObjectId, ref: "User" },
         description: { type: String },
@@ -38,6 +38,7 @@ const form: Schema = new Schema(
         role: { type: String },
         editors: [{ type: Schema.Types.ObjectId, ref: "User" }],
         dontdelete: { type: Boolean, default: false },     //To be used only with default Templates
+        anonymous:{ type: Boolean, default: false },
     },
     {
         timestamps: true,
