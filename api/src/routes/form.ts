@@ -41,7 +41,7 @@ export async function getForms(req: Request, res: Response) {
 export async function getForm(req: Request, res: Response) {
     try {
         console.log("inside getForm")
-        const form = await Form.findById(req.params.formid)
+        const form = await Form.findById(req.params.formId)
         console.log(req.session.userId)
         console.log(form?.owner)
         if (form) {
@@ -70,7 +70,7 @@ export async function getForm(req: Request, res: Response) {
 export async function getFormForResponse(req: Request, res: Response) {
     try {
         console.log("Inside getformresp")
-        const form = await Form.findById(req.params.formid)
+        const form = await Form.findById(req.params.formId)
 
         if (form) {
             var presentDateTime: Date = new Date()
@@ -286,11 +286,11 @@ export async function extractFormid(
     res: Response,
     next: NextFunction
 ) {
-    let form = await Form.findById(req.params.formid)
+    let form = await Form.findById(req.params.formId)
 
     if (form) {
         console.log("Voila!! we found formid")
-        fid = req.params.formid
+        fid = req.params.formId
         next()
     } else {
         console.log("FormID is invalid")

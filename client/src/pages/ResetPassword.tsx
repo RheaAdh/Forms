@@ -12,19 +12,16 @@ const ResetPassword: React.FC = () => {
 
     const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        const resp = await fetch(
-            `http://localhost:7000/resetpassword/${token}`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    newPassword: password,
-                    newConfirmPassword: confirmPassword,
-                }),
-            }
-        )
+        const resp = await fetch(`/resetpassword/${token}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                newPassword: password,
+                newConfirmPassword: confirmPassword,
+            }),
+        })
         const data = await resp.json()
         if (data.success) {
             setSuccessfulReset(true)

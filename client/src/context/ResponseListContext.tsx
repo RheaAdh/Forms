@@ -111,16 +111,13 @@ export default function ResponseListProvider({
     const getUsers = async () => {
         if (!readOnly) return
         try {
-            const res = await fetch(
-                `http://localhost:7000/api/responsesidbyformfilled/${formId}`,
-                {
-                    method: "GET",
-                    headers: {
-                        "Content-type": "application/json",
-                    },
-                    credentials: "include",
-                }
-            )
+            const res = await fetch(`/api/responsesidbyformfilled/${formId}`, {
+                method: "GET",
+                headers: {
+                    "Content-type": "application/json",
+                },
+                credentials: "include",
+            })
             const data = await res.json()
             setUsers(
                 data.data.map((user: any) => ({
@@ -153,7 +150,7 @@ export default function ResponseListProvider({
             responses: responses.filter((resp: any) => JSON.stringify(resp)),
             sendMail,
         }
-        const res = await fetch("http://localhost:7000/api/submitresponse", {
+        const res = await fetch("/api/submitresponse", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

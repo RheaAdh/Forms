@@ -10,7 +10,7 @@
 }
 
 .display-form-container {
-    height: 100vh;
+    height: calc(100vh - var(--adminNavbarHeight));
     width: 85vw;
     overflow-y: auto;
     position: absolute;

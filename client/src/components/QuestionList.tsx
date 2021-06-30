@@ -17,15 +17,19 @@ const QuestionList: React.FC = () => {
         }
     }, [form?.currentForm?.id])
     return (
-        <div className="list-container">
-            <div className="list-body">
+        <div className="">
+            <div className="">
                 <button
                     onClick={() => questions?.questionActions?.addQuestion()}
                 >
                     Add New Question
                 </button>
                 {questions?.questions.map((question, index: number) => (
-                    <Question key={index} question={question} index={index} />
+                    <Question
+                        key={question?.qid}
+                        question={question}
+                        index={index}
+                    />
                 ))}
             </div>
         </div>

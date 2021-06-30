@@ -12,14 +12,14 @@ interface props {
     close: any
 }
 
-const PermissionList: React.FC<props> = ({close}) => {
+const PermissionList: React.FC<props> = ({ close }) => {
     const form = useCurrentForm()
     const currentUsername = useAuth()?.currentUser?.username
     const [admins, setAdmins] = useState<Admin[]>([])
     const [searchString, setSearchString] = useState<string>("")
 
     useEffect(() => {
-        fetch(`http://localhost:7000/api/getadmins`)
+        fetch(`/api/getadmins`)
             .then((resp: any) => {
                 return resp.json()
             })
@@ -43,40 +43,46 @@ const PermissionList: React.FC<props> = ({close}) => {
     return (
         <div className="permission-component">
             <div className="permission-content">
-            <button onClick={close}>Close</button>
-            <br></br>
-            <span>Search:</span>
-            <input
-                type="text"
-                onChange={(e) => setSearchString(e.target.value)}
-            ></input>
-            <ul className="permission-list">
-                {admins?.map((admin) =>
-                    admin.username !== currentUsername &&
-                    admin.username
-                        .replace(/[^a-zA-Z ]/g, "")
-                        .search(searchString) !== -1 ? (
-                        <li key={admin._id}>
-                            {admin.username}
-                            {form?.currentForm?.editors &&
-                            form?.currentForm?.editors?.findIndex(
-                                (editor) => editor === admin._id
-                            ) === -1 ? (
-                                <input
-                                    type="checkbox"
-                                    onChange={(e) => updateEditors(e, admin)}
-                                ></input>
-                            ) : (
-                                <input
-                                    type="checkbox"
-                                    defaultChecked
-                                    onChange={(e) => updateEditors(e, admin)}
-                                ></input>
-                            )}
-                        </li>
-                    ) : null
-                )}
-            </ul>
+                <button onClick={close}>Close</button>
+                <br></br>
+                <span>Search:</span>
+                <input
+                    type="text"
+                    onChange={(e) =>
+                        setSearchString(
+                            e.target.value.replace(/[^a-zA-Z ]/g, "")
+                        )
+                    }
+                ></input>
+                <ul className="permission-list">
+                    {admins?.map((admin) =>
+                        admin.username !== currentUsername &&
+                        admin.username.search(searchString) !== -1 ? (
+                            <li key={admin._id}>
+                                {admin.username}
+                                {form?.currentForm?.editors &&
+                                form?.currentForm?.editors?.findIndex(
+                                    (editor) => editor === admin._id
+                                ) === -1 ? (
+                                    <input
+                                        type="checkbox"
+                                        onChange={(e) =>
+                                            updateEditors(e, admin)
+                                        }
+                                    ></input>
+                                ) : (
+                                    <input
+                                        type="checkbox"
+                                        defaultChecked
+                                        onChange={(e) =>
+                                            updateEditors(e, admin)
+                                        }
+                                    ></input>
+                                )}
+                            </li>
+                        ) : null
+                    )}
+                </ul>
             </div>
         </div>
     )

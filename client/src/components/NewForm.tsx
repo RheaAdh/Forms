@@ -14,7 +14,7 @@ const NewForm = () => {
     //COMPLETE THE addedForm IS SET TO THE ADDED FORM, TRIGGERING A RERENDER, SO THAN
     //HISTORY GETS PUSHED
 
-    addedForm && history.push(`/editForm/${addedForm._id}`)
+    addedForm && history.push(`/form-admin/${addedForm._id}`)
 
     const addForm = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -24,7 +24,7 @@ const NewForm = () => {
         }
 
         //UPDATE ON BACKEND
-        fetch("http://localhost:7000/api/addForm", {
+        fetch("/api/addForm", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -9,7 +9,10 @@ body {
     --backgroundColor: #252525;
     --fontColor: #fff;
     --borderBottom: #02b7db;
-    --marginTop: 2em;
+    --marginTop: 1.5rem;
+    --adminNavbarHeight: 8rem;
+    --secondaryBackground: rgba(255, 255, 255, 0.12);
+    --secondaryBorder: #fff;
     font-size: 20px;
     color: var(--fontColor);
     margin: 0;
@@ -51,6 +54,7 @@ button {
 }
 
 input {
+    display: block;
     font-size: 1rem;
     background: none;
     outline: none;
@@ -58,6 +62,10 @@ input {
     border: 0px solid transparent;
     text-shadow: 0px 0px 0px transparent;
     color: var(--fontColor);
+}
+
+svg path {
+    fill: var(--fontColor);
 }
 
 input[type="text"] {
@@ -165,13 +173,48 @@ textarea:active {
 }
 
 select {
-    background-color: inherit;
-    color: var(--fontColor);
+    appearance: none;
     outline: none;
+    background-color: transparent;
     border: none;
+    padding: 0 1em 0 0;
+    margin: 0;
+    width: 100%;
     font-size: 1rem;
+    font-family: "Catamaran";
+    cursor: pointer;
+    color: var(--fontColor);
+}
+select::-ms-expand {
+    display: none;
 }
 
-option {
+.select {
+    margin-top: var(--marginTop);
+    position: relative;
+    min-width: 25%;
+    max-width: 35%;
+    border: 1px solid var(--borderBottom);
+    border-radius: 0.25em;
+    padding: 0.25em 0.5em;
+    font-size: 1.25rem;
+    cursor: pointer;
     background-color: inherit;
+}
+.select-arrow {
+    width: 1.5em;
+    height: 1.5em;
+    position: absolute;
+    top: 0.6em;
+    right: 0.25em;
+    display: block;
+    background: url("./images/DropdownArrow.svg") no-repeat;
+    background-size: 1.1em;
+    pointer-events: none;
+}
+option {
+    background-color: var(--backgroundColor);
+}
+option:hover {
+    background-color: var(--borderBottom);
 }

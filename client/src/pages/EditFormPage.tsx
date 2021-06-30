@@ -13,49 +13,25 @@ import "react-datepicker/dist/react-datepicker.css"
 import "../styles/EditFormPage.css"
 import { useCurrentForm } from "../context/CurrentFormContext"
 import autoAdjustHeight from "../util"
+import AdminNavbar from "../components/AdminNavbar"
 
 const EditFormPage: React.FC = () => {
-    const { formid }: any = useParams()
-
-    const [showEditTitle, setShowEditTitle] = useState<boolean>(false)
+    const { formId }: any = useParams()
 
     const [loading, setLoading] = useState<boolean>(true)
-
-    const inputRef = useRef<HTMLInputElement>(null)
-
     const [displayPermission, setDisplayPermission] = useState<boolean>(false)
-
     const auth = useAuth()
     const form = useCurrentForm()
 
-    const [allAdmins, setAdmins] = useState<any[]>([])
-
     useEffect(() => {
         if (!auth?.currentUser) auth?.getCurrentUser().then((res: any) => {})
-        if (formid) {
-            form?.setFormDetails(formid, true).then((data) => {
-                if (data === null) {
-                    //HANDLE ERROR
-                }
+        if (formId !== undefined) {
+            form?.setFormDetails(formId, true).then((data) => {
+                // ERROR HANDLING NEEDED
+                setLoading(false)
             })
         }
-    }, [formid])
-
-    useEffect(() => {
-        if (
-            form?.currentForm?.title?.length &&
-            auth?.currentUser?.userid?.length
-        ) {
-            setLoading(false)
-        }
-    }, [form?.currentForm?.title, auth?.currentUser?.userid])
-
-    //SHOW AND HIDE EDIT FORM TITLE LOGIC
-    useEffect(() => {
-        if (showEditTitle) {
-            if (null !== inputRef.current) inputRef.current.focus()
-        }
-    }, [showEditTitle])
+    }, [formId])
 
     useEffect(
         () => {
@@ -72,10 +48,6 @@ const EditFormPage: React.FC = () => {
         ]
     )
 
-    const handleTitleClick = () => {
-        setShowEditTitle(true)
-    }
-
     const toggleForm = () => {
         form?.setActive(!form?.currentForm?.isActive)
         if (form?.currentForm?.isActive) form?.setDate(new Date())
@@ -85,32 +57,28 @@ const EditFormPage: React.FC = () => {
     if (loading) {
         return <div>Loading</div>
     }
-    //console.log(form?.closes)
     return (
         <div className="edit-form-page">
+            <AdminNavbar questionsPage={true} />
             <div className="edit-form-container">
-                <Link to="/">
-                    <button>Back</button>
-                </Link>
                 <div className="edit-form-component">
-                    {showEditTitle ? (
-                        <input
-                            onBlur={() => setShowEditTitle(false)}
-                            type="text"
-                            defaultValue={form?.currentForm?.title}
-                            onChange={(e) => form?.setTitle(e.target.value)}
-                            ref={inputRef}
-                        ></input>
-                    ) : (
-                        <h1 onClick={handleTitleClick}>
-                            {form?.currentForm?.title}
-                        </h1>
-                    )}
-                    <button>
-                        {form?.currentForm?.isActive
-                            ? `Form is active, click to toggle`
-                            : `Form has closed, click to toggle`}
-                    </button>
+                    <input
+                        type="text"
+                        className="form-title-editable"
+                        defaultValue={form?.currentForm?.title}
+                        onChange={(e) => form?.setTitle(e.target.value)}
+                    ></input>
+                    <div className="date-wrapper">
+                        <h3 style={{ marginBottom: "0" }}>Closing date :</h3>
+                        <DatePicker
+                            selected={form?.currentForm?.date}
+                            showTimeSelect
+                            dateFormat="MMMM d, yyyy h:mm aa"
+                            onChange={(date: Date) => {
+                                form?.setDate(date)
+                            }}
+                        />
+                    </div>
                     <h3>Description:</h3>
                     <textarea
                         value={form?.currentForm?.description}
@@ -119,18 +87,15 @@ const EditFormPage: React.FC = () => {
                             form?.setDescription(e.target.value)
                         }}
                     ></textarea>
+                    <button onClick={toggleForm}>
+                        {form?.currentForm?.isActive
+                            ? `Form is active, click to toggle`
+                            : `Form has closed, click to toggle`}
+                    </button>
                 </div>
-                <h3>Closing date :</h3>
-                <DatePicker
-                    selected={form?.currentForm?.date}
-                    showTimeSelect
-                    dateFormat="MMMM d, yyyy h:mm aa"
-                    onChange={(date: Date) => {
-                        form?.setDate(date)
-                    }}
-                />
-                <h4>
+                <div className="radio-checkbox">
                     <input
+                        id="set-editable"
                         type="checkbox"
                         checked={form?.currentForm?.editable || false}
                         onChange={(e) => {
@@ -139,8 +104,11 @@ const EditFormPage: React.FC = () => {
                             form?.setMultipleResponses(!editVal)
                         }}
                     ></input>
-                    Editable
+                    <span className="styled-radio-checkbox"></span>
+                    <label htmlFor="set-editable">Editable</label>
                     <input
+                        className="radio-checkbox"
+                        id="set-multiple"
                         type="checkbox"
                         checked={form?.currentForm?.multipleResponses || false}
                         onChange={(e) => {
@@ -149,8 +117,9 @@ const EditFormPage: React.FC = () => {
                             form?.setEditable(!multiVal)
                         }}
                     ></input>
-                    Multiple responses
-                </h4>
+                    <span className="styled-radio-checkbox"></span>
+                    <label htmlFor="set-multiple">Multiple responses</label>
+                </div>
                 <button
                     onClick={() => {
                         setDisplayPermission(true)
@@ -158,18 +127,20 @@ const EditFormPage: React.FC = () => {
                 >
                     Set edit permissions
                 </button>
-                {displayPermission ? <PermissionList close={()=>{setDisplayPermission(false)}}/> : ""}
+                {displayPermission ? (
+                    <PermissionList
+                        close={() => {
+                            setDisplayPermission(false)
+                        }}
+                    />
+                ) : (
+                    ""
+                )}
                 <h2>Questions:</h2>
                 <QuestionList />
             </div>
         </div>
     )
 }
-
-//!POSTMAN COPY-PASTE
-// "formid": "5fb61c61ac3bc523cf528434",
-// "questionType": "mcq-answer",
-// "questionText": "Who is your favourite Rick?",
-// "options": [{"text": "Rick Riordan"}, {"text": "Rick Sanchez"}, {"text": "Rick Astley"}]
 
 export default EditFormPage

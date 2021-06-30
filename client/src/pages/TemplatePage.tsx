@@ -7,7 +7,7 @@ const TemplatePage: React.FC = () => {
     const auth = useAuth()
 
     useEffect(() => {
-        fetch(`http://localhost:7000/api/viewAllTemplates`, {
+        fetch(`/api/viewAllTemplates`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -37,12 +37,10 @@ const TemplatePage: React.FC = () => {
     const deleteForm = (id: any) => {
         setForms((prevForms) => prevForms.filter((form) => form._id !== id))
     }
-    return auth?.currentUser ? (
+    return (
         <div>
             <FormList forms={forms} deleteForm={deleteForm} />
         </div>
-    ) : (
-        <h1>Login / Register</h1>
     )
 }
 

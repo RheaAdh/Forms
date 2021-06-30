@@ -36,7 +36,7 @@ import {
     getResponseByBothFormidAndResponseid,
     getResponsebyRespid,
 } from "./response"
-import { checkAuthentication } from "./user"
+import { checkAuthentication, isAnonymous } from "./user"
 
 const router = express.Router()
 
@@ -51,7 +51,7 @@ router.post("/addquestion", isValidAdmin, addQuestion)
 router.put("/updatequestion", isValidAdmin, updateQuestion)
 router.delete("/deletequestion", isValidAdmin, deleteQuestion)
 router.get(
-    "/getmyquestionsbyformid/:formid",
+    "/getmyquestionsbyformid/:formId",
     isValidAdmin,
     getQuestionsByFormid
 )
@@ -90,17 +90,17 @@ router.get("/viewAllTemplates", viewAllTempalates)
 router.get("/getsuperadminforms", isValidSuperAdmin, getSuperAdminForms)
 
 ///////////////////////////USER,ADMIN AND SUPERADMIN///////////////////////////////
-router.get("/getform/:formid", extractFormid, checkAuthentication, getForm)
-
+router.get("/getform/:formId", extractFormid, checkAuthentication, getForm)
+router.get("/getanonymity/:formId", isAnonymous)
 router.get(
-    "/getformforresp/:formid",
+    "/getformforresp/:formId",
     extractFormid,
     checkAuthentication,
     getFormForResponse
 )
 
 router.get(
-    "/getformforresp/anonymous/:formid",
+    "/getformforresp/anonymous/:formId",
     checkAuthentication,
     getFormForResponse
 )
@@ -108,7 +108,7 @@ router.get(
 router.get("/getquestions", checkAuthentication, getQuestions)
 router.get("/getquestion/:qid", checkAuthentication, getQuestion)
 router.post(
-    "/getquestionsbyformid/:formid",
+    "/getquestionsbyformid/:formId",
     checkAuthentication,
     getQuestionsByFormid
 )
@@ -116,7 +116,7 @@ router.post("/submitresponse", checkAuthentication, submitResponse)
 router.get("/response/:respid", getResponsebyRespid)
 
 //Covert to .csv and download route
-router.get("/download/:formid", downloadResponse)
+router.get("/download/:formId", downloadResponse)
 
 router.post("/updateeditor", updateeditor)
 

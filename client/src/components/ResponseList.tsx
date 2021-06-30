@@ -10,7 +10,7 @@ const ResponseList: React.FC<props> = ({ creatorRole }) => {
     const [forms, setForms] = useState<any[]>([])
 
     useEffect(() => {
-        fetch(`http://localhost:7000/api/get${creatorRole}forms`, {
+        fetch(`/api/get${creatorRole}forms`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

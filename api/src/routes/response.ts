@@ -177,7 +177,7 @@ export const getFormsByCreator = async (req: Request, res: Response) => {
 
 export const downloadResponse = async (req: Request, res: Response) => {
     //
-    let formId = req.params.formid
+    let formId = req.params.formId
     console.log(req.params.formid)
 
     //resp will store array of responses

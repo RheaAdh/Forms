@@ -9,15 +9,15 @@ interface props {
 
 const Form: React.FC<props> = ({ form, deleteForm }) => {
     const [active, setActive] = useState(form.isActive)
-    const [link, setLink] = useState(`http://localhost:3000/login/${form._id}`)
+    const [link, setLink] = useState(`/login/${form._id}`)
     let history = useHistory()
     const auth = useAuth()
 
     const handleClick = () => {
-        history.push(`/editForm/${form._id}`)
+        history.push(`/form-admin/${form._id}`)
     }
     const toggleActive = () => {
-        fetch(`http://localhost:7000/api/updateform`, {
+        fetch(`/api/updateform`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -47,7 +47,7 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
 
         //!CHANGE ON BACK END
         const body = { id: form._id }
-        fetch("http://localhost:7000/api/deleteform", {
+        fetch("/api/deleteform", {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -66,7 +66,7 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
             })
     }
     const handleMakeTemplate = () => {
-        fetch(`http://localhost:7000/api/makeTemplate/${form._id}`, {
+        fetch(`/api/makeTemplate/${form._id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -79,7 +79,7 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
             })
     }
     const handleUseTemplate = () => {
-        fetch(`http://localhost:7000/api/useTemplate/${form._id}`, {
+        fetch(`/api/useTemplate/${form._id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

@@ -21,7 +21,7 @@ import {
 export async function addQuestion(req: Request, res: Response) {
     try {
         let {
-            formid,
+            formId,
             questionType,
             questionText,
             description,
@@ -38,9 +38,9 @@ export async function addQuestion(req: Request, res: Response) {
         //?FIND FORM
 
         let form: any
-        form = await Form.findById(formid)
+        form = await Form.findById(formId)
         const common = {
-            formid: formid,
+            formid: formId,
             questionText: questionText,
             description: description,
             required: required,
@@ -145,7 +145,7 @@ export async function addQuestion(req: Request, res: Response) {
             form.questions.push(newQuestion)
             await form.save()
             console.log("Form saved!!")
-            return res.status(200).json(newQuestion)
+            return res.json(newQuestion)
         }
     } catch (error) {
         console.log(error)
@@ -176,9 +176,9 @@ export async function getQuestion(req: Request, res: Response) {
 export async function getQuestionsByFormid(req: Request, res: Response) {
     //sending previous response and questions
     try {
-        let formid: any = req.params.formid
+        let formid: any = req.params.formId
         let admin: boolean = req.body.admin
-        const form = await Form.findById(req.params.formid)
+        const form = await Form.findById(req.params.formId)
         if (form === null) {
             return res
                 .status(404)
@@ -199,7 +199,7 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
         const questions = await Question.find({ formid: formid })
         let user = await FormResponse.findOne({
             userid: req.session.userId,
-            formId: req.params.formid,
+            formId: req.params.formId,
         })
         if (!user) {
             let data = { prevResponse: null, ques: questions }
@@ -225,9 +225,9 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
 
 export async function updateQuestion(req: Request, res: Response) {
     try {
-        let { formid } = req.body
+        let { formId } = req.body
         let form: any
-        form = await Form.findById(formid)
+        form = await Form.findById(formId)
         if (form.isTemplate) {
             console.log("Template cant be editted")
             return res

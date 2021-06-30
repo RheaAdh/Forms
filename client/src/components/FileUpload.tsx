@@ -10,7 +10,7 @@ const FileUpload = () => {
             }
             const formData = new FormData()
             formData.append("file", file[0])
-            const resp = await fetch("http://localhost:7000/api/test-upload", {
+            const resp = await fetch("/api/test-upload", {
                 method: "POST",
                 headers: {
                     "Content-type": "multipart/formdata",

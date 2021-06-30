@@ -7,7 +7,7 @@ const FormsPage: React.FC = () => {
     const auth = useAuth()
 
     useEffect(() => {
-        fetch(`http://localhost:7000/api/getforms`, {
+        fetch(`/api/getforms`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -37,13 +37,11 @@ const FormsPage: React.FC = () => {
     const deleteForm = (id: any) => {
         setForms((prevForms) => prevForms.filter((form) => form._id !== id))
     }
-    return auth?.currentUser ? (
+    return (
         <div>
             <NewForm />
             <FormList forms={forms} deleteForm={deleteForm} />
         </div>
-    ) : (
-        <h1>Login / Register</h1>
     )
 }
 

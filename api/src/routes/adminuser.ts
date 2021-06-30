@@ -161,7 +161,7 @@ export async function isValidAdmin(
     if (req.session.isAuth) {
         next()
     } else {
-        return res.status(400).send({
+        return res.status(401).send({
             success: false,
             data: "You are not LoggedIn, Please Login to view",
         })
@@ -181,14 +181,14 @@ export async function isValidSuperAdmin(
         if (req.session.role == "superadmin") {
             next()
         } else {
-            return res.status(400).send({
+            return res.status(403).send({
                 success: false,
                 data: "Superadmin access required",
             })
         }
     } else {
         return res
-            .status(400)
+            .status(401)
             .send({ success: false, data: "Please Login to view" })
     }
 }

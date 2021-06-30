@@ -7,11 +7,7 @@ import { useAuth } from "../context/AuthContext"
 const LoginPage: React.FC = () => {
     const auth = useAuth()
     const [loading, setLoading] = useState<boolean>(true)
-    const { formid }: any = useParams()
-    const handleFormSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        console.log("This function runs")
-    }
+    const { formId }: any = useParams()
 
     useEffect(() => {
         const fetchStore = async () => {
@@ -24,41 +20,36 @@ const LoginPage: React.FC = () => {
         return <div>Loading</div>
     }
 
-    if (auth?.currentUser && formid) {
-        return <Redirect to={`/form/${formid}`} />
+    if (auth?.currentUser && auth.currentUser.userid !== "x" && formId) {
+        return <Redirect to={`/form/${formId}`} />
     }
 
     return (
         <div className="form-container">
             <form id="form">
-                
                 <h3>Login</h3>
                 <div className="container">
-                    {auth?.currentUser ? (
-                        <h4 style={{ color: "white" }}>You are logged in</h4>
-                    ) : (
-                        <button
+                    <button
+                        style={{
+                            padding: "10px",
+                            borderRadius: "15px",
+                            background: "red",
+                            color: "white",
+                            cursor: "pointer",
+                            width: "auto",
+                            border: "none",
+                        }}
+                    >
+                        <a
+                            href="http://localhost:7000/user/auth/google"
                             style={{
-                                padding: "10px",
-                                borderRadius: "15px",
-                                background: "red",
+                                textDecoration: "none",
                                 color: "white",
-                                cursor: "pointer",
-                                width: "auto",
-                                border: "none",
                             }}
                         >
-                            <a
-                                href="http://localhost:7000/user/auth/google"
-                                style={{
-                                    textDecoration: "none",
-                                    color: "white",
-                                }}
-                            >
-                                Login With Google
-                            </a>
-                        </button>
-                    )}
+                            Login With Google
+                        </a>
+                    </button>
                 </div>
             </form>
         </div>

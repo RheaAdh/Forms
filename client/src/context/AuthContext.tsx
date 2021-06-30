@@ -42,7 +42,7 @@ export default function AuthProvider({ children }: Props): ReactElement {
         password: string,
         confirmPassword: string
     ) => {
-        const response = await fetch("http://localhost:7000/admin/register", {
+        const response = await fetch("/admin/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -60,7 +60,7 @@ export default function AuthProvider({ children }: Props): ReactElement {
     }
 
     const login = async (email: string, password: string) => {
-        const response = await fetch("http://localhost:7000/admin/login", {
+        const response = await fetch("/admin/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -80,7 +80,7 @@ export default function AuthProvider({ children }: Props): ReactElement {
     const logout = async () => {
         let response
         if (currentUser?.role === "user") {
-            response = await fetch("http://localhost:7000/user/logout", {
+            response = await fetch("/user/logout", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -88,7 +88,7 @@ export default function AuthProvider({ children }: Props): ReactElement {
                 credentials: "include",
             })
         } else {
-            response = await fetch("http://localhost:7000/admin/logout", {
+            response = await fetch("/admin/logout", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -103,7 +103,7 @@ export default function AuthProvider({ children }: Props): ReactElement {
     }
 
     const getCurrentUser = async () => {
-        const res = await fetch("http://localhost:7000/sessiondetail", {
+        const res = await fetch("/sessiondetail", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -118,12 +118,18 @@ export default function AuthProvider({ children }: Props): ReactElement {
             userid: data.userId,
         }
         if (user.email) setCurrentUser(user)
-        else setCurrentUser(null)
+        else
+            setCurrentUser({
+                email: "x",
+                userid: "x",
+                username: "x",
+                role: "x",
+            })
         return data
     }
 
     const forgotPassword = async (email: string) => {
-        const res = await fetch("http://localhost:7000/forgotpassword", {
+        const res = await fetch("/forgotpassword", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

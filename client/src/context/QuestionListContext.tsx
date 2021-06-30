@@ -14,7 +14,7 @@ export const questionTypes = [
 ]
 
 export interface Question {
-    formid: string
+    formId: string
     qid?: string
     questionText: string
     questionType: string
@@ -29,10 +29,13 @@ export interface Question {
 }
 
 export interface QuestionActions {
-    getQuestions: (formid: string, quesData: any) => void
+    getQuestions: (formId: string, quesData: any) => void
     addOptions: (qid: string) => void
     addRows: (qid: string) => void
     addCols: (qid: string) => void
+    deleteOption: (qid: string, idx: number) => void
+    deleteRow: (qid: string, idx: number) => void
+    deleteCol: (qid: string, idx: number) => void
     updateOptions: (qid: string, idx: number, change: string) => void
     updateRows: (qid: string, idx: number, change: string) => void
     updateCols: (qid: string, idx: number, change: string) => void
@@ -69,14 +72,14 @@ export default function QuestionsListProvider({
     children,
 }: Props): ReactElement {
     const [questions, setQuestions] = useState<Question[]>([])
-    const [formid, setFormid] = useState<string | null>(null)
+    const [formId, setFormid] = useState<string | null>(null)
 
-    const getQuestions = async (formid: string, quesData: any) => {
-        setFormid(formid)
+    const getQuestions = async (formId: string, quesData: any) => {
+        setFormid(formId)
         setQuestions(
             quesData.map((q: any) => {
                 return {
-                    formid: formid,
+                    formId: formId,
                     qid: q._id,
                     questionText: q["questionText"],
                     questionType: q["questionType"],
@@ -97,15 +100,15 @@ export default function QuestionsListProvider({
         )
     }
     const addQuestion = () => {
-        if (!formid) return
+        if (!formId) return
         const newQuestion = {
             questionText: "Question",
             questionType: "short-answer",
             required: false,
-            formid: formid,
+            formId: formId,
             qid: "",
         }
-        fetch("http://localhost:7000/api/addquestion", {
+        fetch("/api/addquestion", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -123,7 +126,7 @@ export default function QuestionsListProvider({
             })
     }
     const deleteQuestion = async (qid: string) => {
-        const res = await fetch("http://localhost:7000/api/deletequestion", {
+        const res = await fetch("/api/deletequestion", {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -131,14 +134,14 @@ export default function QuestionsListProvider({
             credentials: "include",
             body: JSON.stringify({
                 id: qid,
-                formid: questions[0].formid,
+                formId: questions[0].formId,
             }),
         })
         const data = await res.json()
         if (data.success) {
-            const newQuestions = questions.filter((q) => q.qid !== qid).slice()
-            setQuestions([])
-            setQuestions(newQuestions)
+            setQuestions((prevQuestions) =>
+                prevQuestions.filter((q) => q.qid !== qid)
+            )
         } else console.log(data)
     }
     const addOptions = (qid: string) => {
@@ -173,6 +176,40 @@ export default function QuestionsListProvider({
 
         newQuestions[idx] = q
         setQuestions(newQuestions)
+    }
+    const deleteOption = (qid: string, i: number) => {
+        var q = questions.find((question) => question.qid === qid)
+        var idx = questions.findIndex((question) => question.qid === qid)
+        if (q?.options) {
+            q.options = q.options.filter((opt, ix: number) => ix !== i)
+            const newQuestions = questions.slice()
+            newQuestions[idx] = {} as Question
+            setQuestions(newQuestions)
+            newQuestions[idx] = q
+            setQuestions(newQuestions)
+        }
+    }
+    const deleteRow = (qid: string, i: number) => {
+        var q = questions.find((question) => question.qid === qid)
+        var idx = questions.findIndex((question) => question.qid === qid)
+        if (q?.rows) {
+            q.rows = q.rows.filter((r, ix: number) => ix !== i)
+            const newQuestions = questions.slice()
+            newQuestions[idx] = q
+            setQuestions(newQuestions)
+        }
+    }
+    const deleteCol = (qid: string, i: number) => {
+        var q = questions.find((question) => question.qid === qid)
+        var idx = questions.findIndex((question) => question.qid === qid)
+        if (q?.cols) {
+            q.cols = q.cols.filter((r, ix: number) => ix !== i)
+            const newQuestions = questions.slice()
+            newQuestions[idx] = {} as Question
+            setQuestions(newQuestions)
+            newQuestions[idx] = q
+            setQuestions(newQuestions)
+        }
     }
     const updateOptions = (qid: string, i: number, change: string) => {
         var q = questions.find((question) => question.qid === qid)
@@ -329,7 +366,7 @@ export default function QuestionsListProvider({
                     questionTypes[questionTypes.indexOf(q.questionType)],
             })
         }
-        fetch("http://localhost:7000/api/updatequestion", {
+        fetch("/api/updatequestion", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -340,11 +377,14 @@ export default function QuestionsListProvider({
     }
     const questionActions: QuestionActions = {
         getQuestions,
-        addQuestion,
         deleteQuestion,
+        addQuestion,
         addOptions,
         addRows,
         addCols,
+        deleteOption,
+        deleteRow,
+        deleteCol,
         updateOptions,
         updateRows,
         updateCols,

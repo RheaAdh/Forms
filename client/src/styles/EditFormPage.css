@@ -7,21 +7,44 @@
     overflow: hidden;
     height: 100vh;
     width: 100vw;
+    position: absolute;
 }
 
 .edit-form-container {
     overflow-y: auto;
     width: 85vw;
-    height: 100vh;
-    position: absolute;
+    height: calc(100vh - var(--adminNavbarHeight));
+    position: relative;
     left: 15vw;
 }
 
 .edit-form-component {
+    position: relative;
     background: rgba(190, 190, 190, 0.1);
     backdrop-filter: saturate(180%) blur(25px);
     border-radius: 1em;
     width: 65vw;
     padding: 1em 1em 2em 1.5em;
     margin: 2em 0;
+}
+
+.edit-form-component textarea,
+.edit-form-component h3,
+.edit-form-component input[type="text"] {
+    margin: var(--marginTop);
+}
+
+.form-title-editable {
+    border: none !important;
+    font-size: 1.4rem;
+    font-weight: 500;
+}
+
+.date-wrapper {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.date-wrapper h3 {
+    margin: calc(var(--marginTop) + 0.5rem);
 }

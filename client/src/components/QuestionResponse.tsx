@@ -60,7 +60,7 @@ const QuestionResponse: React.FC<props> = ({
                 questionId: question.qid,
                 shortText: e?.target.value,
                 canSubmit: submit,
-                formId: question.formid,
+                formId: question.formId,
             }
             responseList?.responseActions?.updateResponse(index, answer)
         }
@@ -73,7 +73,7 @@ const QuestionResponse: React.FC<props> = ({
         const answer = {
             answerType: "paragraph-answer",
             paragraphText: e?.target.value,
-            formId: question.formid,
+            formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
         }
@@ -85,7 +85,7 @@ const QuestionResponse: React.FC<props> = ({
         const answer = {
             answerType: "mcq-answer",
             selectedOption: optionText,
-            formId: question.formid,
+            formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
         }
@@ -109,7 +109,7 @@ const QuestionResponse: React.FC<props> = ({
         const answer = {
             answerType: "checkbox-answer",
             multipleSelected: opt,
-            formId: question.formid,
+            formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
         }
@@ -121,7 +121,7 @@ const QuestionResponse: React.FC<props> = ({
         const answer = {
             answerType: "dropdown-answer",
             selectedOption: e.target.value,
-            formId: question.formid,
+            formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
         }
@@ -146,7 +146,7 @@ const QuestionResponse: React.FC<props> = ({
         const answer = {
             answerType: "email-answer",
             emailAnswer: e.target.value,
-            formId: question.formid,
+            formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
         }
@@ -173,7 +173,7 @@ const QuestionResponse: React.FC<props> = ({
         const answer = {
             answerType: "multiplechoicegrid-answer",
             selectedOptionsGrid: mcq,
-            formId: question.formid,
+            formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
         }
@@ -205,7 +205,7 @@ const QuestionResponse: React.FC<props> = ({
         const answer = {
             answerType: "checkboxgrid-answer",
             selectedOptionsGrid: mcq,
-            formId: question.formid,
+            formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
         }
@@ -219,7 +219,7 @@ const QuestionResponse: React.FC<props> = ({
         const answer = {
             answerType: "linearscale-answer",
             selectedOption: e.target.value,
-            formId: question.formid,
+            formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
         }
@@ -389,7 +389,7 @@ const QuestionResponse: React.FC<props> = ({
             </form>
         </div>,
         //Dropdown
-        <div>
+        <div className="select">
             {responseList?.readOnly ? (
                 <select defaultValue={prevResponse?.selectedOption} disabled>
                     {question["options"]?.map(
@@ -419,6 +419,7 @@ const QuestionResponse: React.FC<props> = ({
                     )}
                 </select>
             )}
+            <span className="select-arrow"></span>
         </div>,
         //Email
         <div>

@@ -2,6 +2,7 @@ import React, { ReactElement, useContext, useState } from "react"
 
 export interface CurrentForm {
     id: string
+    anonymous?: boolean
     date?: Date | null
     title?: string
     description?: string
@@ -9,6 +10,7 @@ export interface CurrentForm {
     multipleResponses?: boolean
     isActive?: boolean
     editors?: string[]
+    isQuestionsPage?: boolean
 }
 interface Props {
     children: ReactElement
@@ -16,6 +18,7 @@ interface Props {
 export interface Form {
     currentForm: CurrentForm | null
     updateForm: () => void
+    getAnonymity: (formId: string) => Promise<any>
     setTitle: (title: string) => void
     setDescription: (description: string) => void
     setDate: (date: Date | null) => void
@@ -28,6 +31,7 @@ export interface Form {
     ) => Promise<any>
     setActive: (isActive: boolean) => void
     setEditors: (editor: string[]) => void
+    setQuestionsPage: (isQuestionsPage: boolean) => void
 }
 
 const CurrentFormContext = React.createContext<Form | null>(null)
@@ -38,6 +42,7 @@ export const useCurrentForm = () => {
 
 export default function CurrentFormProvider({ children }: Props): ReactElement {
     const [id, setId] = useState<string>("")
+    const [anonymous, setAnonymity] = useState<boolean>()
     const [title, setTitle] = useState<string>()
     const [description, setDescription] = useState<string>()
     const [date, setDate] = useState<Date | null>()
@@ -45,6 +50,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
     const [multipleResponses, setMultipleResponses] = useState<boolean>()
     const [editors, setEditors] = useState<string[]>()
     const [isActive, setActive] = useState<boolean>()
+    const [isQuestionsPage, setQuestionsPage] = useState<boolean>()
 
     const setFormDetails = async (
         id: string,
@@ -68,9 +74,9 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         }
         let fetchRoute = ``
         if (admin) {
-            fetchRoute = `http://localhost:7000/api/getform/${id}`
+            fetchRoute = `/api/getform/${id}`
         } else {
-            fetchRoute = `http://localhost:7000/api/getformforresp/${id}`
+            fetchRoute = `/api/getformforresp/${id}`
         }
         try {
             const res = await fetch(fetchRoute, {
@@ -104,6 +110,25 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
             return null
         }
     }
+    const getAnonymity = async (formId: string) => {
+        const res = await fetch(`/api/getanonymity/${formId}`, {
+            method: "GET",
+            headers: {
+                "Content-type": "application/json",
+            },
+        })
+        const data = await res.json()
+        if (!data.success) {
+            return {
+                success: false,
+                status: res.status,
+                msg: data.msg,
+            }
+        }
+        setAnonymity(data.data)
+        setId(formId)
+        return data
+    }
     const updateForm = async () => {
         if (
             description === undefined ||
@@ -117,7 +142,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
             return
         }
         if (form?.currentForm?.id)
-            fetch("http://localhost:7000/api/updateform", {
+            fetch("/api/updateform", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -145,6 +170,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
 
     const currentForm: CurrentForm = {
         id,
+        anonymous,
         date,
         isActive,
         title,
@@ -152,11 +178,13 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         editable,
         multipleResponses,
         editors,
+        isQuestionsPage,
     }
 
     const form: Form = {
         currentForm,
         setFormDetails,
+        getAnonymity,
         updateForm,
         setTitle,
         setDescription,
@@ -165,6 +193,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         setMultipleResponses,
         setActive,
         setEditors,
+        setQuestionsPage,
     }
 
     return (
