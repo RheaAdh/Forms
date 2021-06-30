@@ -215,7 +215,7 @@ async function emailResponse(token: any, receiver: any) {
         console.log("inside forgot mailer")
         console.log(receiver.username)
 
-        const output = `<p>Hello ${receiver.username}</p>Link for reset password: http://localhost:3000/resetpassword/${token}<p>Regards,<br>IECSE</p>`
+        const output = `<p>Hello ${receiver.username}</p>Link for reset password: <a href ="http://localhost:3000/resetpassword/${token}">http://localhost:3000/resetpassword/${token}</a><p>Regards,<br>IECSE</p>`
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,

@@ -536,7 +536,7 @@ export const getResponseByBothFormidAndResponseid = async (
 async function emailResponse(resp: any, receiver: any) {
     try {
         console.log("inside mailer")
-        const output = `<p>Hello ${receiver.username}</p>Link to your recently submitted form response:http://localhost:3000/response/${resp.id}<p>Regards,<br>IECSE</p>`
+        const output = `<p>Hello ${receiver.username}</p>Link to your recently submitted form response:<a href="http://localhost:3000/response/${resp.id}">http://localhost:3000/response/${resp.id}</a><p>Regards,<br>IECSE</p>`
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,

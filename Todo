@@ -11,11 +11,9 @@ Templates in context
 date picker needs styling
 response download - handle username, email (anonymous or not)
 
-Backend
 
 ---NEED DETAILS(SAVED FOR LAST)---
     s3 bucket(IMP)
     csv download 
     file upload
-mailer integration for forgot password 
 

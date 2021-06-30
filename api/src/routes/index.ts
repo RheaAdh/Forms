@@ -99,11 +99,12 @@ router.get(
     getFormForResponse
 )
 
-router.get(
-    "/getformforresp/anonymous/:formId",
-    checkAuthentication,
-    getFormForResponse
-)
+//No need --> anonymous works with above, just rather than redirecting to google login, directly redirect to form from frontend for anonymous response
+// router.get(
+//     "/getformforresp/anonymous/:formid",
+//     checkAuthentication,
+//     getFormForResponse
+// )
 
 router.get("/getquestions", checkAuthentication, getQuestions)
 router.get("/getquestion/:qid", checkAuthentication, getQuestion)
