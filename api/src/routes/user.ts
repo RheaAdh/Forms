@@ -124,38 +124,34 @@ export async function getUser(req: any, res: any) {
 
 //MIDDLEWARE FOR CHECKING USER LOGIN
 export async function checkAuthentication(req: any, res: any, next: any) {
-    try
-    {
-        let form = await Form.findById(req.params.formid)
-    if(form)
-    {
-        if(form.anonymous)
-        {
-            next();
-        }
-        else
-        {
-            if (req.isAuthenticated() || req.session.isAuth) {
-                console.log("Allowed to access")
+    try {
+        let form = await Form.findById(fid)
+        console.log("console fid "+fid)
+        if (form) {
+            if (form.anonymous) {
+                // console.log("anonymous response")
                 next()
             } else {
-                console.log("Login to access")
-                res.status(400).send({ success: false, data: "Please Login to view" })
+                console.log("Login required")
+                if (req.isAuthenticated() || req.session.isAuth) {
+                    console.log("Allowed to access")
+                    next()
+                } else {
+                    console.log("Login to access")
+                    res.status(400).send({
+                        success: false,
+                        data: "Please Login to view",
+                    })
+                }
             }
+        } else {
+            console.log("Form not found1")
+            res.status(404).send({ success: false, msg: "Form not found" })
         }
+    } catch {
+        console.log("Server Error")
+        res.status(500).send({ success: false, msg: "Server Error" })
     }
-    else
-    {
-        console.log("Form not found");
-        res.status(404).send({success:false,msg:"Form not found"});    
-    }
-    }
-    catch
-    {
-        console.log("Server Error");
-        res.status(500).send({success:false,msg:"Server Error"});
-    }
-    
 }
 
 export default Router

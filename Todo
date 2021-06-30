@@ -4,15 +4,13 @@ implement design
 there is some bug in google login button for user response
 create predefined templates for events we know  --- templates is done so now form just needs to be created with no delete option 
 show message like requires editor access, form is closed, registration closed etc whereever required
-checkbox to select for email response in each response
+delete option should be there for all mcq,grid,choice based question
+
 
 Backend
-
-check when to send mail (pending due to frontend)
 
 ---NEED DETAILS(SAVED FOR LAST)---
     s3 bucket(IMP)
     csv download 
     file upload
-mailer integration for forgot password 
 
