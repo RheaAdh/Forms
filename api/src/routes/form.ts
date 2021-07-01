@@ -312,7 +312,7 @@ export async function makeTemplate(req: Request, res: Response) {
                         "Cannot create a template from already existing template",
                 })
             }
-
+            console.log("Creating Template")
             Form.findById(formId).exec(async function (err, doc) {
                 if (doc) {
                     doc._id = mongoose.Types.ObjectId()
@@ -414,8 +414,6 @@ export async function viewAllTempalates(req: Request, res: Response) {
     const forms = await Form.find({
         isTemplate: true,
     }).sort({ createdAt: -1 })
-    console.log("egfewjgpjps")
-
     console.log(forms)
     return res.send({ success: true, forms: forms })
 }

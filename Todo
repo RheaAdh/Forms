@@ -1,19 +1,51 @@
-Frontend
-
+FRONTEND
 implement design
 there is some bug in google login button for user response
 create predefined templates for events we know  --- templates is done so now form just needs to be created with no delete option 
 show message like requires editor access, form is closed, registration closed etc whereever required
 delete option (admin side)
 form input character limit, error color change
-file upload
+file upload  --- Not required for now
 Templates in context
-date picker needs styling
-response download - handle username, email (anonymous or not)
+date picker needs styling  --- Horizontal scroll
 
+Response DropDown not working in chrome
+Templates remove closing time ,edit,permission,save etc
+Show 1response /Total response for multiple response
+Required not working -- on refresh required selection doesnt persists
+Show required with star mark or something in response page
+Option selection in response doesnt work on clicking circle 
+decrease height of form response div
+implement only single response with both edit and multiple as false
+Owner shouldnt be shown in permission list
+
+BACKEND
+option id
+sort response based on time
+response download - handle username, email (anonymous or not)
 
 ---NEED DETAILS(SAVED FOR LAST)---
     s3 bucket(IMP)
     csv download 
     file upload
+
+
+
+DESIGN
+Domain theme
+Form error
+Not Logged in
+Session expired (if possible)
+No access
+404 (all error page with illustration or animation)
+Toggler For form open close
+slider
+substitute for blur (Firefox error)
+permission list 
+edit, multiple, single resp only
+anonymous option
+
+
+
+
 
