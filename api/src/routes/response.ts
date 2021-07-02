@@ -154,7 +154,7 @@ export const getResponsesByForm = async (req: Request, res: Response) => {
     try {
         let formResponses = await FormResponse.findOne({
             formId: formId,
-        })
+        }).populate('userid',{password:0})
         res.status(200).send(formResponses)
     } catch (error) {
         console.log(error)
@@ -165,7 +165,7 @@ export const getFormsByCreator = async (req: Request, res: Response) => {
     try {
         let creatorId = req.params.creatorId
         let usersForms: any
-        usersForms = await Form.find({ owner: creatorId })
+        usersForms = await Form.find({ owner: creatorId }).populate('userid',{password:0})
         res.status(200).send(usersForms)
     } catch (error) {
         console.log(error)
@@ -314,7 +314,8 @@ export const getResponsesByResIdByFormId = async (
         let responseid = req.params.responseid
         let formIndividualResponses = await FormResponse.findOne({
             _id: responseid,
-        })
+        }).populate('userid',{password:0})
+        console.log(formIndividualResponses)
         console.log("Responses")
         if (formIndividualResponses) {
             let form = await Form.findById(formIndividualResponses.formId)
@@ -364,7 +365,7 @@ export const getResponseIdByFormFilled = async (
         let responses: any
         responses = await FormResponse.find({
             formId: formId,
-        })
+        }).populate('userid',{password:0})
         console.log(responses)
         let ans: any = []
         for (let i = 0; i < responses.length; i++) {
@@ -521,7 +522,7 @@ export const getResponseByBothFormidAndResponseid = async (
         let formIndividualResponsesForForm = await FormResponse.findOne({
             _id: responseId,
             formId: req.params.formId,
-        })
+        }).populate('userid',{password:0})
         return res
             .status(200)
             .send({ success: true, data: formIndividualResponsesForForm })
@@ -575,7 +576,7 @@ export const getResponsebyRespid = async (req: Request, res: Response) => {
         console.log(respid)
         let resp = await FormResponse.findById({ _id: respid }).populate(
             "responses.questionId formId"
-        )
+        ).populate('userid',{password:0})
         if (resp) {
             console.log(resp)
             return res.status(200).send({

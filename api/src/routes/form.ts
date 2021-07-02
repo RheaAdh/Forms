@@ -125,7 +125,7 @@ export async function getAdminForms(req: Request, res: Response) {
             res.send({ success: true, forms: adminForms })
         }
     } catch (err) {
-        return res.send({ success: false, msg: err })
+        return res.status(500).send({ success: false, msg: err })
     }
 }
 
@@ -139,7 +139,7 @@ export async function getSuperAdminForms(req: Request, res: Response) {
         })
         res.send({ success: true, forms: superAdminForms })
     } catch (err) {
-        return res.send({ success: false, msg: err })
+        return res.status(500).send({ success: false, msg: err })
     }
 }
 
@@ -192,7 +192,7 @@ export async function deleteForm(req: Request, res: Response) {
     console.log("Inside Delete")
     try {
         console.log(req.body.id)
-        let form = await Form.findById(req.body.id).populate("owner")
+        let form = await Form.findById(req.body.id).populate("owner",{password:0})
         console.log(form)
         if (!form?.isTemplate) {
             let deletedResponses: any
@@ -424,7 +424,7 @@ export async function updateeditor(req: Request, res: Response) {
     console.log(neweditors)
     try {
         console.log("updating editor")
-        let form: any = await Form.findById(formid).populate("editors")
+        let form: any = await Form.findById(formid).populate("editors",{password:0})
 
         if (form) {
             console.log(form)
