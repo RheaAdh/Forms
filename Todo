@@ -18,9 +18,11 @@ Option selection in response doesnt work on clicking circle
 decrease height of form response div
 implement only single response with both edit and multiple as false
 Owner shouldnt be shown in permission list
+Ask confirmation for deleting form,template
+There is some bug in description, newly created form's description takes description of previous form
 
 BACKEND
-option id
+option id  -- not needed
 sort response based on time
 response download - handle username, email (anonymous or not)
 
