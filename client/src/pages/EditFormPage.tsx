@@ -31,6 +31,10 @@ const EditFormPage: React.FC = () => {
                 setLoading(false)
             })
         }
+
+        return () => {
+            form?.setFormDetails("", false, null)
+        }
     }, [formId])
 
     useEffect(
@@ -41,7 +45,7 @@ const EditFormPage: React.FC = () => {
         [
             form?.currentForm?.description,
             form?.currentForm?.editable,
-            form?.currentForm?.multipleResponses,
+            form?.currentForm?.anonymous,
             form?.currentForm?.date,
             form?.currentForm?.title,
             form?.currentForm?.editors,
@@ -68,17 +72,21 @@ const EditFormPage: React.FC = () => {
                         defaultValue={form?.currentForm?.title}
                         onChange={(e) => form?.setTitle(e.target.value)}
                     ></input>
-                    <div className="date-wrapper">
-                        <h3 style={{ marginBottom: "0" }}>Closing date :</h3>
-                        <DatePicker
-                            selected={form?.currentForm?.date}
-                            showTimeSelect
-                            dateFormat="MMMM d, yyyy h:mm aa"
-                            onChange={(date: Date) => {
-                                form?.setDate(date)
-                            }}
-                        />
-                    </div>
+                    {!form?.currentForm?.isTemplate && (
+                        <div className="date-wrapper">
+                            <h3 style={{ marginBottom: "0" }}>
+                                Closing date :
+                            </h3>
+                            <DatePicker
+                                selected={form?.currentForm?.date}
+                                showTimeSelect
+                                dateFormat="MMMM d, yyyy h:mm aa"
+                                onChange={(date: Date) => {
+                                    form?.setDate(date)
+                                }}
+                            />
+                        </div>
+                    )}
                     <h3>Description:</h3>
                     <textarea
                         value={form?.currentForm?.description}
@@ -87,47 +95,78 @@ const EditFormPage: React.FC = () => {
                             form?.setDescription(e.target.value)
                         }}
                     ></textarea>
-                    <button onClick={toggleForm}>
-                        {form?.currentForm?.isActive
-                            ? `Form is active, click to toggle`
-                            : `Form has closed, click to toggle`}
+                    {!form?.currentForm?.isTemplate && (
+                        <button onClick={toggleForm}>
+                            {form?.currentForm?.isActive
+                                ? `Form is active, click to toggle`
+                                : `Form has closed, click to toggle`}
+                        </button>
+                    )}
+                </div>
+                {!form?.currentForm?.isTemplate && (
+                    <div className="radio-checkbox">
+                        <input
+                            id="set-editable"
+                            type="checkbox"
+                            checked={form?.currentForm?.editable || false}
+                            onChange={(e) => {
+                                form?.setEditable(true)
+                                form?.setAnonymity(false)
+                            }}
+                        ></input>
+                        <span className="styled-radio-checkbox"></span>
+                        <label htmlFor="set-editable">Editable</label>
+                    </div>
+                )}
+                {!form?.currentForm?.isTemplate && (
+                    <div className="radio-checkbox">
+                        <input
+                            className="radio-checkbox"
+                            id="non-editable"
+                            type="checkbox"
+                            checked={
+                                (!form?.currentForm?.editable &&
+                                    !form?.currentForm?.anonymous) ||
+                                false
+                            }
+                            onChange={(e) => {
+                                form?.setEditable(false)
+                                form?.setAnonymity(false)
+                            }}
+                        ></input>
+                        <span className="styled-radio-checkbox"></span>
+                        <label htmlFor="non-editable">Non Editable</label>
+                    </div>
+                )}
+                {!form?.currentForm?.isTemplate && (
+                    <div className="radio-checkbox">
+                        <input
+                            className="radio-checkbox"
+                            id="anonymous"
+                            type="checkbox"
+                            checked={form?.currentForm?.anonymous || false}
+                            onChange={(e) => {
+                                form?.setAnonymity(true)
+                                form?.setEditable(false)
+                            }}
+                        ></input>
+                        <span className="styled-radio-checkbox"></span>
+                        <label htmlFor="anonymous">
+                            Anonymous (no login required)
+                        </label>
+                    </div>
+                )}
+
+                {!form?.currentForm?.isTemplate && (
+                    <button
+                        onClick={() => {
+                            setDisplayPermission(true)
+                        }}
+                    >
+                        Set edit permissions
                     </button>
-                </div>
-                <div className="radio-checkbox">
-                    <input
-                        id="set-editable"
-                        type="checkbox"
-                        checked={form?.currentForm?.editable || false}
-                        onChange={(e) => {
-                            const editVal = e.target.checked
-                            form?.setEditable(editVal)
-                            form?.setMultipleResponses(!editVal)
-                        }}
-                    ></input>
-                    <span className="styled-radio-checkbox"></span>
-                    <label htmlFor="set-editable">Editable</label>
-                    <input
-                        className="radio-checkbox"
-                        id="set-multiple"
-                        type="checkbox"
-                        checked={form?.currentForm?.multipleResponses || false}
-                        onChange={(e) => {
-                            const multiVal = e.target.checked
-                            form?.setMultipleResponses(multiVal)
-                            form?.setEditable(!multiVal)
-                        }}
-                    ></input>
-                    <span className="styled-radio-checkbox"></span>
-                    <label htmlFor="set-multiple">Multiple responses</label>
-                </div>
-                <button
-                    onClick={() => {
-                        setDisplayPermission(true)
-                    }}
-                >
-                    Set edit permissions
-                </button>
-                {displayPermission ? (
+                )}
+                {!form?.currentForm?.isTemplate && displayPermission ? (
                     <PermissionList
                         close={() => {
                             setDisplayPermission(false)

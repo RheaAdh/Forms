@@ -3,7 +3,11 @@ import { useHistory } from "react-router-dom"
 
 import useFormState from "../hooks/useFormState"
 
-const NewForm = () => {
+interface props {
+    isTemplate: boolean
+}
+
+const NewForm: React.FC<props> = ({ isTemplate }) => {
     const [addedForm, setAddedForm] = useState<any | null>(null)
 
     const history = useHistory()
@@ -20,7 +24,7 @@ const NewForm = () => {
         event.preventDefault()
         const form = {
             title: title ? title : "untitled",
-            color_theme: "#ffffff",
+            isTemplate,
         }
 
         //UPDATE ON BACKEND
@@ -46,7 +50,9 @@ const NewForm = () => {
         <div>
             <form onSubmit={addForm} style={{ margin: "1rem" }}>
                 <input
-                    placeholder="Create New Form"
+                    placeholder={`Create New ${
+                        isTemplate ? "Template" : "Form"
+                    }`}
                     type="text"
                     value={title}
                     onChange={handleTitle}

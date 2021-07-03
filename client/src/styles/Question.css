@@ -47,10 +47,28 @@
 .option-container {
     display: flex;
 }
+
+.admin-question-container > .add-option-btn {
+    border-bottom: 1px solid var(--fontColor);
+    margin-top: var(--marginTop);
+    width: 20vw;
+}
+
 .delete-option-btn {
     width: 0.8rem;
     margin-left: 0.5rem;
 }
+.linear-scale-flexbox {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.linear-scale-flexbox > span {
+    padding-top: 1.8em;
+}
+
 .question-component-primary-row3 {
     border-top: 1px solid var(--fontColor);
     width: 95%;
@@ -64,8 +82,47 @@
     padding: 0.5em 0.5em;
 }
 
-.question-delete-btn {
+.question-component-primary-row3 button {
     margin: 1.2em 2em 0 0;
+}
+
+.question-component-primary-row3 button .icon-info {
+    z-index: 2;
+    position: absolute;
+    width: max-content;
+    display: block;
+    font-size: 0.9rem;
+    height: 0;
+    padding: 0;
+    background-color: rebeccapurple;
+    overflow: hidden;
+    transition: 250ms;
+    -webkit-transition: 250ms;
+    -moz-transition: 250ms;
+    transform: translateX(-0.4em) translateY(0.1em);
+}
+
+.question-component-primary-row3 button:hover .icon-info {
+    padding: 0.5em;
+    overflow: visible;
+    height: auto;
+}
+
+.question-component-primary-row3 button .text-info-arrow {
+    z-index: 1;
+    position: absolute;
+    display: block;
+    width: 1.5rem;
+    height: 0rem;
+    overflow: hidden;
+    transform: translateY(-0.5rem) translateX(-0.1em) rotate(-45deg);
+    -webkit-transform: translateY(-0.5rem) translateX(-0.1em) rotate(-45deg);
+    background-color: rebeccapurple;
+}
+
+.question-component-primary-row3 button:hover .text-info-arrow {
+    overflow: visible;
+    height: 1.5rem;
 }
 
 .question-component-secondary {

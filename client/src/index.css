@@ -1,6 +1,6 @@
 body {
     margin: 0;
-    font-family: "Catamaran";
+    font-family: "Catamaran" !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -23,6 +23,10 @@ p {
     margin: 0;
 }
 
+b {
+    display: block;
+}
+
 h2 {
     margin: 0;
     font-size: 2.5rem;
@@ -40,7 +44,7 @@ h3 {
 }
 
 button {
-    font-family: "Montserrat";
+    font-family: "Catamaran";
     font-size: var(--rootFontSize);
     background: transparent;
     cursor: pointer;
@@ -62,6 +66,7 @@ input {
     border: 0px solid transparent;
     text-shadow: 0px 0px 0px transparent;
     color: var(--fontColor);
+    font-family: "Catamaran";
 }
 
 svg path {
@@ -132,8 +137,10 @@ textarea:active {
 .radio-checkbox input[type="checkbox"] {
     display: block;
     opacity: 0;
-    width: 0;
-    height: 0;
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    padding: 0;
     cursor: pointer;
     position: absolute;
 }
@@ -154,22 +161,17 @@ textarea:active {
     );
 }
 
-.radio-checkbox:first-child,
-.radio-checkbox:first-child {
-    margin-top: var(--marginTop);
-}
-
-.radio-checkbox label {
-    cursor: pointer;
-    margin-left: 1em;
-}
-
 .radio-checkbox input[type="radio"]:checked + .styled-radio-checkbox + label,
 .radio-checkbox
     input[type="checkbox"]:checked
     + .styled-radio-checkbox
     + label {
     color: var(--borderBottom);
+}
+
+.radio-checkbox label {
+    cursor: pointer;
+    margin-left: 1em;
 }
 
 select {
@@ -208,9 +210,14 @@ select::-ms-expand {
     top: 0.6em;
     right: 0.25em;
     display: block;
-    background: url("./images/DropdownArrow.svg") no-repeat;
-    background-size: 1.1em;
     pointer-events: none;
+}
+.select-arrow svg {
+    width: 1.2em !important;
+    height: 1.2em !important;
+}
+.select-arrow svg path {
+    fill: var(--fontColor);
 }
 option {
     background-color: var(--backgroundColor);

@@ -333,7 +333,7 @@ export function sessionDetails(req: Request, res: Response) {
 
 export async function getAllAdmins(req: Request, res: Response) {
     try {
-        let admins = await User.find({ role: "admin" }).select("username")
+        let admins = await User.find({ role: "admin" }).select("username email")
         console.log(admins)
         return res
             .status(200)

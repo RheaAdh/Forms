@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
 import FormList from "../components/FormList"
+import NewForm from "../components/NewForm"
 
 import { useAuth } from "../context/AuthContext"
 const TemplatePage: React.FC = () => {
@@ -24,8 +25,7 @@ const TemplatePage: React.FC = () => {
                 if (data.success === true) {
                     setForms(data.forms)
                 } else {
-                    console.log("There is an imposter among us!!")
-                    //REDIRECT TO DASHBOARD PAGE I GUESS
+                    // HANDLE ERROR
                 }
             })
     }, [])
@@ -39,6 +39,7 @@ const TemplatePage: React.FC = () => {
     }
     return (
         <div>
+            <NewForm isTemplate={true} />
             <FormList forms={forms} deleteForm={deleteForm} />
         </div>
     )

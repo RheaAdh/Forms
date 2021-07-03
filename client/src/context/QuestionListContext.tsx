@@ -12,6 +12,13 @@ export const questionTypes = [
     "email-answer",
     "file-upload",
 ]
+// Rendering JSX elements from an array (such as <input>) requires a unique key, but db doesn't store unique key for options
+// Schema in db is [{type:string}]. Modified schema on frontend stores unique key for each option
+// Local state key and keyGen function achieve this
+export interface Option {
+    text: string
+    key: number
+}
 
 export interface Question {
     formId: string
@@ -19,9 +26,9 @@ export interface Question {
     questionText: string
     questionType: string
     required: boolean
-    options?: string[]
-    cols?: string[]
-    rows?: string[]
+    options?: Option[]
+    cols?: Option[]
+    rows?: Option[]
     lowRating?: number
     highRating?: number
     lowRatingLabel?: string
@@ -30,19 +37,19 @@ export interface Question {
 
 export interface QuestionActions {
     getQuestions: (formId: string, quesData: any) => void
+    updateQuestion: (qid: string) => void
+    deleteQuestion: (qid: string) => void
+    addQuestion: (after: number) => void
     addOptions: (qid: string) => void
     addRows: (qid: string) => void
     addCols: (qid: string) => void
     deleteOption: (qid: string, idx: number) => void
     deleteRow: (qid: string, idx: number) => void
     deleteCol: (qid: string, idx: number) => void
-    updateOptions: (qid: string, idx: number, change: string) => void
-    updateRows: (qid: string, idx: number, change: string) => void
-    updateCols: (qid: string, idx: number, change: string) => void
+    updateOptions: (qid: string, idx: number, change: Option) => void
+    updateRows: (qid: string, idx: number, change: Option) => void
+    updateCols: (qid: string, idx: number, change: Option) => void
     updateType: (qid: string, type: string) => void
-    updateQuestion: (qid: string) => void
-    deleteQuestion: (qid: string) => void
-    addQuestion: () => void
     setLowRating: (qid: string, num: number) => void
     setHighRating: (qid: string, num: number) => void
     setLowRatingLabel: (qid: string, label: string) => void
@@ -73,6 +80,13 @@ export default function QuestionsListProvider({
 }: Props): ReactElement {
     const [questions, setQuestions] = useState<Question[]>([])
     const [formId, setFormid] = useState<string | null>(null)
+    const [key, setKey] = useState<number>(1)
+
+    const keyGen = () => {
+        const k = key
+        setKey((prevKey) => prevKey + 1)
+        return k
+    }
 
     const getQuestions = async (formId: string, quesData: any) => {
         setFormid(formId)
@@ -84,9 +98,24 @@ export default function QuestionsListProvider({
                     questionText: q["questionText"],
                     questionType: q["questionType"],
                     required: q.required,
-                    options: q.options !== undefined ? q.options : [""],
-                    rows: q.rowLabel !== undefined ? q.rowLabel : [""],
-                    cols: q.colLabel !== undefined ? q.colLabel : [""],
+                    options:
+                        q.options !== undefined
+                            ? q.options.map((opt: string) => {
+                                  return { text: opt, id: keyGen() }
+                              })
+                            : [{ text: "", id: keyGen() }],
+                    rows:
+                        q.rowLabel !== undefined
+                            ? q.rowLabel.map((opt: string) => {
+                                  return { text: opt, id: keyGen() }
+                              })
+                            : [{ text: "", id: keyGen() }],
+                    cols:
+                        q.colLabel !== undefined
+                            ? q.colLabel.map((opt: string) => {
+                                  return { text: opt, id: keyGen() }
+                              })
+                            : [{ text: "", id: keyGen() }],
                     lowRating: q.lowRating !== undefined ? q.lowRating : 0,
                     highRating: q.highRating !== undefined ? q.highRating : 2,
                     lowRatingLabel:
@@ -99,7 +128,7 @@ export default function QuestionsListProvider({
             })
         )
     }
-    const addQuestion = () => {
+    const addQuestion = (after: number) => {
         if (!formId) return
         const newQuestion = {
             questionText: "Question",
@@ -119,7 +148,11 @@ export default function QuestionsListProvider({
             .then((response) => response.json())
             .then((data) => {
                 newQuestion.qid = data._id
-                setQuestions([...questions, newQuestion])
+                setQuestions((prevQuestions) => [
+                    ...prevQuestions.slice(0, after + 1),
+                    newQuestion,
+                    ...prevQuestions.slice(after + 1),
+                ])
             })
             .catch((error) => {
                 console.log("Error: ", error)
@@ -147,8 +180,13 @@ export default function QuestionsListProvider({
     const addOptions = (qid: string) => {
         var q = questions.find((question) => question.qid === qid)
         var idx = questions.findIndex((question) => question.qid === qid)
-        if (q?.options) q.options = [...q?.options, ""]
-        else if (q !== undefined) q.options = [""]
+        const k = keyGen()
+        if (q?.options)
+            q.options = [
+                ...q?.options,
+                { text: `Option${q.options.length + 1}`, key: k },
+            ]
+        else if (q !== undefined) q.options = [{ text: `Option1`, key: k }]
         else return
         const newQuestions = questions.slice()
 
@@ -158,8 +196,10 @@ export default function QuestionsListProvider({
     const addRows = (qid: string) => {
         var q = questions.find((question) => question.qid === qid)
         var idx = questions.findIndex((question) => question.qid === qid)
-        if (q?.rows) q.rows = [...q?.rows, ""]
-        else if (q !== undefined) q.rows = [""]
+        const k = keyGen()
+        if (q?.rows)
+            q.rows = [...q?.rows, { text: `Row${q.rows.length + 1}`, key: k }]
+        else if (q !== undefined) q.rows = [{ text: `Row${1}`, key: k }]
         else return
         const newQuestions = questions.slice()
 
@@ -169,8 +209,10 @@ export default function QuestionsListProvider({
     const addCols = (qid: string) => {
         var q = questions.find((question) => question.qid === qid)
         var idx = questions.findIndex((question) => question.qid === qid)
-        if (q?.cols) q.cols = [...q?.cols, ""]
-        else if (q !== undefined) q.cols = [""]
+        const k = keyGen()
+        if (q?.cols)
+            q.cols = [...q?.cols, { text: `Col${q.cols.length + 1}`, key: k }]
+        else if (q !== undefined) q.cols = [{ text: `Col${1}`, key: k }]
         else return
         const newQuestions = questions.slice()
 
@@ -183,8 +225,6 @@ export default function QuestionsListProvider({
         if (q?.options) {
             q.options = q.options.filter((opt, ix: number) => ix !== i)
             const newQuestions = questions.slice()
-            newQuestions[idx] = {} as Question
-            setQuestions(newQuestions)
             newQuestions[idx] = q
             setQuestions(newQuestions)
         }
@@ -211,7 +251,7 @@ export default function QuestionsListProvider({
             setQuestions(newQuestions)
         }
     }
-    const updateOptions = (qid: string, i: number, change: string) => {
+    const updateOptions = (qid: string, i: number, change: Option) => {
         var q = questions.find((question) => question.qid === qid)
         var idx = questions.findIndex((question) => question.qid === qid)
         if (q === undefined) return
@@ -224,7 +264,7 @@ export default function QuestionsListProvider({
             setQuestions(newQuestions)
         }
     }
-    const updateRows = (qid: string, i: number, change: string) => {
+    const updateRows = (qid: string, i: number, change: Option) => {
         var q = questions.find((question) => question.qid === qid)
         var idx = questions.findIndex((question) => question.qid === qid)
         if (q === undefined) return
@@ -237,7 +277,7 @@ export default function QuestionsListProvider({
             setQuestions(newQuestions)
         }
     }
-    const updateCols = (qid: string, i: number, change: string) => {
+    const updateCols = (qid: string, i: number, change: Option) => {
         var q = questions.find((question) => question.qid === qid)
         var idx = questions.findIndex((question) => question.qid === qid)
         if (q === undefined) return
@@ -328,7 +368,7 @@ export default function QuestionsListProvider({
                 _id: q.qid,
                 questionText: q.questionText,
                 required: q.required,
-                options: q.options,
+                options: q.options.map((option) => option.text),
                 lowRating: q.lowRating,
                 highRating: q.highRating,
                 lowRatingLabel: q.lowRatingLabel,
@@ -339,6 +379,7 @@ export default function QuestionsListProvider({
         } else {
             body = JSON.stringify({
                 ...q,
+                options: [],
                 _id: q.qid,
                 questionText: q.questionText,
                 required: q.required,
@@ -356,8 +397,9 @@ export default function QuestionsListProvider({
                 _id: q.qid,
                 questionText: q.questionText,
                 required: q.required,
-                rowLabel: q.rows,
-                colLabel: q.cols,
+                options: q?.options?.map((option) => option.text),
+                rowLabel: q.rows.map((row) => row.text),
+                colLabel: q.cols.map((col) => col.text),
                 lowRating: q.lowRating,
                 highRating: q.highRating,
                 lowRatingLabel: q.lowRatingLabel,

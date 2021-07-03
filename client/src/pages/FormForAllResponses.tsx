@@ -4,7 +4,6 @@ import QuestionResponse from "../components/QuestionResponse"
 import { useAuth } from "../context/AuthContext"
 import { useCurrentForm } from "../context/CurrentFormContext"
 import getQuestionsAndResponses, {
-    getByResponseIdPublic,
     downloadResponse,
     getByResponseId,
 } from "../context/Actions"
@@ -13,6 +12,7 @@ import { useResponses, user } from "../context/ResponseListContext"
 import { Question, useQuestionsList } from "../context/QuestionListContext"
 import "../styles/DisplayForm.css"
 import AdminNavbar from "../components/AdminNavbar"
+import { ReactComponent as DropdownArrow } from "../images/DropdownArrow.svg"
 
 const FormForAllResponses = () => {
     const auth = useAuth()
@@ -32,10 +32,9 @@ const FormForAllResponses = () => {
         //Get current logged in user
         if (auth?.currentUser === null) auth?.getCurrentUser()
         // Admin level access, fetch all responses for csv data
-        if (formId) {
+        if (formId !== undefined) {
             downloadResponse(formId).then((data) => {
                 if (data) {
-                    console.log(data)
                     setColumnsForDownload(data.columns)
                     setDataForDownload(data.dataForDownload)
                 }
@@ -129,20 +128,34 @@ const FormForAllResponses = () => {
                         datas={dataForDownload ? dataForDownload : []}
                         text={"Click  to download responses"}
                     />
-
-                    <br />
-                    {responseList?.users?.length ? (
+                    {
+                        //UNIQUE USERNAME PROBLEM
+                    }
+                    {!form?.currentForm?.anonymous &&
+                    responseList?.users?.length ? (
                         <div className="select">
-                            <select defaultValue={currentUser?.username}>
+                            <select
+                                value={currentUser?.username}
+                                onChange={(e) => {
+                                    e.persist()
+                                    setCurrentUser((prevUser) => {
+                                        const newUser = responseList?.users?.find(
+                                            (user) =>
+                                                user.username ===
+                                                e.target?.value
+                                        )
+                                        return newUser === undefined
+                                            ? prevUser
+                                            : newUser
+                                    })
+                                }}
+                            >
                                 {responseList?.users.map(
                                     (user: any, i: number) => {
                                         return (
                                             <option
                                                 key={i}
                                                 value={user.username}
-                                                onClick={(e) => {
-                                                    setCurrentUser(user)
-                                                }}
                                             >
                                                 {user.username}
                                             </option>
@@ -150,13 +163,49 @@ const FormForAllResponses = () => {
                                     }
                                 )}
                             </select>
-                            <span className="select-arrow"></span>
+                            <span className="select-arrow">
+                                {" "}
+                                <DropdownArrow />{" "}
+                            </span>
+                        </div>
+                    ) : form?.currentForm?.anonymous &&
+                      responseList?.users?.length &&
+                      currentUser !== null ? (
+                        <div className="anonymous-responses-box">
+                            <button
+                                onClick={() =>
+                                    setCurrentUser(
+                                        responseList.responseActions.findPreviousUser(
+                                            currentUser
+                                        )
+                                    )
+                                }
+                            >
+                                {`<--`}
+                            </button>
+                            {`Response ${
+                                responseList?.users?.findIndex(
+                                    (usr) =>
+                                        usr.responseid ===
+                                        currentUser?.responseid
+                                ) + 1
+                            } of ${responseList?.users?.length}`}
+                            <button
+                                onClick={() =>
+                                    setCurrentUser(
+                                        responseList.responseActions.findNextUser(
+                                            currentUser
+                                        )
+                                    )
+                                }
+                            >
+                                {`-->`}
+                            </button>
                         </div>
                     ) : null}
                 </div>
                 <div className="display-form-component form-header">
-                    <h2>{form?.currentForm?.title}</h2>
-
+                    <h2>{`${responseList?.users?.length} responses`}</h2>
                     <p>{form?.currentForm?.description}</p>
                 </div>
                 {questions?.questions?.map((q: Question, idx: number) => {

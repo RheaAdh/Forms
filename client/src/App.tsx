@@ -6,10 +6,11 @@ import AdminLoginPage from "./pages/AdminLoginPage"
 import RegisterPage from "./pages/RegisterPage"
 import ResetPassword from "./pages/ResetPassword"
 import { Route, Switch } from "react-router-dom"
-import LoggedIn, { Protected } from "./Routes"
-import FormAdmin from "./pages/FormAdmin"
+import { Protected } from "./Routes"
 import FormForUser from "./pages/FormForUser"
 import FormForUserResponseOnly from "./pages/FormForUserResponseOnly"
+import EditFormPage from "./pages/EditFormPage"
+import FormForAllResponses from "./pages/FormForAllResponses"
 
 function App() {
     console.log("APP IS RERENDERED")
@@ -18,27 +19,23 @@ function App() {
         <div className="App">
             <Switch>
                 <Route path="/" exact render={() => <DashboardPage />} />
-                <LoggedIn
+
+                <Protected
                     path="/form-admin/:formId"
-                    comp={() => (
-                        <Protected
-                            comp={() => <FormAdmin isQuestionsPage={true} />}
-                        />
-                    )}
+                    component={() => <EditFormPage />}
                 />
+
                 <Route path={"/form/:formId"} render={() => <FormForUser />} />
                 <Route path="/dashboard" render={() => <DashboardPage />} />
                 <Route path="/adminlogin" render={() => <AdminLoginPage />} />
                 <Route path="/login/:formId" render={() => <LoginPage />} />
                 <Route path="/register" render={() => <RegisterPage />} />
-                <LoggedIn
+
+                <Protected
                     path="/responses/:formId"
-                    comp={() => (
-                        <Protected
-                            comp={() => <FormAdmin isQuestionsPage={false} />}
-                        />
-                    )}
+                    component={() => <FormForAllResponses />}
                 />
+
                 <Route
                     path="/response/:responseId"
                     render={() => <FormForUserResponseOnly />}

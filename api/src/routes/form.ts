@@ -229,7 +229,7 @@ export async function deleteForm(req: Request, res: Response) {
                 return res.send({ success: true, msg: deletedForm })
             } else {
                 res.send({
-                    success: true,
+                    success: false,
                     msg: "Form cant be deleted as it is created by superadmin",
                 })
             }

@@ -2,12 +2,12 @@ import React, { ReactElement, useContext, useState } from "react"
 
 export interface CurrentForm {
     id: string
+    isTemplate?: boolean
     anonymous?: boolean
     date?: Date | null
     title?: string
     description?: string
     editable?: boolean
-    multipleResponses?: boolean
     isActive?: boolean
     editors?: string[]
     isQuestionsPage?: boolean
@@ -22,8 +22,8 @@ export interface Form {
     setTitle: (title: string) => void
     setDescription: (description: string) => void
     setDate: (date: Date | null) => void
-    setEditable: (admin: boolean) => void
-    setMultipleResponses: (multiple: boolean) => void
+    setEditable: (editable: boolean) => void
+    setAnonymity: (anonymous: boolean) => void
     setFormDetails: (
         id: string,
         toEdit: boolean,
@@ -47,26 +47,31 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
     const [description, setDescription] = useState<string>()
     const [date, setDate] = useState<Date | null>()
     const [editable, setEditable] = useState<boolean>()
-    const [multipleResponses, setMultipleResponses] = useState<boolean>()
     const [editors, setEditors] = useState<string[]>()
     const [isActive, setActive] = useState<boolean>()
     const [isQuestionsPage, setQuestionsPage] = useState<boolean>()
+    const [isTemplate, setIsTemplate] = useState<boolean>()
 
     const setFormDetails = async (
         id: string,
         admin: boolean,
         formData?: any
     ) => {
+        if (formData === null) {
+            // Small hack to prevent a form from getting updated with details from previous context
+            setDescription(undefined)
+            return
+        }
         setId(id)
         // if data has already been fetched
         if (formData !== undefined) {
-            console.log(formData)
             setTitle(formData.title)
             setDescription(formData.description)
             setEditable(formData.isEditable)
-            setMultipleResponses(formData.multipleResponses)
             setActive(formData.isActive)
             setEditors(formData.editors)
+            setAnonymity(formData.anonymous)
+            setIsTemplate(formData.isTemplate)
             if (formData.closes) {
                 new Date(formData.closes)
             } else setDate(null)
@@ -98,9 +103,10 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
             setTitle(data.form.title)
             setDescription(data.form.description)
             setEditable(data.form.isEditable)
-            setMultipleResponses(data.form.multipleResponses)
             setActive(data.form.isActive)
             setEditors(data.form.editors)
+            setAnonymity(data.form.anonymous)
+            setIsTemplate(data.form.isTemplate)
             if (data.form.closes) {
                 setDate(new Date(data.form.closes))
             } else setDate(null)
@@ -133,7 +139,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         if (
             description === undefined ||
             editable === undefined ||
-            multipleResponses === undefined ||
+            anonymous === undefined ||
             date === undefined ||
             title === undefined ||
             isActive === undefined ||
@@ -152,7 +158,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
                     _id: id,
                     description: description,
                     isEditable: editable,
-                    multipleResponses: multipleResponses,
+                    anonymous: anonymous,
                     closes: date,
                     title: title,
                     isActive: isActive,
@@ -176,21 +182,21 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         title,
         description,
         editable,
-        multipleResponses,
         editors,
         isQuestionsPage,
+        isTemplate,
     }
 
     const form: Form = {
         currentForm,
         setFormDetails,
         getAnonymity,
+        setAnonymity,
         updateForm,
         setTitle,
         setDescription,
         setDate,
         setEditable,
-        setMultipleResponses,
         setActive,
         setEditors,
         setQuestionsPage,

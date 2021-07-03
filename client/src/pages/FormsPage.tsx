@@ -39,7 +39,7 @@ const FormsPage: React.FC = () => {
     }
     return (
         <div>
-            <NewForm />
+            <NewForm isTemplate={false} />
             <FormList forms={forms} deleteForm={deleteForm} />
         </div>
     )

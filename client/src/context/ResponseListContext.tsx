@@ -7,8 +7,9 @@ export interface gridOptions {
 }
 
 export interface user {
-    username: string
+    username?: string
     responseid: string
+    email?: string
 }
 
 export interface Response {
@@ -32,6 +33,8 @@ export interface ResponseActions {
         readOnly: boolean
     ) => void
     getUsers: () => Promise<user[]>
+    findPreviousUser: (currentUser: user) => user
+    findNextUser: (currentUser: user) => user
     updateResponse: (index: number, response: Response) => void
     setFormId: (formiId: string) => void
     clearResponse: (questions: any[]) => void
@@ -119,10 +122,12 @@ export default function ResponseListProvider({
                 credentials: "include",
             })
             const data = await res.json()
+            console.log(data)
             setUsers(
                 data.data.map((user: any) => ({
                     responseid: user.responseid,
                     username: user.username,
+                    email: user.email,
                 }))
             )
             return data.data
@@ -130,6 +135,32 @@ export default function ResponseListProvider({
             console.log(console.error())
         }
         return []
+    }
+
+    const findNextUser = (currentUser: user) => {
+        const index: number | undefined = users?.findIndex(
+            (usr) => usr.responseid === currentUser.responseid
+        )
+        if (index !== undefined) {
+            if (index + 1 === users?.length) {
+                return users[0]
+            }
+            if (users !== undefined) return users[index + 1]
+        }
+        return currentUser
+    }
+
+    const findPreviousUser = (currentUser: user) => {
+        const index: number | undefined = users?.findIndex(
+            (usr) => usr.responseid === currentUser.responseid
+        )
+        if (index !== undefined && users !== undefined) {
+            if (index === 0) {
+                return users[users.length - 1]
+            }
+            return users[index - 1]
+        }
+        return currentUser
     }
 
     const updateResponse = (index: number, response: Response) => {
@@ -182,6 +213,8 @@ export default function ResponseListProvider({
     const responseActions = {
         getResponse,
         getUsers,
+        findPreviousUser,
+        findNextUser,
         updateResponse,
         setFormId,
         submit,

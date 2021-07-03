@@ -69,8 +69,6 @@ const FormForUser = () => {
                         data.ques.map((q: any) => q.required),
                         false
                     )
-                    // If this is a readonly page, then it's admin side. Set loading false is done
-                    // by checking if all users have been fetched
                     setLoading(false)
                 })
             }
@@ -99,7 +97,7 @@ const FormForUser = () => {
                 <b>Your response has been submitted!</b>
                 <br />
                 {/* if form is accepting multiple */}
-                {form?.currentForm?.multipleResponses ? (
+                {form?.currentForm?.anonymous ? (
                     <button
                         onClick={() => {
                             setLoading(true)
@@ -132,6 +130,7 @@ const FormForUser = () => {
                 <button
                     onClick={() => {
                         auth?.logout()
+                        window.location.reload()
                     }}
                 >
                     Logout
@@ -142,7 +141,7 @@ const FormForUser = () => {
 
     return (
         <div className="display-form-page">
-            <div className="display-form-container">
+            <div className="display-form-container no-navbar">
                 <div className="display-form-component form-header">
                     <h2>{form?.currentForm?.title}</h2>
 

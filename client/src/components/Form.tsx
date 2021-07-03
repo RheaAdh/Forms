@@ -57,7 +57,10 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log(data)
+                if (!data.success) {
+                    //HANDLE ERROR
+                    return
+                }
                 //!CHANGE ON FRONT END
                 deleteForm(form._id)
             })

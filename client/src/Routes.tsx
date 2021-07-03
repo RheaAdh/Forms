@@ -1,34 +1,29 @@
 import React, { createElement, useEffect } from "react"
-import { Redirect, Route } from "react-router"
+import { Redirect, Route, RouteProps, useParams } from "react-router"
 import Error from "./components/Error"
 import { useAuth } from "./context/AuthContext"
-import { useCurrentForm } from "./context/CurrentFormContext"
 
-const LoggedIn = ({ comp, ...rest }: any) => {
+export interface props extends RouteProps {}
+
+const LoggedIn: React.FC<props> = ({ ...rest }) => {
     const auth = useAuth()?.currentUser
-    const routeComponent = (props: any) => {
-        return auth?.userid === "x" ? (
-            <Redirect to={`/login/${props.match.params.formid}`} />
-        ) : (
-            createElement(comp, props)
-        )
+    const { formId }: any = useParams()
+    if (formId !== undefined && auth?.userid === "x") {
+        return <Redirect to={`/login/${formId}`} />
     }
-    return <Route {...rest} component={routeComponent} />
+    return <Route {...rest} />
 }
 
-export const Protected = ({ comp, ...rest }: any) => {
+export const Protected: React.FC<props> = ({ ...rest }: any) => {
     const auth = useAuth()?.currentUser
-    const routeComponent = (props: any) => {
-        return auth?.role === "admin" ||
-            auth?.role === "superadmin" ||
-            auth === null ? (
-            createElement(comp, props)
-        ) : (
-            <Error />
-        )
+    if (
+        auth?.role === "admin" ||
+        auth?.role === "superadmin" ||
+        auth === null
+    ) {
+        return <Route {...rest} />
     }
-
-    return <Route {...rest} component={routeComponent} />
+    return <Error />
 }
 
 export default LoggedIn

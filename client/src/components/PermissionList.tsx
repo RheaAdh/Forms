@@ -6,6 +6,7 @@ import "../styles/PermissionList.css"
 interface Admin {
     _id: string
     username: string
+    email: string
 }
 
 interface props {
@@ -14,7 +15,7 @@ interface props {
 
 const PermissionList: React.FC<props> = ({ close }) => {
     const form = useCurrentForm()
-    const currentUsername = useAuth()?.currentUser?.username
+    const currentEmail = useAuth()?.currentUser?.email
     const [admins, setAdmins] = useState<Admin[]>([])
     const [searchString, setSearchString] = useState<string>("")
 
@@ -25,13 +26,14 @@ const PermissionList: React.FC<props> = ({ close }) => {
             })
 
             .then((data: any) => {
+                console.log(data.data)
                 setAdmins(data.data)
             })
     }, [])
 
     const updateEditors = (e: any, admin: any) => {
         if (e.target.checked && form?.currentForm?.editors !== undefined) {
-            form?.setEditors([...form.currentForm.editors, admin])
+            form?.setEditors([...form.currentForm.editors, admin._id])
         } else if (form?.currentForm?.editors !== undefined) {
             form?.setEditors(
                 form.currentForm.editors.filter(
@@ -54,17 +56,19 @@ const PermissionList: React.FC<props> = ({ close }) => {
                         )
                     }
                 ></input>
+                {console.log(form?.currentForm?.editors)}
                 <ul className="permission-list">
                     {admins?.map((admin) =>
-                        admin.username !== currentUsername &&
-                        admin.username.search(searchString) !== -1 ? (
-                            <li key={admin._id}>
-                                {admin.username}
+                        admin.email !== currentEmail &&
+                        (admin.email.search(searchString) !== -1 ||
+                            admin.username.search(searchString) !== -1) ? (
+                            <li key={admin._id} className="radio-checkbox">
                                 {form?.currentForm?.editors &&
                                 form?.currentForm?.editors?.findIndex(
                                     (editor) => editor === admin._id
                                 ) === -1 ? (
                                     <input
+                                        id={admin._id}
                                         type="checkbox"
                                         onChange={(e) =>
                                             updateEditors(e, admin)
@@ -72,6 +76,7 @@ const PermissionList: React.FC<props> = ({ close }) => {
                                     ></input>
                                 ) : (
                                     <input
+                                        id={admin._id}
                                         type="checkbox"
                                         defaultChecked
                                         onChange={(e) =>
@@ -79,6 +84,11 @@ const PermissionList: React.FC<props> = ({ close }) => {
                                         }
                                     ></input>
                                 )}
+                                <span className="styled-radio-checkbox"></span>
+
+                                <label htmlFor={admin._id}>
+                                    {admin.username + " " + admin.email}
+                                </label>
                             </li>
                         ) : null
                     )}

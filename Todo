@@ -1,18 +1,28 @@
 Frontend
 
-implement design
 there is some bug in google login button for user response
 create predefined templates for events we know  --- templates is done so now form just needs to be created with no delete option 
 show message like requires editor access, form is closed, registration closed etc whereever required
-delete option (admin side)
 form input character limit, error color change
-file upload
-Templates in context
 date picker needs styling
-response download - handle username, email (anonymous or not)
+edit form button functionality
+add section
+open trashcan trasnition on delete
+prevent first update in question list context
+text area adjust height according to content
+background blur
 
 
 ---NEED DETAILS(SAVED FOR LAST)---
+
+reorder question backend implementation needed
+
+single response / editabe / anonymous backend implementation (first check anonymous if false, check editable or not) , not able to fetch form or questions 
+for anonymous form
+
+editors list possibly contains superadmin id, shouldn't happen since superadmins have access to all forms
+
+
     s3 bucket(IMP)
     csv download 
     file upload

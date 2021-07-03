@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react"
-import { questionTypes, useQuestionsList } from "../context/QuestionListContext"
+import {
+    Option,
+    questionTypes,
+    useQuestionsList,
+} from "../context/QuestionListContext"
 import "../styles/Question.css"
+import { ReactComponent as DeleteIcon } from "../images/DeleteIcon.svg"
+import { ReactComponent as DropdownArrow } from "../images/DropdownArrow.svg"
+import { ReactComponent as AddQuestionIcon } from "../images/AddQuestionIcon.svg"
 
 interface props {
     question: any
@@ -38,181 +45,154 @@ const Question: React.FC<props> = ({ question, index }) => {
 
         <div className="admin-question-container">
             <b>Multiple choice</b>
-            {question?.options?.map((a: string, i: number) => (
-                <div className="option-container">
+            {question?.options?.map((a: Option, i: number) => (
+                <div className="option-container" key={a.key}>
                     <input
-                        key={i}
                         type="text"
                         onChange={(event) =>
-                            questionActions?.updateOptions(
-                                question.qid,
-                                i,
-                                event.target.value
-                            )
+                            questionActions?.updateOptions(question.qid, i, {
+                                text: event.target.value,
+                                key: a.key,
+                            })
                         }
-                        defaultValue={a}
+                        value={a.text}
                     />
                     <button
                         onClick={() =>
                             questionActions?.deleteOption(question.qid, i)
                         }
                     >
-                        <svg
-                            className="delete-option-btn"
-                            width="22"
-                            height="29"
-                            viewBox="0 0 22 29"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M1.57143 25.7778C1.57143 27.55 2.98571 29 4.71429 29H17.2857C19.0143 29 20.4286 27.55 20.4286 25.7778V6.44444H1.57143V25.7778ZM22 1.61111H16.5L14.9286 0H7.07143L5.5 1.61111H0V4.83333H22V1.61111Z"
-                                fill="white"
-                                fillOpacity="0.87"
-                            />
-                        </svg>
+                        <DeleteIcon className="delete-option-btn" />
                     </button>
                 </div>
             ))}
 
-            <button onClick={() => questionActions?.addOptions(question.qid)}>
-                Add option
+            <button
+                className="add-option-btn"
+                onClick={() => questionActions?.addOptions(question.qid)}
+            >
+                {" "}
+                Add Option{" "}
             </button>
         </div>,
 
         <div className="admin-question-container">
             <b>Checkbox</b>
-            {question?.options?.map((a: string, i: number) => (
-                <div className="option-container">
+            {question?.options?.map((a: Option, i: number) => (
+                <div className="option-container" key={a.key}>
                     <input
-                        key={i}
                         type="text"
                         onChange={(event) =>
-                            questionActions?.updateOptions(
-                                question.qid,
-                                i,
-                                event.target.value
-                            )
+                            questionActions?.updateOptions(question.qid, i, {
+                                text: event.target.value,
+                                key: a.key,
+                            })
                         }
-                        defaultValue={a}
+                        value={a.text}
                     />
                     <button
                         onClick={() =>
                             questionActions?.deleteOption(question.qid, i)
                         }
                     >
-                        <svg
-                            className="delete-option-btn"
-                            width="22"
-                            height="29"
-                            viewBox="0 0 22 29"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M1.57143 25.7778C1.57143 27.55 2.98571 29 4.71429 29H17.2857C19.0143 29 20.4286 27.55 20.4286 25.7778V6.44444H1.57143V25.7778ZM22 1.61111H16.5L14.9286 0H7.07143L5.5 1.61111H0V4.83333H22V1.61111Z"
-                                fill="white"
-                                fillOpacity="0.87"
-                            />
-                        </svg>
+                        <DeleteIcon className="delete-option-btn" />
                     </button>
                 </div>
             ))}
-            <button onClick={() => questionActions?.addOptions(question.qid)}>
+            <button
+                className="add-option-btn"
+                onClick={() => questionActions?.addOptions(question.qid)}
+            >
                 Add option
             </button>
         </div>,
 
         <div className="admin-question-container">
             <b>Dropdown</b>
-            {question?.options?.map((a: string, i: number) => (
-                <div className="option-container">
+            {question?.options?.map((a: Option, i: number) => (
+                <div className="option-container" key={a.key}>
                     <input
-                        key={i}
                         type="text"
                         onChange={(event) =>
-                            questionActions?.updateOptions(
-                                question.qid,
-                                i,
-                                event.target.value
-                            )
+                            questionActions?.updateOptions(question.qid, i, {
+                                text: event.target.value,
+                                key: a.key,
+                            })
                         }
-                        defaultValue={a}
+                        value={a.text}
                     />
                     <button
                         onClick={() =>
                             questionActions?.deleteOption(question.qid, i)
                         }
                     >
-                        <svg
-                            className="delete-option-btn"
-                            width="22"
-                            height="29"
-                            viewBox="0 0 22 29"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M1.57143 25.7778C1.57143 27.55 2.98571 29 4.71429 29H17.2857C19.0143 29 20.4286 27.55 20.4286 25.7778V6.44444H1.57143V25.7778ZM22 1.61111H16.5L14.9286 0H7.07143L5.5 1.61111H0V4.83333H22V1.61111Z"
-                                fill="white"
-                                fillOpacity="0.87"
-                            />
-                        </svg>
+                        <DeleteIcon className="delete-option-btn" />
                     </button>
                 </div>
             ))}
-            <button onClick={() => questionActions?.addOptions(question.qid)}>
+            <button
+                className="add-option-btn"
+                onClick={() => questionActions?.addOptions(question.qid)}
+            >
                 Add option
             </button>
         </div>,
 
         <div className="admin-question-container">
             <b>Linear scale</b>
-            <div className="select">
-                <select
-                    name="minVal"
-                    onChange={(event) => {
-                        questionActions?.setLowRating(
-                            question.qid,
-                            parseInt(event.target.value)
-                        )
-                    }}
-                    defaultValue={question.lowRating}
-                >
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                </select>
-                <span className="select-arrow"></span>
+            <div className="linear-scale-flexbox">
+                <div className="select">
+                    <select
+                        name="minVal"
+                        onChange={(event) => {
+                            event.persist()
+                            questionActions?.setLowRating(
+                                question.qid,
+                                parseInt(event.target.value)
+                            )
+                        }}
+                        value={question.lowRating}
+                    >
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                    </select>
+                    <span className="select-arrow">
+                        <DropdownArrow />
+                    </span>
+                </div>
+                <span>to</span>
+                <div className="select">
+                    <select
+                        name="maxVal"
+                        onChange={(event) => {
+                            event.persist()
+                            questionActions?.setHighRating(
+                                question.qid,
+                                parseInt(event.target.value)
+                            )
+                        }}
+                        value={question.highRating}
+                    >
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                    <span className="select-arrow">
+                        <DropdownArrow />
+                    </span>
+                </div>
             </div>
-            <span>to</span>
-            <div className="select">
-                <select
-                    name="maxVal"
-                    onChange={(event) => {
-                        questionActions?.setHighRating(
-                            question.qid,
-                            parseInt(event.target.value)
-                        )
-                    }}
-                    defaultValue={question.highRating}
-                >
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                </select>
-            </div>
-            <span className="select-arrow"></span>
             <input
                 type="text"
                 name=""
-                placeholder="Label (Optional)"
-                defaultValue={question.lowRatingLabel}
+                placeholder="Low Rating Label (Optional)"
+                value={question.lowRatingLabel}
                 onChange={(event) => {
                     questionActions?.setLowRatingLabel(
                         question.qid,
@@ -223,8 +203,8 @@ const Question: React.FC<props> = ({ question, index }) => {
             <input
                 type="text"
                 name=""
-                placeholder="Label (Optional)"
-                defaultValue={question.highRatingLabel}
+                placeholder="High Rating Label (Optional)"
+                value={question.highRatingLabel}
                 onChange={(event) => {
                     questionActions?.setHighRatingLabel(
                         question.qid,
@@ -237,21 +217,29 @@ const Question: React.FC<props> = ({ question, index }) => {
         <div className="admin-question-container">
             <b>Multiple choice grid</b>
             <p>Rows:</p>
-            {question?.rows?.map((a: any, i: number) => (
-                <input
-                    key={i}
-                    type="text"
-                    onChange={(event) =>
-                        questionActions?.updateRows(
-                            question.qid,
-                            i,
-                            event.target.value
-                        )
-                    }
-                    defaultValue={a}
-                />
+            {question?.rows?.map((a: Option, i: number) => (
+                <div className="option-container" key={a.key}>
+                    <input
+                        type="text"
+                        onChange={(event) =>
+                            questionActions?.updateRows(question.qid, i, {
+                                text: event.target.value,
+                                key: a.key,
+                            })
+                        }
+                        value={a.text}
+                    />
+                    <button
+                        onClick={() =>
+                            questionActions?.deleteRow(question.qid, i)
+                        }
+                    >
+                        <DeleteIcon className="delete-option-btn" />
+                    </button>
+                </div>
             ))}
             <button
+                className="add-option-btn"
                 onClick={() => {
                     questionActions?.addRows(question.qid)
                 }}
@@ -259,21 +247,29 @@ const Question: React.FC<props> = ({ question, index }) => {
                 Add row
             </button>
             <p>Columns:</p>
-            {question?.cols?.map((a: any, i: number) => (
-                <input
-                    key={i}
-                    type="text"
-                    onChange={(event) =>
-                        questionActions?.updateCols(
-                            question.qid,
-                            i,
-                            event.target.value
-                        )
-                    }
-                    defaultValue={a}
-                />
+            {question?.cols?.map((a: Option, i: number) => (
+                <div className="option-container" key={a.key}>
+                    <input
+                        type="text"
+                        onChange={(event) =>
+                            questionActions?.updateCols(question.qid, i, {
+                                text: event.target.value,
+                                key: a.key,
+                            })
+                        }
+                        value={a.text}
+                    />
+                    <button
+                        onClick={() =>
+                            questionActions?.deleteCol(question.qid, i)
+                        }
+                    >
+                        <DeleteIcon className="delete-option-btn" />
+                    </button>
+                </div>
             ))}
             <button
+                className="add-option-btn"
                 onClick={() => {
                     questionActions?.addCols(question.qid)
                 }}
@@ -282,24 +278,32 @@ const Question: React.FC<props> = ({ question, index }) => {
             </button>
         </div>,
 
-        <div>
+        <div className="admin-question-container">
             <b>Checkbox grid</b>
             <p>Rows:</p>
-            {question?.rows?.map((a: any, i: number) => (
-                <input
-                    key={i}
-                    type="text"
-                    onChange={(event) =>
-                        questionActions?.updateRows(
-                            question.qid,
-                            i,
-                            event.target.value
-                        )
-                    }
-                    defaultValue={a}
-                />
+            {question?.rows?.map((a: Option, i: number) => (
+                <div className="option-container" key={a.key}>
+                    <input
+                        type="text"
+                        onChange={(event) =>
+                            questionActions?.updateRows(question.qid, i, {
+                                text: event.target.value,
+                                key: a.key,
+                            })
+                        }
+                        value={a.text}
+                    />
+                    <button
+                        onClick={() =>
+                            questionActions?.deleteRow(question.qid, i)
+                        }
+                    >
+                        <DeleteIcon className="delete-option-btn" />
+                    </button>
+                </div>
             ))}
             <button
+                className="add-option-btn"
                 onClick={() => {
                     questionActions?.addRows(question.qid)
                 }}
@@ -307,21 +311,29 @@ const Question: React.FC<props> = ({ question, index }) => {
                 Add row
             </button>
             <p>Columns:</p>
-            {question?.cols?.map((a: any, i: number) => (
-                <input
-                    key={i}
-                    type="text"
-                    onChange={(event) =>
-                        questionActions?.updateCols(
-                            question.qid,
-                            i,
-                            event.target.value
-                        )
-                    }
-                    defaultValue={a}
-                />
+            {question?.cols?.map((a: Option, i: number) => (
+                <div className="option-container" key={a.key}>
+                    <input
+                        type="text"
+                        onChange={(event) =>
+                            questionActions?.updateCols(question.qid, i, {
+                                text: event.target.value,
+                                key: a.key,
+                            })
+                        }
+                        value={a.text}
+                    />
+                    <button
+                        onClick={() =>
+                            questionActions?.deleteCol(question.qid, i)
+                        }
+                    >
+                        <DeleteIcon className="delete-option-btn" />
+                    </button>
+                </div>
             ))}
             <button
+                className="add-option-btn"
                 onClick={() => {
                     questionActions?.addCols(question.qid)
                 }}
@@ -384,9 +396,8 @@ const Question: React.FC<props> = ({ question, index }) => {
                                 question.qid,
                                 e.target.value
                             )
-                            console.log(questions?.questions)
                         }}
-                        defaultValue={question?.questionText}
+                        value={question?.questionText}
                     />
                     <div className="select">
                         <select
@@ -413,7 +424,9 @@ const Question: React.FC<props> = ({ question, index }) => {
                             <option value={8}>Email</option>
                             <option value={9}>File upload</option>
                         </select>
-                        <span className="select-arrow"></span>
+                        <span className="select-arrow">
+                            <DropdownArrow />
+                        </span>
                     </div>
                 </div>
                 <div className="question-component-primary-row2">
@@ -424,41 +437,49 @@ const Question: React.FC<props> = ({ question, index }) => {
                         {question.required ? (
                             <input
                                 type="checkbox"
-                                id="required-checkbox"
+                                id={question.qid}
                                 defaultChecked
+                                onChange={(e) =>
+                                    questionActions?.setRequired(
+                                        question.qid,
+                                        e.target.checked
+                                    )
+                                }
                             ></input>
                         ) : (
                             <input
                                 type="checkbox"
-                                id="required-checkbox"
+                                id={question.qid}
+                                onChange={(e) =>
+                                    questionActions?.setRequired(
+                                        question.qid,
+                                        e.target.checked
+                                    )
+                                }
                             ></input>
                         )}
                         <span className="styled-radio-checkbox"></span>
-                        <label htmlFor="required-checkbox">Required</label>
+                        <label htmlFor={question.qid}>Required</label>
                     </div>
 
                     <button
-                        className="question-delete-btn"
                         onClick={() => {
+                            console.log(question.qid)
                             questionActions?.deleteQuestion(question.qid)
                         }}
                     >
-                        {
-                            //delete btn
-                        }
-                        <svg
-                            width="22"
-                            height="29"
-                            viewBox="0 0 22 29"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M1.57143 25.7778C1.57143 27.55 2.98571 29 4.71429 29H17.2857C19.0143 29 20.4286 27.55 20.4286 25.7778V6.44444H1.57143V25.7778ZM22 1.61111H16.5L14.9286 0H7.07143L5.5 1.61111H0V4.83333H22V1.61111Z"
-                                fill="white"
-                                fillOpacity="0.87"
-                            />
-                        </svg>
+                        <DeleteIcon />
+                        <span className="icon-info">Delete Question</span>
+                        <span className="text-info-arrow" />
+                    </button>
+                    <button
+                        onClick={() => {
+                            questionActions?.addQuestion(index)
+                        }}
+                    >
+                        <AddQuestionIcon />
+                        <span className="icon-info">New Question</span>
+                        <span className="text-info-arrow" />
                     </button>
                 </div>
             </div>

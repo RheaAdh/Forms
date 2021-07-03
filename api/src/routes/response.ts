@@ -325,7 +325,7 @@ export const getResponsesByResIdByFormId = async (
                     String(form.owner) == String(req.session.userId)
                 ) {
                     console.log("Accessed Responses")
-                    return res.status(200).send({
+                    return res.send({
                         success: true,
                         data: formIndividualResponses,
                     })
