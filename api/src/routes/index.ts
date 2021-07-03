@@ -1,5 +1,10 @@
 import express, { Response, Request } from "express"
-import { isValidAdmin, isValidSuperAdmin, getAllAdmins } from "./adminuser"
+import {
+    isValidAdmin,
+    isValidSuperAdmin,
+    getAllAdmins,
+    verifyEmail,
+} from "./adminuser"
 import {
     deleteForm,
     addForm,
@@ -80,20 +85,19 @@ router.get(
     isValidAdmin,
     getResponsesByQuestionsByForm
 )
-router.get("/download/:formId",isValidAdmin, downloadResponse)
-router.post("/updateeditor",isValidAdmin, updateeditor)
+router.get("/download/:formId", isValidAdmin, downloadResponse)
+router.post("/updateeditor", isValidAdmin, updateeditor)
 
-router.get("/getadmins",isValidAdmin, getAllAdmins)
-router.get("/makeTemplate/:formId",isValidAdmin, makeTemplate)
-router.get("/useTemplate/:formId",isValidAdmin, useTemplate)
-router.get("/viewAllTemplates",isValidAdmin, viewAllTempalates)
-router.get("/response/:respid",isValidAdmin, getResponsebyRespid)
-
+router.get("/getadmins", isValidAdmin, getAllAdmins)
+router.get("/makeTemplate/:formId", isValidAdmin, makeTemplate)
+router.get("/useTemplate/:formId", isValidAdmin, useTemplate)
+router.get("/viewAllTemplates", isValidAdmin, viewAllTempalates)
+router.get("/response/:respid", isValidAdmin, getResponsebyRespid)
 
 ///////////////////////////SUPERADMIN ONLY////////////////////////////////
 router.get("/getsuperadminforms", isValidSuperAdmin, getSuperAdminForms)
 
-///////////////////////////USER,ADMIN AND SUPERADMIN///////////////////////////////
+///////////////////////////USER,ADMIN AND SUPERADMIN///////////////////////
 router.get("/getform/:formId", extractFormid, checkAuthentication, getForm)
 router.get("/getanonymity/:formId", isAnonymous)
 router.get(
@@ -111,5 +115,8 @@ router.post(
     getQuestionsByFormid
 )
 router.post("/submitresponse", checkAuthentication, submitResponse)
+
+////////////////////NO-AUTH///////////////////////////////////////////////////
+router.get("/emailverification/:token", verifyEmail)
 
 export default router

@@ -43,6 +43,7 @@ passport.use(
                             username: profile.displayName,
                             email: profile.emails[0].value,
                             role: "user",
+                            isVerified: true,
                         })
                         await newUser.save()
                         console.log("New User saved in database")
