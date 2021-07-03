@@ -20,13 +20,13 @@ response download - handle username, email (anonymous or not)
 
 ---NEED DETAILS(SAVED FOR LAST)---
 
-email validation -- Abhijeet
-reorder question backend implementation needed --- Rhea
+email validation ---> Abhijeet
+reorder question backend implementation needed ---> Rhea
 
 single response / editabe / anonymous backend implementation (first check anonymous if false, check editable or not) , not able to fetch form or questions 
-for anonymous form  ---- channged checkAuth middleware as implemented earlier seems working and  For where ever anonymous mark multipleresponse true and editable false  
+for anonymous form  ----> channged checkAuth middleware as implemented earlier seems working and  For where ever anonymous mark multipleresponse true and editable false  
 
-editors list possibly contains superadmin id, shouldn't happen since superadmins have access to all forms  -- Even though it contains/not contains it doesnt matter superadmin has access
+editors list possibly contains superadmin id, shouldn't happen since superadmins have access to all forms  --> Even though it contains/not contains it doesnt matter superadmin has access
 
 
     s3 bucket(IMP)
