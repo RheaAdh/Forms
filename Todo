@@ -11,7 +11,12 @@ open trashcan trasnition on delete
 prevent first update in question list context
 text area adjust height according to content
 background blur
+non anonymous responses dropdown issue 
 
+BACKEND
+option id  -- not needed
+sort response based on time
+response download - handle username, email (anonymous or not)
 
 ---NEED DETAILS(SAVED FOR LAST)---
 
@@ -26,4 +31,31 @@ editors list possibly contains superadmin id, shouldn't happen since superadmins
     s3 bucket(IMP)
     csv download 
     file upload
+
+
+
+DESIGN
+Domain theme
+Form error
+Not Logged in
+Session expired (if possible)
+No access
+404 (all error page with illustration or animation)
+Toggler For form open close
+slider
+substitute for blur (Firefox error)
+permission list 
+edit, multiple, single resp only
+anonymous option
+Form in card view
+admin/superadmin dashboard
+Login page
+registration page
+OAuth page
+Forget password page 
+ 
+
+
+
+
 

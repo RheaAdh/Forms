@@ -154,7 +154,7 @@ export const getResponsesByForm = async (req: Request, res: Response) => {
     try {
         let formResponses = await FormResponse.findOne({
             formId: formId,
-        })
+        }).populate("userid", { password: 0 })
         res.status(200).send(formResponses)
     } catch (error) {
         console.log(error)
@@ -165,7 +165,9 @@ export const getFormsByCreator = async (req: Request, res: Response) => {
     try {
         let creatorId = req.params.creatorId
         let usersForms: any
-        usersForms = await Form.find({ owner: creatorId })
+        usersForms = await Form.find({ owner: creatorId }).populate("userid", {
+            password: 0,
+        })
         res.status(200).send(usersForms)
     } catch (error) {
         console.log(error)
@@ -176,14 +178,13 @@ export const getFormsByCreator = async (req: Request, res: Response) => {
 //Coverting Response to .csv and then downloading
 
 export const downloadResponse = async (req: Request, res: Response) => {
-    //
     let formId = req.params.formId
     console.log(req.params.formid)
 
     //resp will store array of responses
     let resp = await FormResponse.find({
         formId: formId,
-    })
+    }).populate("userid", { password: 0 })
 
     //Using map to avoid frequent query and to store map of question id and question text which will be shown in .csv
     let quesidtotext: any = new Map()
@@ -194,7 +195,8 @@ export const downloadResponse = async (req: Request, res: Response) => {
             "questionText"
         )
         if (form) {
-            console.log("Form is " + form)
+            console.log("$$Form is " + form)
+            console.log("$$Response is " + resp)
             let questions = form.questions
             for (let i in questions) {
                 quesidtotext[String(questions[i]._id)] =
@@ -205,9 +207,6 @@ export const downloadResponse = async (req: Request, res: Response) => {
             res.status(400).send({ success: false, data: "No Form found" })
         }
 
-        // console.log("form is ")
-        // console.log(form)
-
         let temp
         let data = []
         //here we are extracting answer from array of responses->resp and storing in data which will be used in converting to .csv
@@ -216,7 +215,11 @@ export const downloadResponse = async (req: Request, res: Response) => {
         for (let i = 0; i < resp.length; i++) {
             temp = resp[i].responses
             let datarow
-            datarow = { Name: resp[i].username }
+            if (!form?.anonymous)
+                datarow = {
+                    Name: resp[i].username,
+                    Email: resp[i].userid.email,
+                }
             for (let j = 0; j < temp.length; j++) {
                 let str = quesidtotext[temp[j].questionId]
                 if (temp[j].shortText) {
@@ -282,20 +285,20 @@ export const downloadResponse = async (req: Request, res: Response) => {
         }
         console.log(data)
 
-        //Converting data to .csv and writting to a file
+        //Converting data to .csv and writting to a file  --- this part is now in frontend
         if (data) {
-            var ws = fileSystem.createWriteStream(
-                "./src/responsedownload/data.csv"
-            )
-            fastcsv
-                .write(data, { headers: true })
-                .on("finish", function () {
-                    //!!!!!Download .csv file
-                    //Need help
-                    //!!!!!Below res.download()  is not working properly
-                    // res.download('./src/responsedownload/data.csv')
-                })
-                .pipe(ws)
+            // var ws = fileSystem.createWriteStream(
+            //     "./src/responsedownload/data.csv"
+            // )
+            // fastcsv
+            //     .write(data, { headers: true })
+            //     .on("finish", function () {
+            //         //!!!!!Download .csv file
+            //         //Need help
+            //         //!!!!!Below res.download()  is not working properly
+            //         // res.download('./src/responsedownload/data.csv')
+            //     })
+            //     .pipe(ws)
             return res.send({ success: true, data: data })
         } else {
             res.status(400).send({ success: false, data: "No Form found" })
@@ -315,7 +318,10 @@ export const getResponsesByResIdByFormId = async (
         let formIndividualResponses = await FormResponse.findOne({
             _id: responseid,
         })
+            .populate("userid", { password: 0 })
+            .sort({ timestamps: -1 })
         console.log("Responses")
+        console.log(formIndividualResponses)
         if (formIndividualResponses) {
             let form = await Form.findById(formIndividualResponses.formId)
             if (form) {
@@ -364,7 +370,7 @@ export const getResponseIdByFormFilled = async (
         let responses: any
         responses = await FormResponse.find({
             formId: formId,
-        })
+        }).populate("userid", { password: 0 })
         console.log(responses)
         let ans: any = []
         for (let i = 0; i < responses.length; i++) {
@@ -521,7 +527,7 @@ export const getResponseByBothFormidAndResponseid = async (
         let formIndividualResponsesForForm = await FormResponse.findOne({
             _id: responseId,
             formId: req.params.formId,
-        })
+        }).populate("userid", { password: 0 })
         return res
             .status(200)
             .send({ success: true, data: formIndividualResponsesForForm })
@@ -573,9 +579,9 @@ export const getResponsebyRespid = async (req: Request, res: Response) => {
     try {
         let respid = req.params.respid
         console.log(respid)
-        let resp = await FormResponse.findById({ _id: respid }).populate(
-            "responses.questionId formId"
-        )
+        let resp = await FormResponse.findById({ _id: respid })
+            .populate("responses.questionId formId")
+            .populate("userid", { password: 0 })
         if (resp) {
             console.log(resp)
             return res.status(200).send({
