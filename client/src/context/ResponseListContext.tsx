@@ -112,7 +112,6 @@ export default function ResponseListProvider({
     }
 
     const getUsers = async () => {
-        if (!readOnly) return
         try {
             const res = await fetch(`/api/responsesidbyformfilled/${formId}`, {
                 method: "GET",
