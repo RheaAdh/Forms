@@ -133,15 +133,22 @@ export async function isAnonymous(req: any, res: any) {
 //MIDDLEWARE FOR CHECKING USER LOGIN
 export async function checkAuthentication(req: any, res: any, next: any) {
     try {
-        if (req.isAuthenticated() || req.session.isAuth) {
-            console.log("Allowed to access")
-            next()
-        } else {
-            console.log("Login to access")
-            res.status(401).send({
-                success: false,
-                data: "Please Login to view",
-            })
+        let form = await Form.findById(fid)
+        if (form) {
+            if (form.anonymous) {
+                next()
+            } else {
+                if (req.isAuthenticated() || req.session.isAuth) {
+                    console.log("Allowed to access")
+                    next()
+                } else {
+                    console.log("Login to access")
+                    res.status(401).send({
+                        success: false,
+                        data: "Please Login to view",
+                    })
+                }
+            }
         }
     } catch {
         console.log("Server Error")

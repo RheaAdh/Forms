@@ -82,6 +82,22 @@ export async function getFormForResponse(req: Request, res: Response) {
                 form.isActive = false
                 await form.save()
             }
+            if (!form?.isEditable && !form?.multipleResponses) {
+                let response = await FormResponse.findOne({
+                    userid: req.session.userId,
+                    formId: req.params.formId,
+                })
+                if (response) {
+                    console.log(response)
+                    console.log(req.session.username)
+                    console.log("Trying to answer again to a non-editable form")
+                    return res.status(400).send({
+                        success: false,
+                        msg:
+                            "Form is non editable and you have already submitted a response",
+                    })
+                }
+            }
             if (!form.isActive) {
                 console.log("Form is closed")
                 return res
@@ -192,7 +208,9 @@ export async function deleteForm(req: Request, res: Response) {
     console.log("Inside Delete")
     try {
         console.log(req.body.id)
-        let form = await Form.findById(req.body.id).populate("owner",{password:0})
+        let form = await Form.findById(req.body.id).populate("owner", {
+            password: 0,
+        })
         console.log(form)
         if (!form?.isTemplate) {
             let deletedResponses: any
@@ -424,7 +442,9 @@ export async function updateeditor(req: Request, res: Response) {
     console.log(neweditors)
     try {
         console.log("updating editor")
-        let form: any = await Form.findById(formid).populate("editors",{password:0})
+        let form: any = await Form.findById(formid).populate("editors", {
+            password: 0,
+        })
 
         if (form) {
             console.log(form)

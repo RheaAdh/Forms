@@ -27,7 +27,7 @@ export const submitResponse = async (req: Request, res: Response) => {
     let { username, userid, formId, responses, sendMail } = req.body
     let form: any = await Form.findOne({ _id: formId })
     console.log(form)
-
+    console.log("Send Mail boolean is " + sendMail)
     var presentDateTime: Date = new Date()
     console.log("Present time " + presentDateTime)
     console.log("closing time " + form.closes)
@@ -98,11 +98,11 @@ export const submitResponse = async (req: Request, res: Response) => {
         } //when for has submission but editing is not allowed but multiple response by single user is allowed
         else if (form.multipleResponses) {
             try {
-                let responseCount = await FormResponse.find({
-                    userid: req.session.userId,
-                    formId,
-                }).count()
-                if (responseCount <= Number(process.env.LIMIT_MULTIPLE_RESP)) {
+                //Multiple Response in anonymous forms
+                if (form.anonymous) {
+                    console.log(
+                        "Submitting Multiple response to anonymous forms"
+                    )
                     const formResponse = new FormResponse({
                         username,
                         userid,
@@ -111,19 +111,43 @@ export const submitResponse = async (req: Request, res: Response) => {
                     })
                     newresp = await formResponse.save()
                     console.log("Response added!")
-                    console.log("Submitting another Response by the user")
                     res.status(200).send({
                         success: true,
                         data: "Response submitted ",
                     })
-
-                    emailResponse(newresp, req.session)
+                    if (sendMail) emailResponse(newresp, req.session)
                 } else {
-                    console.log("Response Limit Reached")
-                    return res.status(400).send({
-                        success: false,
-                        msg: `Maximum Response Limit ${process.env.LIMIT_MULTIPLE_RESP} reached, try contacting Admin for further details`,
-                    })
+                    //Multiple Response in non-anonymous forms with a limit in form submission per user
+                    let responseCount = await FormResponse.find({
+                        userid: req.session.userId,
+                        formId,
+                    }).countDocuments()
+                    console.log(responseCount)
+                    if (
+                        responseCount <= Number(process.env.LIMIT_MULTIPLE_RESP)
+                    ) {
+                        const formResponse = new FormResponse({
+                            username,
+                            userid,
+                            formId,
+                            responses,
+                        })
+                        newresp = await formResponse.save()
+                        console.log("Response added!")
+                        console.log("Submitting another Response by the user")
+                        res.status(200).send({
+                            success: true,
+                            data: "Response submitted ",
+                        })
+
+                        if (sendMail) emailResponse(newresp, req.session)
+                    } else {
+                        console.log("Response Limit Reached")
+                        return res.status(400).send({
+                            success: false,
+                            msg: `Maximum Response Limit ${process.env.LIMIT_MULTIPLE_RESP} reached, try contacting Admin for further details`,
+                        })
+                    }
                 }
             } catch (error) {
                 console.log("Server Error")
