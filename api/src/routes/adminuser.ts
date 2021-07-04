@@ -76,8 +76,13 @@ export async function adminRegister(req: Request, res: Response) {
         })
 
         try {
-            await user.save()
+            let newuser = await user.save()
             console.log("New admin created!")
+
+            //Verification of Email  purpose id -> 1
+            emailToken(newuser.token, newuser, 1)
+            console.log("Email for verification")
+
             return res.status(200).send({
                 success: true,
                 data: "Successfully registered a new admin",
@@ -111,6 +116,12 @@ export async function adminLogin(req: Request, res: Response) {
         return res.status(400).send({
             success: false,
             data: "User doesnt exist, Please register to Login",
+        })
+    }
+    if (!user.isVerified) {
+        return res.status(400).send({
+            success: false,
+            data: "Verification is pending,Check your mail box and verify",
         })
     }
 
@@ -210,12 +221,22 @@ export async function adminLogout(
     })
 }
 
-async function emailResponse(token: any, receiver: any) {
+async function emailToken(token: any, receiver: any, purpose: Number) {
     try {
         console.log("inside forgot mailer")
         console.log(receiver.username)
 
-        const output = `<p>Hello ${receiver.username}</p>Link for reset password: <a href ="http://localhost:3000/resetpassword/${token}">http://localhost:3000/resetpassword/${token}</a><p>Regards,<br>IECSE</p>`
+        const output1 = `<p>Hello ${receiver.username}</p>Please click on the link to verify: <a href ="http://localhost:3000/verifyemail/${token}">http://localhost:3000/verifyemail/${token}</a><p>Regards,<br>IECSE</p>`
+        const output2 = `<p>Hello ${receiver.username}</p>Link for reset password: <a href ="http://localhost:3000/resetpassword/${token}">http://localhost:3000/resetpassword/${token}</a><p>Regards,<br>IECSE</p>`
+        let output: any
+        switch (purpose) {
+            case 1:
+                output = output1
+                break
+            case 2:
+                output = output2
+                break
+        }
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
@@ -273,7 +294,7 @@ export async function adminForgotPassword(
     // let link = `http://localhost:7000/resetpassword/${token}`
     console.log(user)
 
-    emailResponse(token, user)
+    emailToken(token, user, 2)
 
     //send email with this link
     return res.status(200).send({
@@ -282,11 +303,7 @@ export async function adminForgotPassword(
     })
 }
 
-export async function adminResetPassword(
-    req: Request,
-    res: Response,
-    next: NextFunction
-) {
+export async function adminResetPassword(req: Request, res: Response) {
     console.log("adminResetPassword POST REQUEST WAS MADE")
     const compareToken = req.params.token
     console.log(compareToken)
@@ -298,6 +315,7 @@ export async function adminResetPassword(
         user = await User.findOne({ token: compareToken })
     } catch (error) {
         console.error("error")
+        res.status(500).send({ success: false, msg: "Server Error" })
     }
     if (newPassword.length >= 8) {
         if (newPassword === newConfirmPassword) {
@@ -324,6 +342,31 @@ export async function adminResetPassword(
         }
     } else {
         return res.status(400).send({ success: false, msg: "min len 8" })
+    }
+}
+
+export async function verifyEmail(req: Request, res: Response) {
+    try {
+        let compareToken = req.params.token
+        let user = await User.findOne({ token: compareToken })
+        if (user) {
+            await User.updateOne(
+                { token: compareToken },
+                { $set: { isVerified: true, token: uuidv4() } }
+            )
+            console.log("User Verified and token reset")
+            return res.status(200).send({
+                success: true,
+                msg: "Email Verified, Redirect to Login",
+            })
+        } else {
+            return res
+                .status(400)
+                .send({ success: false, msg: "Invalid Token" })
+        }
+    } catch (err) {
+        console.log(err)
+        res.status(500).send({ success: false, msg: "Server Error" })
     }
 }
 

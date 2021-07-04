@@ -1,5 +1,15 @@
 import mongoose, { Schema, Document } from 'mongoose'
 
+export interface UserDoc extends Document {
+    username: string
+    password:string
+    email:string
+    role:string
+    token:string
+    isVerified:boolean
+
+}
+
 //USER SCHEMA
 const userSchema: Schema = new Schema(
     {
@@ -24,6 +34,10 @@ const userSchema: Schema = new Schema(
         token:{
             type:String,
             default:null,
+        },
+        isVerified:{
+            type:Boolean,
+            default:false
         }
     },
     {
@@ -33,4 +47,7 @@ const userSchema: Schema = new Schema(
 
 //COMPILE USER MODEL
 
-export const User = mongoose.model('User', userSchema);
+export const User = mongoose.model<UserDoc>("user", userSchema)
+
+// export default FormResponse
+// export const User = mongoose.model('User', userSchema);
