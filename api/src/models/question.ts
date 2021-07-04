@@ -15,7 +15,7 @@ const questionSchema: Schema = new Schema(
         questionText: { type: String, required: true },
         required: { type: Boolean, default: false },
         //questionType: String This is  made by default by the discriminator key
-        userId: { type: Schema.Types.ObjectId, ref: "User" },
+        userId: { type: Schema.Types.ObjectId, ref: "user" },
     },
     options
 )

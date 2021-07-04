@@ -9,7 +9,6 @@ export interface ResponseDoc extends Document {
             answerType: string
             shortText: string
             paragraphText: string
-            // emailText: string
             selectedOption: string
             multipleSelected: [string]
             selectedOptionsGrid: [{ row: string; col: string }]
@@ -25,7 +24,7 @@ export interface ResponseDoc extends Document {
 const response: Schema = new Schema(
     {
         username: { type: String },
-        userid: { type: Schema.Types.ObjectId, ref: "User" },
+        userid: { type: Schema.Types.ObjectId, ref: "user" },
         formId: { type: Schema.Types.ObjectId, ref: "Form" },
         responses: [
             {
