@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose"
+import mongoose, { Document, Mongoose, Schema, Types } from "mongoose"
 import { Response, Request, NextFunction } from "express"
 import * as mongo from "../config/mongo"
 import { Form } from "../models/form"
@@ -207,42 +207,44 @@ export async function updateForm(req: Request, res: Response) {
 export async function deleteForm(req: Request, res: Response) {
     console.log("Inside Delete")
     try {
-        console.log(req.body.id)
-        let form = await Form.findById(req.body.id).populate("owner", {
+        console.log(req.body._id)
+        let form: any = await Form.find({
+            _id: mongoose.Types.ObjectId(req.body._id),
+        }).populate("owner", {
             password: 0,
         })
         console.log(form)
         if (!form?.isTemplate) {
             let deletedResponses: any
             deletedResponses = await FormResponse.deleteMany({
-                formId: req.body.id,
+                formId: req.body._id,
             })
 
             let deletedQuestions: any
             deletedQuestions = await Question.deleteMany({
-                formid: req.body.id,
+                formid: req.body._id,
             })
 
             let deletedForm: any
             deletedForm = await Form.deleteOne({
-                _id: req.body.id,
+                _id: req.body._id,
             })
             return res.send({ success: true, msg: deletedForm })
         } else if (form?.owner["role"] == "superadmin") {
             if (req.session.role == "superadmin") {
                 let deletedResponses: any
                 deletedResponses = await FormResponse.deleteMany({
-                    formId: req.body.id,
+                    formId: req.body._id,
                 })
 
                 let deletedQuestions: any
                 deletedQuestions = await Question.deleteMany({
-                    formid: req.body.id,
+                    formid: req.body._id,
                 })
 
                 let deletedForm: any
                 deletedForm = await Form.deleteOne({
-                    _id: req.body.id,
+                    _id: req.body._id,
                 })
                 return res.send({ success: true, msg: deletedForm })
             } else {
@@ -254,17 +256,17 @@ export async function deleteForm(req: Request, res: Response) {
         } else {
             let deletedResponses: any
             deletedResponses = await FormResponse.deleteMany({
-                formId: req.body.id,
+                formId: req.body._id,
             })
 
             let deletedQuestions: any
             deletedQuestions = await Question.deleteMany({
-                formid: req.body.id,
+                formid: req.body._id,
             })
 
             let deletedForm: any
             deletedForm = await Form.deleteOne({
-                _id: req.body.id,
+                _id: req.body._id,
             })
             return res.send({ success: true, msg: deletedForm })
         }

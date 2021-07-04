@@ -28,7 +28,7 @@ const form: Schema = new Schema(
         title: { type: String, required: true },
         color_theme: String,
         questions: [{ type: Schema.Types.ObjectId, ref: "question" }],
-        owner: { type: Schema.Types.ObjectId, ref: "User" },
+        owner: { type: Schema.Types.ObjectId, ref: "user" },
         description: { type: String },
         closes: Date,
         isEditable: { type: Boolean, default: true },
@@ -36,7 +36,7 @@ const form: Schema = new Schema(
         multipleResponses: { type: Boolean, default: false },
         isTemplate: { type: Boolean, default: false },
         role: { type: String },
-        editors: [{ type: Schema.Types.ObjectId, ref: "User" }],
+        editors: [{ type: Schema.Types.ObjectId, ref: "user" }],
         dontdelete: { type: Boolean, default: false },     //To be used only with default Templates
         anonymous:{ type: Boolean, default: false },
     },
