@@ -1,4 +1,5 @@
 import React, { ReactElement, useContext, useState } from "react"
+// import { v4 as uuidv4 } from "uuid"
 
 export const questionTypes = [
     "short-answer",
@@ -129,6 +130,8 @@ export default function QuestionsListProvider({
         )
     }
     const addQuestion = (after: number) => {
+        console.log(after)
+
         if (!formId) return
         const newQuestion = {
             questionText: "Question",
@@ -136,7 +139,10 @@ export default function QuestionsListProvider({
             required: false,
             formId: formId,
             qid: "",
+            after: after,
         }
+        console.log(newQuestion)
+
         fetch("/api/addquestion", {
             method: "POST",
             headers: {

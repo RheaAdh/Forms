@@ -2,7 +2,7 @@ import { Response, Request } from "express"
 import * as mongo from "../config/mongo"
 import { Form } from "../models/form"
 import FormResponse from "../models/response"
-
+import { updateForm } from "./form"
 import {
     Question,
     shortQuestion,
@@ -21,6 +21,7 @@ import {
 export async function addQuestion(req: Request, res: Response) {
     try {
         let {
+            after,
             formId,
             questionType,
             questionText,
@@ -36,6 +37,9 @@ export async function addQuestion(req: Request, res: Response) {
         } = req.body
 
         //?FIND FORM
+        console.log("checekckeckkeckekckekcekc")
+
+        console.log("after=" + after)
 
         let form: any
         form = await Form.findById(formId)
@@ -138,13 +142,45 @@ export async function addQuestion(req: Request, res: Response) {
                 default:
                     newQuestion = new Question({ ...common })
             }
+            console.log("chchckckckckkckckk2")
+
+            console.log(newQuestion)
 
             await newQuestion.save()
-            console.log("Questoin saved!!")
+            console.log("Question saved!!")
+
+            console.log(form.questions.length)
 
             form.questions.push(newQuestion)
+            let last = form.questions.length - 1
+            let moveto = after + 1
+            console.log("---BEFORE SWAP-------")
+            for (let i = 0; i < form.questions.length; i++) {
+                console.log(form.questions[i])
+            }
+            console.log("----SWAP-------")
+            for (let i = last; i > moveto; i--) {
+                console.log(form.questions[i - 1], form.questions[i])
+                let temp = form.questions[i]
+                form.questions[i] = form.questions[i - 1]
+                form.questions[i - 1] = temp
+                console.log(form.questions[i - 1], form.questions[i])
+                await form.save()
+            }
+            console.log("------AFTER SWAP-----------")
+
+            for (let i = 0; i < form.questions.length; i++) {
+                console.log(form.questions[i])
+            }
+
             await form.save()
+            console.log("------AFTER SAVE-----------")
+            for (let i = 0; i < form.questions.length; i++) {
+                console.log(form.questions[i])
+            }
+
             console.log("Form saved!!")
+
             return res.json(newQuestion)
         }
     } catch (error) {

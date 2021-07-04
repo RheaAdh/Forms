@@ -228,13 +228,18 @@ async function emailToken(token: any, receiver: any, purpose: Number) {
 
         const output1 = `<p>Hello ${receiver.username}</p>Please click on the link to verify: <a href ="http://localhost:3000/verifyemail/${token}">http://localhost:3000/verifyemail/${token}</a><p>Regards,<br>IECSE</p>`
         const output2 = `<p>Hello ${receiver.username}</p>Link for reset password: <a href ="http://localhost:3000/resetpassword/${token}">http://localhost:3000/resetpassword/${token}</a><p>Regards,<br>IECSE</p>`
+        const subject1 = "Verify Mail"
+        const subject2 = "Reset Password"
         let output: any
+        let subject: any
         switch (purpose) {
             case 1:
                 output = output1
+                subject = subject1
                 break
             case 2:
                 output = output2
+                subject = subject2
                 break
         }
         let transporter = nodemailer.createTransport({
@@ -255,7 +260,7 @@ async function emailToken(token: any, receiver: any, purpose: Number) {
             let info = await transporter.sendMail({
                 from: '"Admin" <iecseforms@gmail.com>', // sender address
                 to: `${receiver.email}`, // list of receivers
-                subject: "Reset Password", // Subject line
+                subject: subject, // Subject line
                 text: "Reset Password Link", // plain text body
                 html: output, // html body
             })
