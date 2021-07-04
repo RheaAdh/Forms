@@ -311,18 +311,18 @@ export const downloadResponse = async (req: Request, res: Response) => {
 
         //Converting data to .csv and writting to a file  --- this part is now in frontend
         if (data) {
-            // var ws = fileSystem.createWriteStream(
-            //     "./src/responsedownload/data.csv"
-            // )
-            // fastcsv
-            //     .write(data, { headers: true })
-            //     .on("finish", function () {
-            //         //!!!!!Download .csv file
-            //         //Need help
-            //         //!!!!!Below res.download()  is not working properly
-            //         // res.download('./src/responsedownload/data.csv')
-            //     })
-            //     .pipe(ws)
+            var ws = fileSystem.createWriteStream(
+                "./src/responsedownload/data.csv"
+            )
+            fastcsv
+                .write(data, { headers: true })
+                .on("finish", function () {
+                    //!!!!!Download .csv file
+                    //Need help
+                    //!!!!!Below res.download()  is not working properly
+                    // res.download('./src/responsedownload/data.csv')
+                })
+                .pipe(ws)
             return res.send({ success: true, data: data })
         } else {
             res.status(400).send({ success: false, data: "No Form found" })
@@ -394,13 +394,14 @@ export const getResponseIdByFormFilled = async (
         let responses: any
         responses = await FormResponse.find({
             formId: formId,
-        }).populate("userid", { password: 0 })
+        }).populate("userid",{password:0})
         console.log(responses)
         let ans: any = []
         for (let i = 0; i < responses.length; i++) {
             ans.push({
                 responseid: responses[i]._id,
                 username: responses[i].username,
+                email: responses[i].userid.email
             })
         }
 
