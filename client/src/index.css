@@ -250,11 +250,18 @@ option:hover {
 }
 
 .lin-scale-question {
+    width: 100%;
     margin-top: var(--marginTop);
+    display: flex;
 }
 
 .lin-scale-item {
     flex: 3 !important;
+}
+
+.lin-scale-item:first-child,
+.lin-scale-item:last-child {
+    transform: translateY(0.3em);
 }
 
 .lin-scale-item label {

@@ -212,14 +212,14 @@ const QuestionResponse: React.FC<props> = ({
         }
         responseList?.responseActions?.updateResponse(index, answer)
     }
-    const handleLinearScale = (e: any) => {
+    const handleLinearScale = (num: string) => {
         var submit: boolean = !question.required
         if (question["required"]) {
             submit = true
         }
         const answer = {
             answerType: "linearscale-answer",
-            selectedOption: e.target.value,
+            selectedOption: num,
             formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
@@ -231,12 +231,7 @@ const QuestionResponse: React.FC<props> = ({
         //Short
         <div>
             {responseList?.readOnly === true ? (
-                <input
-                    type="text"
-                    placeholder="Short Answer"
-                    defaultValue={prevResponse?.shortText}
-                    readOnly
-                />
+                <p>{prevResponse?.shortText}</p>
             ) : (
                 <input
                     type="text"
@@ -249,12 +244,7 @@ const QuestionResponse: React.FC<props> = ({
         //Paragraph
         <div>
             {responseList?.readOnly === true ? (
-                <textarea
-                    onChange={(e) => autoAdjustHeight(e)}
-                    placeholder="Paragraph Answer"
-                    readOnly
-                    defaultValue={prevResponse?.paragraphText}
-                ></textarea>
+                <p>{prevResponse?.paragraphText}</p>
             ) : (
                 <textarea
                     placeholder="Paragraph Answer"
@@ -406,16 +396,14 @@ const QuestionResponse: React.FC<props> = ({
                     })}
                 </select>
             )}
-            <span className="select-arrow"></span>
+            <span className="select-arrow">
+                <DropdownArrow />
+            </span>
         </div>,
         //Email
         <div>
             {responseList?.readOnly === true ? (
-                <input
-                    readOnly
-                    type="text"
-                    defaultValue={prevResponse?.emailAnswer}
-                />
+                <p>{prevResponse?.emailAnswer}</p>
             ) : (
                 <input
                     type="text"
@@ -602,33 +590,35 @@ const QuestionResponse: React.FC<props> = ({
         </div>,
         //Linear Scale
         <div className="lin-scale-question">
-            <span>{question.lowRatingLabel}</span>
-            <div className="grid-question-row">
-                {arr.map((num: string) => (
-                    <div className="radio-checkbox grid-question-row-item lin-scale-item">
-                        {responseList?.readOnly ? (
-                            <input
-                                type="radio"
-                                disabled
-                                key={num}
-                                id={question.qid + num}
-                                name={question.qid}
-                            ></input>
-                        ) : (
-                            <input
-                                type="radio"
-                                key={num}
-                                id={question.qid + num}
-                                name={question.qid}
-                                onChange={(e) => handleLinearScale(e)}
-                            ></input>
-                        )}
-                        <span className="styled-radio-checkbox"></span>
-                        <label htmlFor={question.qid + num}>{num}</label>
-                    </div>
-                ))}
-            </div>
-            <span className="lin-scale-label">
+            <span className="lin-scale-item">{question.lowRatingLabel}</span>
+
+            {arr.map((num: string) => (
+                <div
+                    className="radio-checkbox grid-question-row-item lin-scale-item"
+                    key={num}
+                >
+                    {responseList?.readOnly ? (
+                        <input
+                            type="radio"
+                            disabled
+                            key={num}
+                            id={question.qid + num}
+                            name={question.qid}
+                        ></input>
+                    ) : (
+                        <input
+                            type="radio"
+                            key={num}
+                            id={question.qid + num}
+                            name={question.qid}
+                            onChange={() => handleLinearScale(num)}
+                        ></input>
+                    )}
+                    <span className="styled-radio-checkbox"></span>
+                    <label htmlFor={question.qid + num}>{num}</label>
+                </div>
+            ))}
+            <span className="lin-scale-item">
                 {question["highRatingLabel"]}
             </span>
         </div>,
