@@ -33,7 +33,7 @@ const RegisterPage: React.FC = () => {
     useEffect(() => {
         if (value?.currentUser === null) value.getCurrentUser()
     }, [])
-    return value?.currentUser ? (
+    return value?.currentUser && value?.currentUser?.userid !== "x" ? (
         <Redirect to="/" />
     ) : (
         <div className="form-container">

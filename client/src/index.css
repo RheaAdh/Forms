@@ -10,6 +10,7 @@ body {
     --fontColor: #fff;
     --borderBottom: #02b7db;
     --marginTop: 1.5rem;
+    --linScaleLine: #585858;
     --adminNavbarHeight: 8rem;
     --secondaryBackground: rgba(255, 255, 255, 0.12);
     --secondaryBorder: #fff;
@@ -224,4 +225,39 @@ option {
 }
 option:hover {
     background-color: var(--borderBottom);
+}
+
+.grid-question {
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--marginTop);
+}
+
+.grid-question-row {
+    display: flex;
+    min-width: 30%;
+}
+
+.grid-question-row-item:first-child {
+    flex: 4;
+}
+
+.grid-question-row-item {
+    display: inline-block;
+    flex: 3;
+    flex-wrap: wrap;
+}
+
+.lin-scale-question {
+    margin-top: var(--marginTop);
+}
+
+.lin-scale-item {
+    flex: 3 !important;
+}
+
+.lin-scale-item label {
+    margin-left: 0.3em;
+    position: relative;
+    top: 1em;
 }

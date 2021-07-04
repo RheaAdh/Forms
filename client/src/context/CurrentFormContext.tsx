@@ -8,6 +8,7 @@ export interface CurrentForm {
     title?: string
     description?: string
     editable?: boolean
+    multipleResponses?: boolean
     isActive?: boolean
     editors?: string[]
     isQuestionsPage?: boolean
@@ -23,6 +24,7 @@ export interface Form {
     setDescription: (description: string) => void
     setDate: (date: Date | null) => void
     setEditable: (editable: boolean) => void
+    setMultipleResponses: (multiple: boolean) => void
     setAnonymity: (anonymous: boolean) => void
     setFormDetails: (
         id: string,
@@ -47,6 +49,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
     const [description, setDescription] = useState<string>()
     const [date, setDate] = useState<Date | null>()
     const [editable, setEditable] = useState<boolean>()
+    const [multipleResponses, setMultipleResponses] = useState<boolean>()
     const [editors, setEditors] = useState<string[]>()
     const [isActive, setActive] = useState<boolean>()
     const [isQuestionsPage, setQuestionsPage] = useState<boolean>()
@@ -59,10 +62,9 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
     ) => {
         if (formData === null) {
             // Small hack to prevent a form from getting updated with details from previous context
-            setDescription(undefined)
+            setId("")
             return
         }
-        setId(id)
         // if data has already been fetched
         if (formData !== undefined) {
             setTitle(formData.title)
@@ -72,9 +74,12 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
             setEditors(formData.editors)
             setAnonymity(formData.anonymous)
             setIsTemplate(formData.isTemplate)
+            setMultipleResponses(formData.multipleResponses)
             if (formData.closes) {
                 new Date(formData.closes)
             } else setDate(null)
+
+            setId(id)
             return { success: true, form: formData }
         }
         let fetchRoute = ``
@@ -105,11 +110,14 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
             setEditable(data.form.isEditable)
             setActive(data.form.isActive)
             setEditors(data.form.editors)
+            setMultipleResponses(data.form.multipleResponses)
             setAnonymity(data.form.anonymous)
             setIsTemplate(data.form.isTemplate)
             if (data.form.closes) {
                 setDate(new Date(data.form.closes))
             } else setDate(null)
+
+            setId(id)
             return data.form
         } catch (err) {
             console.log(err)
@@ -136,15 +144,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         return data
     }
     const updateForm = async () => {
-        if (
-            description === undefined ||
-            editable === undefined ||
-            anonymous === undefined ||
-            date === undefined ||
-            title === undefined ||
-            isActive === undefined ||
-            editors === undefined
-        ) {
+        if (id === undefined || id.length === 0) {
             return
         }
         if (form?.currentForm?.id)
@@ -182,6 +182,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         title,
         description,
         editable,
+        multipleResponses,
         editors,
         isQuestionsPage,
         isTemplate,
@@ -197,6 +198,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         setDescription,
         setDate,
         setEditable,
+        setMultipleResponses,
         setActive,
         setEditors,
         setQuestionsPage,

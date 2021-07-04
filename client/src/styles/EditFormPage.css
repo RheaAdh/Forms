@@ -1,5 +1,5 @@
 .edit-form-page {
-    background: url("../images/logo.png") no-repeat;
+    background: var(--backgroundImage) no-repeat;
     background-position: right top;
     background-size: 40rem 44rem;
     background-color: var(--backgroundColor);

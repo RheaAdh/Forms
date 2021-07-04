@@ -6,6 +6,8 @@ import "../styles/AdminNavbar.css"
 import { Link } from "react-router-dom"
 import { ReactComponent as PreviewIcon } from "../images/PreviewForm.svg"
 import { ReactComponent as ProfileIcon } from "../images/ProfileIcon.svg"
+import { ReactComponent as CopyIcon } from "../images/CopyIcon.svg"
+import { CopyToClipboard } from "react-copy-to-clipboard"
 
 interface props {
     questionsPage: boolean
@@ -50,11 +52,21 @@ const AdminNavbar = ({ questionsPage }: props) => {
                         className="navbar-icon-btn"
                         onClick={() => history.push(`/form/${formId}`)}
                     >
-                        <PreviewIcon />
+                        <PreviewIcon width="2rem" />
                         <span className="icon-info">Preview Form</span>
                         <span className="text-info-arrow" />
                     </button>
                 ) : null}
+
+                <CopyToClipboard
+                    text={`http://localhost:3000/form/${form?.currentForm?.id}`}
+                >
+                    <button className="navbar-icon-btn">
+                        <CopyIcon width="1.5rem" />
+                        <span className="icon-info">Copy Link to Form</span>
+                        <span className="text-info-arrow" />
+                    </button>
+                </CopyToClipboard>
 
                 <h2>{form?.currentForm?.title}</h2>
             </div>

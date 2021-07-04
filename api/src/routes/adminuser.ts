@@ -83,7 +83,7 @@ export async function adminRegister(req: Request, res: Response) {
             emailToken(newuser.token, newuser, 1)
             console.log("Email for verification")
 
-            return res.status(200).send({
+            return res.send({
                 success: true,
                 data: "Successfully registered a new admin",
             })

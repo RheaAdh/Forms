@@ -80,11 +80,11 @@ export default function QuestionsListProvider({
 }: Props): ReactElement {
     const [questions, setQuestions] = useState<Question[]>([])
     const [formId, setFormid] = useState<string | null>(null)
-    const [key, setKey] = useState<number>(1)
+    let key = 1
 
     const keyGen = () => {
         const k = key
-        setKey((prevKey) => prevKey + 1)
+        key = key + 1
         return k
     }
 
@@ -101,21 +101,21 @@ export default function QuestionsListProvider({
                     options:
                         q.options !== undefined
                             ? q.options.map((opt: string) => {
-                                  return { text: opt, id: keyGen() }
+                                  return { text: opt, key: keyGen() }
                               })
-                            : [{ text: "", id: keyGen() }],
+                            : [{ text: "", key: keyGen() }],
                     rows:
                         q.rowLabel !== undefined
                             ? q.rowLabel.map((opt: string) => {
-                                  return { text: opt, id: keyGen() }
+                                  return { text: opt, key: keyGen() }
                               })
-                            : [{ text: "", id: keyGen() }],
+                            : [{ text: "", key: keyGen() }],
                     cols:
                         q.colLabel !== undefined
                             ? q.colLabel.map((opt: string) => {
-                                  return { text: opt, id: keyGen() }
+                                  return { text: opt, key: keyGen() }
                               })
-                            : [{ text: "", id: keyGen() }],
+                            : [{ text: "", key: keyGen() }],
                     lowRating: q.lowRating !== undefined ? q.lowRating : 0,
                     highRating: q.highRating !== undefined ? q.highRating : 2,
                     lowRatingLabel:
@@ -136,6 +136,7 @@ export default function QuestionsListProvider({
             required: false,
             formId: formId,
             qid: "",
+            after,
         }
         fetch("/api/addquestion", {
             method: "POST",
@@ -358,7 +359,7 @@ export default function QuestionsListProvider({
         setQuestions(newQuestions)
     }
     const updateQuestion = (qid: string | undefined) => {
-        if (qid === undefined) return
+        if (qid === undefined || qid.length === 0) return
         const q = questions.find((question) => question.qid === qid)
         if (q === undefined) return
         let body = null

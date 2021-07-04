@@ -95,7 +95,6 @@ const QuestionResponse: React.FC<props> = ({
 
     const handleCheckbox = (e: any, option: Option) => {
         var submit = true
-        console.log(prevResponse)
         if (prevResponse?.multipleSelected === undefined) return
         const opt = prevResponse?.multipleSelected.slice()
         if (e.target.checked) {
@@ -158,7 +157,7 @@ const QuestionResponse: React.FC<props> = ({
     const handleMcqGrid = (row: string, col: string) => {
         if (prevResponse?.selectedOptionsGrid === undefined) return
         const mcq = prevResponse?.selectedOptionsGrid?.slice()
-        var submit = false
+        var submit = !question.required
         let idx = mcq.findIndex((obj: any, i: number) => {
             if (obj["row"] === row) {
                 return true
@@ -407,9 +406,7 @@ const QuestionResponse: React.FC<props> = ({
                     })}
                 </select>
             )}
-            <span className="select-arrow">
-                <DropdownArrow />
-            </span>
+            <span className="select-arrow"></span>
         </div>,
         //Email
         <div>
@@ -430,127 +427,159 @@ const QuestionResponse: React.FC<props> = ({
             <b>{emailError}</b>
         </div>,
         //MCQ grid
-        <div>
-            {question.cols?.map((data: Option, i: number) => {
-                return (
-                    <span key={data.key} style={{ marginRight: "10px" }}>
-                        {data.text}
-                    </span>
-                )
-            })}
+        <div className="grid-question">
+            <div className="grid-question-row">
+                <span key={"0"} className="grid-question-row-item"></span>
+                {question.cols?.map((data: Option, i: number) => {
+                    return (
+                        <span key={data.key} className="grid-question-row-item">
+                            {data.text}
+                        </span>
+                    )
+                })}
+            </div>
             {question?.rows?.map((row: Option, i: number) => {
                 return (
-                    <div key={row.key} className="radio-checkbox">
-                        <span>{row.text} </span>
+                    <div className="grid-question-row" key={row.key}>
+                        <span className="grid-question-row-item">
+                            {row.text}{" "}
+                        </span>
                         {question?.cols?.map((col: Option, j: number) => {
                             // Iterating through rows and columns to return radio element.
                             // Based on previous response, return element with default checked set to true if checked
                             // else leave the attribute out. (Setting to false wasn't working)
 
-                            return prevResponse?.selectedOptionsGrid?.find(
-                                (ob) => {
-                                    return (
-                                        ob["row"] === row.text &&
-                                        ob["col"] === col.text
-                                    )
-                                }
-                            ) !== undefined ? (
-                                responseList?.readOnly ? (
-                                    <input
-                                        type="radio"
-                                        key={col.key}
-                                        name={row.text}
-                                        style={{
-                                            display: "inline",
-                                            marginRight: "10px",
-                                        }}
-                                        disabled
-                                        defaultChecked
-                                    />
-                                ) : (
-                                    <input
-                                        onClick={() =>
-                                            handleMcqGrid(row.text, col.text)
-                                        }
-                                        type="radio"
-                                        key={col.key}
-                                        name={row.text}
-                                        style={{
-                                            display: "inline",
-                                            marginRight: "10px",
-                                        }}
-                                        defaultChecked
-                                    />
-                                )
-                            ) : responseList?.readOnly ? (
-                                <input
-                                    disabled
-                                    type="radio"
+                            return (
+                                <div
                                     key={col.key}
-                                    name={row.text}
-                                    style={{
-                                        display: "inline",
-                                        marginRight: "10px",
-                                    }}
-                                />
-                            ) : (
-                                <input
-                                    onClick={() =>
-                                        handleMcqGrid(row.text, col.text)
-                                    }
-                                    type="radio"
-                                    key={col.text}
-                                    name={row.text}
-                                    style={{
-                                        display: "inline",
-                                        marginRight: "10px",
-                                    }}
-                                />
+                                    className="radio-checkbox grid-question-row-item"
+                                >
+                                    {prevResponse?.selectedOptionsGrid?.find(
+                                        (ob) => {
+                                            return (
+                                                ob["row"] === row.text &&
+                                                ob["col"] === col.text
+                                            )
+                                        }
+                                    ) !== undefined ? (
+                                        responseList?.readOnly ? (
+                                            <input
+                                                type="radio"
+                                                key={col.key}
+                                                name={row.text}
+                                                disabled
+                                                defaultChecked
+                                            />
+                                        ) : (
+                                            <input
+                                                onClick={() =>
+                                                    handleMcqGrid(
+                                                        row.text,
+                                                        col.text
+                                                    )
+                                                }
+                                                type="radio"
+                                                key={col.key}
+                                                name={row.text}
+                                                defaultChecked
+                                            />
+                                        )
+                                    ) : responseList?.readOnly ? (
+                                        <input
+                                            disabled
+                                            type="radio"
+                                            key={col.key}
+                                            name={row.text}
+                                        />
+                                    ) : (
+                                        <input
+                                            onClick={() =>
+                                                handleMcqGrid(
+                                                    row.text,
+                                                    col.text
+                                                )
+                                            }
+                                            type="radio"
+                                            key={col.key}
+                                            name={row.text}
+                                        />
+                                    )}
+                                    <span className="styled-radio-checkbox"></span>
+                                </div>
                             )
                         })}
-                        <span className="styled-radio-checkbox"></span>
                     </div>
                 )
             })}
         </div>,
         //CheckboxGrid
-        <div>
-            {question?.cols?.map((data: Option, i: number) => {
-                return (
-                    <span key={data.key} style={{ marginRight: "10px" }}>
-                        {data.text}
-                    </span>
-                )
-            })}
+        <div className="grid-question">
+            <div className="grid-question-row">
+                <span className="grid-question-row-item"></span>
+                {question?.cols?.map((data: Option, i: number) => {
+                    return (
+                        <span key={data.key} className="grid-question-row-item">
+                            {data.text}
+                        </span>
+                    )
+                })}
+            </div>
             {question?.rows?.map((row: Option, i: number) => {
                 return (
-                    <div key={row.key} className="radio-checkbox">
-                        <p>{row.text}</p>
+                    <div key={row.key} className="grid-question-row">
+                        <span className="grid-question-row-item">
+                            {row.text}
+                        </span>
                         {question?.cols?.map((col: Option, i: number) => {
-                            return prevResponse?.selectedOptionsGrid?.find(
-                                (obj) => {
-                                    return (
-                                        obj["row"] === row.text &&
-                                        obj["col"] === col.text
-                                    )
-                                }
-                            ) !== undefined ? (
-                                responseList?.readOnly ? (
-                                    <>
+                            return (
+                                <div
+                                    key={col.key}
+                                    className="radio-checkbox grid-question-row-item"
+                                >
+                                    {prevResponse?.selectedOptionsGrid?.find(
+                                        (obj) => {
+                                            return (
+                                                obj["row"] === row.text &&
+                                                obj["col"] === col.text
+                                            )
+                                        }
+                                    ) !== undefined ? (
+                                        responseList?.readOnly ? (
+                                            <input
+                                                disabled
+                                                type="checkbox"
+                                                key={col.key}
+                                                name={row.text}
+                                                id={row.text + col.text}
+                                                defaultChecked
+                                            />
+                                        ) : (
+                                            <input
+                                                onClick={(e) =>
+                                                    handleCheckboxGrid(
+                                                        e,
+                                                        row.text,
+                                                        col.text
+                                                    )
+                                                }
+                                                type="checkbox"
+                                                key={col.key}
+                                                name={row.text}
+                                                id={row.text + col.text}
+                                                defaultChecked
+                                            />
+                                        )
+                                    ) : responseList?.readOnly ? (
                                         <input
-                                            disabled
+                                            readOnly
                                             type="checkbox"
                                             key={col.key}
                                             name={row.text}
                                             id={row.text + col.text}
-                                            defaultChecked
                                         />
-                                        <span className="styled-radio-checkbox"></span>
-                                    </>
-                                ) : (
-                                    <>
+                                    ) : (
                                         <input
-                                            onClick={(e) =>
+                                            onChange={(e) =>
                                                 handleCheckboxGrid(
                                                     e,
                                                     row.text,
@@ -561,39 +590,10 @@ const QuestionResponse: React.FC<props> = ({
                                             key={col.key}
                                             name={row.text}
                                             id={row.text + col.text}
-                                            defaultChecked
                                         />
-                                        <span className="styled-radio-checkbox"></span>
-                                    </>
-                                )
-                            ) : responseList?.readOnly ? (
-                                <>
-                                    <input
-                                        readOnly
-                                        type="checkbox"
-                                        key={col.key}
-                                        name={row.text}
-                                        id={row.text + col.text}
-                                    />
+                                    )}
                                     <span className="styled-radio-checkbox"></span>
-                                </>
-                            ) : (
-                                <>
-                                    <input
-                                        onChange={(e) =>
-                                            handleCheckboxGrid(
-                                                e,
-                                                row.text,
-                                                col.text
-                                            )
-                                        }
-                                        type="checkbox"
-                                        key={col.key}
-                                        name={row.text}
-                                        id={row.text + col.text}
-                                    />
-                                    <span className="styled-radio-checkbox"></span>
-                                </>
+                                </div>
                             )
                         })}
                     </div>
@@ -601,52 +601,36 @@ const QuestionResponse: React.FC<props> = ({
             })}
         </div>,
         //Linear Scale
-        <div>
-            {question.lowRatingLabel ? (
-                <span>{question.lowRatingLabel}</span>
-            ) : null}
-            {arr.map((num: string, idx: number) => {
-                return (
-                    <span key={String(num)}>
+        <div className="lin-scale-question">
+            <span>{question.lowRatingLabel}</span>
+            <div className="grid-question-row">
+                {arr.map((num: string) => (
+                    <div className="radio-checkbox grid-question-row-item lin-scale-item">
                         {responseList?.readOnly ? (
                             <input
-                                readOnly
-                                value={num}
                                 type="radio"
-                                name={question.qid}
-                                style={{
-                                    marginLeft: "15px",
-                                    display: "inline",
-                                }}
-                                defaultChecked={
-                                    prevResponse?.selectedOption == num
-                                }
                                 disabled
-                            />
+                                key={num}
+                                id={question.qid + num}
+                                name={question.qid}
+                            ></input>
                         ) : (
                             <input
-                                onChange={(e) => handleLinearScale(e)}
-                                value={num}
                                 type="radio"
+                                key={num}
+                                id={question.qid + num}
                                 name={question.qid}
-                                style={{
-                                    marginLeft: "15px",
-                                    display: "inline",
-                                }}
-                                defaultChecked={
-                                    prevResponse?.selectedOption == num
-                                }
-                            />
+                                onChange={(e) => handleLinearScale(e)}
+                            ></input>
                         )}
-                        {num}
-                    </span>
-                )
-            })}
-            {question.highRatingLabel ? (
-                <span style={{ marginLeft: "15px" }}>
-                    {question["highRatingLabel"]}
-                </span>
-            ) : null}
+                        <span className="styled-radio-checkbox"></span>
+                        <label htmlFor={question.qid + num}>{num}</label>
+                    </div>
+                ))}
+            </div>
+            <span className="lin-scale-label">
+                {question["highRatingLabel"]}
+            </span>
         </div>,
     ]
     return (

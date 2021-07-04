@@ -104,7 +104,7 @@ export default function ResponseListProvider({
                 selectedOptionsGrid:
                     resp.selectedOptionsGrid !== undefined
                         ? resp.selectedOptionsGrid
-                        : [{} as gridOptions],
+                        : [],
                 emailAnswer:
                     resp.emailAnswer !== undefined ? resp.emailAnswer : "",
             }))
@@ -121,7 +121,6 @@ export default function ResponseListProvider({
                 credentials: "include",
             })
             const data = await res.json()
-            console.log(data)
             setUsers(
                 data.data.map((user: any) => ({
                     responseid: user.responseid,

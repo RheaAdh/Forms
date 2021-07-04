@@ -95,7 +95,6 @@ const FormForUser = () => {
         return (
             <div className="display-form-page">
                 <b>Your response has been submitted!</b>
-                <br />
                 {/* if form is accepting multiple */}
                 {form?.currentForm?.anonymous ? (
                     <button
@@ -115,9 +114,6 @@ const FormForUser = () => {
                 ) : (
                     <div>We accept only 1 response per user</div>
                 )}
-
-                <br />
-                {/* if form is editable */}
                 {form?.currentForm?.editable ? (
                     <button onClick={() => setThankYou(false)}>
                         Edit form?
@@ -125,16 +121,16 @@ const FormForUser = () => {
                 ) : (
                     <div>You cannot edit this form</div>
                 )}
-
-                <br />
-                <button
-                    onClick={() => {
-                        auth?.logout()
-                        window.location.reload()
-                    }}
-                >
-                    Logout
-                </button>
+                {!form?.currentForm?.anonymous && (
+                    <button
+                        onClick={() => {
+                            auth?.logout()
+                            window.location.reload()
+                        }}
+                    >
+                        Logout
+                    </button>
+                )}
             </div>
         )
     }

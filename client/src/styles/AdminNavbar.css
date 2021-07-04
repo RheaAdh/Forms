@@ -42,7 +42,7 @@
 }
 
 .navbar-icon-btn .icon-info {
-    z-index: 2;
+    z-index: 5;
     position: absolute;
     width: max-content;
     display: block;

@@ -9,7 +9,7 @@ interface props {
 
 const Form: React.FC<props> = ({ form, deleteForm }) => {
     const [active, setActive] = useState(form.isActive)
-    const [link, setLink] = useState(`/login/${form._id}`)
+    const link = `http://localhost:3000/form/${form._id}`
     let history = useHistory()
     const auth = useAuth()
 
@@ -46,7 +46,7 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
         event.stopPropagation()
 
         //!CHANGE ON BACK END
-        const body = { id: form._id }
+        const body = { _id: form._id }
         fetch("/api/deleteform", {
             method: "DELETE",
             headers: {
@@ -134,14 +134,10 @@ const Form: React.FC<props> = ({ form, deleteForm }) => {
                         <i className="fas fa-copy"> Share</i>
                     </button>
                 </CopyToClipboard>
-            ) : (
-                <div></div>
-            )}
+            ) : null}
             {!form.isTemplate ? (
                 <button onClick={handleMakeTemplate}>Add to templates</button>
-            ) : (
-                <div></div>
-            )}
+            ) : null}
 
             {form.isTemplate ? (
                 <div>

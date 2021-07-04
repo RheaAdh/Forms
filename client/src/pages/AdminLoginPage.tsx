@@ -84,7 +84,6 @@ const AdminLoginPage: React.FC = () => {
                         border: "none",
                         cursor: "pointer",
                         background: "none",
-                        color: "black",
                     }}
                     value={forgotPassword ? "Confirm email" : "Login"}
                 />
@@ -97,7 +96,6 @@ const AdminLoginPage: React.FC = () => {
                             border: "none",
                             cursor: "pointer",
                             background: "none",
-                            color: "black",
                         }}
                         onClick={(e) => handleForgotPassword()}
                     />

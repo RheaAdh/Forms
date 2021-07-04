@@ -1,12 +1,12 @@
-body {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    transition: all 0.2s linear;
-    background-color: #dcdae2;
-}
 .form-container {
-    min-height: 100vh;
+    background: var(--backgroundImage) no-repeat;
+    background-position: right top;
+    background-size: 40rem 44rem;
+    background-color: var(--backgroundColor);
+    z-index: -1;
+    overflow: hidden;
+    position: absolute;
+    height: 100vh;
     width: 100vw;
     display: flex;
     align-items: center;
@@ -15,6 +15,7 @@ body {
 .form-container form {
     height: 500px;
     width: 350px;
+    padding: 2em;
     background: rgba(255, 255, 255, 0.1);
     text-align: center;
     align-items: center;
@@ -31,7 +32,6 @@ body {
     outline: none;
     height: 40px;
     width: 82%;
-    color: black;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.5) inset;
     font-size: 17px;
     padding: 0 10px;

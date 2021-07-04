@@ -7,6 +7,7 @@ import { useHistory } from "react-router"
 import TemplatePage from "../pages/TemplatePage"
 import Error from "../components/Error"
 import ResponseList from "../components/ResponseList"
+import { Link } from "react-router-dom"
 
 const DashboardPage: React.FC = () => {
     const auth = useAuth()
@@ -80,17 +81,18 @@ const DashboardPage: React.FC = () => {
                             Board Form responses
                         </button>
                     ) : null}
-                    {auth?.currentUser?.role == null ? (
+                    {auth?.currentUser?.userid === "x" ||
+                    auth?.currentUser === null ? (
                         <div>
-                            <button
-                                className="btn"
-                                id="admin-login"
-                                onClick={(e) => {
-                                    history.push("/adminlogin")
+                            <Link
+                                to="/adminlogin"
+                                style={{
+                                    textDecoration: "none",
+                                    color: "#FFF",
                                 }}
                             >
                                 Login (ADMIN ONLY)
-                            </button>
+                            </Link>
                         </div>
                     ) : (
                         <p className="btn" id="logout" onClick={handleLogout}>
