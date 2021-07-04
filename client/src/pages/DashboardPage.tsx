@@ -53,7 +53,8 @@ const DashboardPage: React.FC = () => {
                             All Forms / Create Form
                         </button>
                     ) : null}
-                    {auth?.currentUser?.role === "superadmin" ? (
+                    {auth?.currentUser?.role === "superadmin" ||
+                    auth?.currentUser?.role === "admin" ? (
                         <button
                             className="btn"
                             id="templates"
