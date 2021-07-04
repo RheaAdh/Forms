@@ -1,7 +1,6 @@
 Frontend
 there is some bug in google login button for user response
 create predefined templates for events we know  --- templates is done so now form just needs to be created with no delete option 
-<<<<<<< Updated upstream
 show message like requires editor access, form is closed, registration closed,verificaton email sent/verified etc whereever required
 form input character limit, error color change
 date picker needs styling
@@ -14,30 +13,18 @@ background blur
 non anonymous responses dropdown issue 
 
 Complete Email verification frontend, make a fetch request when email sent is clicked to verify and after verificaton redirect to login 
-
-=======
-show message like requires editor access, form is closed, registration closed etc whereever required
-form input character limit, error color change
 file upload
 Templates in context
-date picker needs styling
 form-admin page - redirect to responses or just change state?
->>>>>>> Stashed changes
 
 BACKEND
 sort response based on time ---> done i guess
 
-<<<<<<< Updated upstream
-reorder question backend implementation needed ---> Rhea
-
 single response / editabe / anonymous backend implementation (first check anonymous if false, check editable or not) , not able to fetch form or questions 
 for anonymous form  ----> channged checkAuth middleware as implemented earlier seems working and  For where ever anonymous mark multipleresponse true and editable false  
 
-=======
->>>>>>> Stashed changes
 ---NEED DETAILS(SAVED FOR LAST)---
     s3 bucket(IMP)
-    csv download 
     file upload
 
 

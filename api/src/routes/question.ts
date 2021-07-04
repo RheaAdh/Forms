@@ -37,17 +37,15 @@ export async function addQuestion(req: Request, res: Response) {
         } = req.body
 
         //?FIND FORM
-        console.log("checekckeckkeckekckekcekc")
-
-        console.log("after=" + after)
-
         let form: any
-        form = await Form.findById(formId)
+        form = await Form.findById(formId).populate("questions")
+
         const common = {
             formid: formId,
             questionText: questionText,
             description: description,
             required: required,
+            quesIndex: after + 1,
         }
 
         console.log("Inside add ques")
@@ -58,7 +56,7 @@ export async function addQuestion(req: Request, res: Response) {
                 .status(400)
                 .send({ success: false, msg: "Template cant be editted" })
         } else {
-            let newQuestion
+            let newQuestion: any
 
             switch (questionType) {
                 case "short-answer": {
@@ -142,45 +140,21 @@ export async function addQuestion(req: Request, res: Response) {
                 default:
                     newQuestion = new Question({ ...common })
             }
-            console.log("chchckckckckkckckk2")
-
-            console.log(newQuestion)
-
+            //Reordering Ques
             await newQuestion.save()
-            console.log("Question saved!!")
-
-            console.log(form.questions.length)
-
             form.questions.push(newQuestion)
-            let last = form.questions.length - 1
-            let moveto = after + 1
-            console.log("---BEFORE SWAP-------")
-            for (let i = 0; i < form.questions.length; i++) {
-                console.log(form.questions[i])
-            }
-            console.log("----SWAP-------")
-            for (let i = last; i > moveto; i--) {
-                console.log(form.questions[i - 1], form.questions[i])
-                let temp = form.questions[i]
-                form.questions[i] = form.questions[i - 1]
-                form.questions[i - 1] = temp
-                console.log(form.questions[i - 1], form.questions[i])
-                await form.save()
-            }
-            console.log("------AFTER SWAP-----------")
-
-            for (let i = 0; i < form.questions.length; i++) {
-                console.log(form.questions[i])
-            }
-
             await form.save()
-            console.log("------AFTER SAVE-----------")
-            for (let i = 0; i < form.questions.length; i++) {
-                console.log(form.questions[i])
-            }
-
-            console.log("Form saved!!")
-
+            let moveto = after + 1 //newques index
+            let ques_arr: any = await Question.updateMany(
+                { formid: formId, quesIndex: { $gt: after } },
+                { $inc: { quesIndex: 1 } }
+            )
+            let updatedques: any = await Question.updateOne(
+                { _id: newQuestion._id },
+                { $set: { quesIndex: moveto } }
+            )
+            console.log("Form updated!!  and new Ques Added!!")
+            console.log(newQuestion)
             return res.json(newQuestion)
         }
     } catch (error) {
@@ -232,7 +206,9 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
                 .status(400)
                 .json({ success: false, msg: "Form has closed" })
         }
-        const questions = await Question.find({ formid: formid })
+        const questions = await Question.find({ formid: formid }).sort({
+            quesIndex: 1,
+        })
         let user = await FormResponse.findOne({
             userid: req.session.userId,
             formId: req.params.formId,
@@ -397,7 +373,13 @@ export async function updateQuestion(req: Request, res: Response) {
 
 export async function deleteQuestion(req: Request, res: Response) {
     try {
+        let ques = await Question.findById(req.body.id)
         await Question.findByIdAndDelete(req.body.id)
+        await Question.updateMany(
+            { formid: ques?.formid, quesIndex: { $gt: ques?.quesIndex } },
+            { $inc: { quesIndex: -1 } }
+        )
+
         console.log(req.body.id)
 
         await Form.findOneAndUpdate(
