@@ -163,6 +163,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
                     title: title,
                     isActive: isActive,
                     editors: editors,
+                    multipleResponses: multipleResponses,
                 }),
             })
                 .then((response) => response.json())

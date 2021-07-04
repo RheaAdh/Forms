@@ -8,6 +8,7 @@ import { ReactComponent as PreviewIcon } from "../images/PreviewForm.svg"
 import { ReactComponent as ProfileIcon } from "../images/ProfileIcon.svg"
 import { ReactComponent as CopyIcon } from "../images/CopyIcon.svg"
 import { CopyToClipboard } from "react-copy-to-clipboard"
+import { ReactComponent as HomeIcon } from "../images/HomeIcon.svg"
 
 interface props {
     questionsPage: boolean
@@ -52,7 +53,7 @@ const AdminNavbar = ({ questionsPage }: props) => {
                         className="navbar-icon-btn"
                         onClick={() => history.push(`/form/${formId}`)}
                     >
-                        <PreviewIcon width="2rem" />
+                        <PreviewIcon style={{ width: "2rem" }} />
                         <span className="icon-info">Preview Form</span>
                         <span className="text-info-arrow" />
                     </button>
@@ -62,12 +63,19 @@ const AdminNavbar = ({ questionsPage }: props) => {
                     text={`http://localhost:3000/form/${form?.currentForm?.id}`}
                 >
                     <button className="navbar-icon-btn">
-                        <CopyIcon width="1.5rem" />
+                        <CopyIcon style={{ width: "1.5rem" }} />
                         <span className="icon-info">Copy Link to Form</span>
                         <span className="text-info-arrow" />
                     </button>
                 </CopyToClipboard>
-
+                <button
+                    className="navbar-icon-btn"
+                    onClick={() => history.push("/")}
+                >
+                    <HomeIcon />
+                    <span className="icon-info">Dashboard</span>
+                    <span className="text-info-arrow" />
+                </button>
                 <h2>{form?.currentForm?.title}</h2>
             </div>
             <div className="navbar-row2">

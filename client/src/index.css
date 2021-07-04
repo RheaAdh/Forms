@@ -75,6 +75,10 @@ svg path {
     fill: var(--fontColor);
 }
 
+.text-type > p {
+    margin-top: var(--marginTop);
+}
+
 input[type="text"] {
     margin-top: var(--marginTop);
     border-bottom: 1px solid var(--fontColor);

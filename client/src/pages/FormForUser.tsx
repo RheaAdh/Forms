@@ -185,14 +185,20 @@ const FormForUser = () => {
                 >
                     Submit
                 </button>
-                <p>
-                    <input
-                        type="checkbox"
-                        defaultChecked={sendMail}
-                        onChange={() => setSendMail(!sendMail)}
-                    ></input>
-                    Send me a mail of my response
-                </p>
+
+                {!form?.currentForm?.anonymous && (
+                    <>
+                        <input
+                            type="checkbox"
+                            defaultChecked={sendMail}
+                            onChange={() => setSendMail(!sendMail)}
+                            id="email-response-btn"
+                        ></input>
+                        <label htmlFor="email-response-btn">
+                            Send me a mail of my response
+                        </label>
+                    </>
+                )}
             </div>
         </div>
     )

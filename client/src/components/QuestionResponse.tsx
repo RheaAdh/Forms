@@ -54,6 +54,8 @@ const QuestionResponse: React.FC<props> = ({
         var submit: boolean = !question.required
         if ((e?.target.value).length === 0 && question.required) {
             submit = false
+        } else {
+            submit = true
         }
         if (question?.qid) {
             const answer = {
@@ -70,6 +72,8 @@ const QuestionResponse: React.FC<props> = ({
         var submit: boolean = true
         if ((e?.target.value).length === 0 && question["required"]) {
             submit = false
+        } else {
+            submit = true
         }
         const answer = {
             answerType: "paragraph-answer",
@@ -229,7 +233,7 @@ const QuestionResponse: React.FC<props> = ({
 
     const types = [
         //Short
-        <div>
+        <div className="text-type">
             {responseList?.readOnly === true ? (
                 <p>{prevResponse?.shortText}</p>
             ) : (
@@ -242,7 +246,7 @@ const QuestionResponse: React.FC<props> = ({
             )}
         </div>,
         //Paragraph
-        <div>
+        <div className="text-type">
             {responseList?.readOnly === true ? (
                 <p>{prevResponse?.paragraphText}</p>
             ) : (
@@ -401,7 +405,7 @@ const QuestionResponse: React.FC<props> = ({
             </span>
         </div>,
         //Email
-        <div>
+        <div className="text-type">
             {responseList?.readOnly === true ? (
                 <p>{prevResponse?.emailAnswer}</p>
             ) : (
@@ -625,9 +629,9 @@ const QuestionResponse: React.FC<props> = ({
     ]
     return (
         <div className="display-form-component">
-            <b>{question.questionText}</b>
+            <b style={{ display: "inline" }}>{question.questionText}</b>
             {question["required"] ? (
-                <span style={{ color: "red" }}>*</span>
+                <span style={{ color: "red", fontSize: "1.5rem" }}>*</span>
             ) : null}
             {types[typeToIdx.indexOf(question["questionType"])]}
         </div>

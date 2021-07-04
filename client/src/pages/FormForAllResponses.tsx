@@ -43,7 +43,7 @@ const FormForAllResponses = () => {
     }, [formId])
 
     useEffect(() => {
-        if (formId && auth?.currentUser?.userid !== "x") {
+        if (formId && auth?.currentUser && auth?.currentUser?.userid !== "x") {
             form?.setFormDetails(formId, true)
                 .then((data) => {
                     if (data.status >= 400) {

@@ -49,6 +49,7 @@ const EditFormPage: React.FC = () => {
             form?.currentForm?.date,
             form?.currentForm?.title,
             form?.currentForm?.editors,
+            form?.currentForm?.multipleResponses,
         ]
     )
 
@@ -110,9 +111,11 @@ const EditFormPage: React.FC = () => {
                             type="checkbox"
                             checked={form?.currentForm?.editable || false}
                             onChange={(e) => {
-                                form?.setEditable(true)
-                                form?.setMultipleResponses(false)
-                                form?.setAnonymity(false)
+                                if (e.target.checked) {
+                                    form?.setEditable(true)
+                                    form?.setMultipleResponses(false)
+                                    form?.setAnonymity(false)
+                                }
                             }}
                         ></input>
                         <span className="styled-radio-checkbox"></span>
@@ -131,9 +134,11 @@ const EditFormPage: React.FC = () => {
                                 false
                             }
                             onChange={(e) => {
-                                form?.setEditable(false)
-                                form?.setAnonymity(false)
-                                form?.setMultipleResponses(false)
+                                if (e.target.checked) {
+                                    form?.setEditable(false)
+                                    form?.setAnonymity(false)
+                                    form?.setMultipleResponses(false)
+                                }
                             }}
                         ></input>
                         <span className="styled-radio-checkbox"></span>
@@ -148,9 +153,11 @@ const EditFormPage: React.FC = () => {
                             type="checkbox"
                             checked={form?.currentForm?.anonymous || false}
                             onChange={(e) => {
-                                form?.setAnonymity(true)
-                                form?.setMultipleResponses(true)
-                                form?.setEditable(false)
+                                if (e.target.checked) {
+                                    form?.setAnonymity(true)
+                                    form?.setMultipleResponses(true)
+                                    form?.setEditable(false)
+                                }
                             }}
                         ></input>
                         <span className="styled-radio-checkbox"></span>
