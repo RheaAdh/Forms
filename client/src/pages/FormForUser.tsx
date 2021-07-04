@@ -7,6 +7,7 @@ import { Question, useQuestionsList } from "../context/QuestionListContext"
 import { useResponses } from "../context/ResponseListContext"
 import QuestionResponse from "../components/QuestionResponse"
 import "../styles/DisplayForm.css"
+import Loading from "../components/Loading"
 
 const FormForUser = () => {
     const auth = useAuth()
@@ -84,7 +85,7 @@ const FormForUser = () => {
     }
 
     if (loading) {
-        return <div>Loading</div>
+        return <Loading />
     }
 
     if (error) {

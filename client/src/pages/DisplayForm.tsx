@@ -13,6 +13,7 @@ import { useResponses, user } from "../context/ResponseListContext"
 import { Question, useQuestionsList } from "../context/QuestionListContext"
 import "../styles/DisplayForm.css"
 import AdminNavbar from "../components/AdminNavbar"
+import Loading from "../components/Loading"
 
 interface props {
     readonly: boolean
@@ -160,7 +161,7 @@ const DisplayForm: React.FC<props> = ({ readonly, responseOnlyPage }) => {
         }
     }, [currentUser])
     if (loading) {
-        return <div>Loading</div>
+        return <Loading />
     }
     if (error) {
         return <div>{error}</div>

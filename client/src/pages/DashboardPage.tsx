@@ -8,6 +8,7 @@ import TemplatePage from "../pages/TemplatePage"
 import Error from "../components/Error"
 import ResponseList from "../components/ResponseList"
 import { Link } from "react-router-dom"
+import Loading from "../components/Loading"
 
 const DashboardPage: React.FC = () => {
     const auth = useAuth()
@@ -35,7 +36,7 @@ const DashboardPage: React.FC = () => {
     }
 
     if (loading) {
-        return <div>Loading...</div>
+        return <Loading />
     }
 
     return (
@@ -52,8 +53,7 @@ const DashboardPage: React.FC = () => {
                             All Forms / Create Form
                         </button>
                     ) : null}
-                    {auth?.currentUser?.role === "admin" ||
-                    auth?.currentUser?.role === "superadmin" ? (
+                    {auth?.currentUser?.role === "superadmin" ? (
                         <button
                             className="btn"
                             id="templates"

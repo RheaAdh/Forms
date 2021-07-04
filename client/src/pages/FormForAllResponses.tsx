@@ -13,6 +13,7 @@ import { Question, useQuestionsList } from "../context/QuestionListContext"
 import "../styles/DisplayForm.css"
 import AdminNavbar from "../components/AdminNavbar"
 import { ReactComponent as DropdownArrow } from "../images/DropdownArrow.svg"
+import Loading from "../components/Loading"
 
 const FormForAllResponses = () => {
     const auth = useAuth()
@@ -109,7 +110,7 @@ const FormForAllResponses = () => {
     }, [currentUser])
 
     if (loading) {
-        return <div>Loading</div>
+        return <Loading />
     }
 
     if (error) {
@@ -135,14 +136,13 @@ const FormForAllResponses = () => {
                     responseList?.users?.length ? (
                         <div className="select">
                             <select
-                                value={currentUser?.username}
+                                value={`${currentUser?.email}`}
                                 onChange={(e) => {
                                     e.persist()
                                     setCurrentUser((prevUser) => {
                                         const newUser = responseList?.users?.find(
                                             (user) =>
-                                                user.username ===
-                                                e.target?.value
+                                                user.email === e.target?.value
                                         )
                                         return newUser === undefined
                                             ? prevUser
@@ -151,13 +151,10 @@ const FormForAllResponses = () => {
                                 }}
                             >
                                 {responseList?.users.map(
-                                    (user: any, i: number) => {
+                                    (usr: user, i: number) => {
                                         return (
-                                            <option
-                                                key={i}
-                                                value={user.username}
-                                            >
-                                                {user.username}
+                                            <option key={i} value={usr.email}>
+                                                {`${usr.username} ${usr.email}`}
                                             </option>
                                         )
                                     }

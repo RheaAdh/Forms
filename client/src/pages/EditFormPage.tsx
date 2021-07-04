@@ -14,6 +14,7 @@ import "../styles/EditFormPage.css"
 import { useCurrentForm } from "../context/CurrentFormContext"
 import autoAdjustHeight from "../util"
 import AdminNavbar from "../components/AdminNavbar"
+import Loading from "../components/Loading"
 
 const EditFormPage: React.FC = () => {
     const { formId }: any = useParams()
@@ -60,7 +61,7 @@ const EditFormPage: React.FC = () => {
     }
 
     if (loading) {
-        return <div>Loading</div>
+        return <Loading />
     }
     return (
         <div className="edit-form-page">

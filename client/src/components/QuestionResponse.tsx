@@ -35,7 +35,7 @@ const QuestionResponse: React.FC<props> = ({
 
     const fillArray = (low: number, hi: number) => {
         for (let i: number = low; i <= hi; i++) {
-            setArr((prevState) => [...prevState, (i as unknown) as string])
+            setArr((prevState) => [...prevState, String(i)])
         }
     }
 
@@ -602,12 +602,32 @@ const QuestionResponse: React.FC<props> = ({
                     key={num}
                 >
                     {responseList?.readOnly ? (
+                        num === prevResponse?.selectedOption ? (
+                            <input
+                                type="radio"
+                                disabled
+                                defaultChecked
+                                key={num}
+                                id={question.qid + num}
+                                name={question.qid}
+                            ></input>
+                        ) : (
+                            <input
+                                type="radio"
+                                disabled
+                                key={num}
+                                id={question.qid + num}
+                                name={question.qid}
+                            ></input>
+                        )
+                    ) : num === prevResponse?.selectedOption ? (
                         <input
+                            defaultChecked
                             type="radio"
-                            disabled
                             key={num}
                             id={question.qid + num}
                             name={question.qid}
+                            onChange={() => handleLinearScale(num)}
                         ></input>
                     ) : (
                         <input

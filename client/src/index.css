@@ -273,3 +273,12 @@ option:hover {
     position: relative;
     top: 1em;
 }
+.loading {
+    background: var(--backgroundImage) no-repeat;
+    background-position: right top;
+    background-size: 40rem 44rem;
+    background-color: var(--backgroundColor);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
