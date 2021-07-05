@@ -92,7 +92,6 @@ router.get("/getadmins", isValidAdmin, getAllAdmins)
 router.get("/makeTemplate/:formId", isValidAdmin, makeTemplate)
 router.get("/useTemplate/:formId", isValidAdmin, useTemplate)
 router.get("/viewAllTemplates", isValidAdmin, viewAllTempalates)
-router.get("/response/:respid", isValidAdmin, getResponsebyRespid)
 
 ///////////////////////////SUPERADMIN ONLY////////////////////////////////
 router.get("/getsuperadminforms", isValidSuperAdmin, getSuperAdminForms)
@@ -118,5 +117,6 @@ router.post("/submitresponse", checkAuthentication, submitResponse)
 
 ////////////////////NO-AUTH///////////////////////////////////////////////////
 router.get("/emailverification/:token", verifyEmail)
+router.get("/response/:respid", getResponsebyRespid)    //To view emailed responses
 
 export default router
