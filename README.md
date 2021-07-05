@@ -1,27 +1,27 @@
 # IECSE Forms
 
 ## Features Implemented
-- Admins can register as `admin`
-- Board members hardcode as `superadmin`
-- Toggle `REGISTERATION_OPEN`=0/1 to block/unblock `/register` (To avoid non-mancom/board using IECSE FORMS)
-- Login as admin/superadmin from `/adminlogin` to open dashboard
-- Dashboard only for admin/superadmin,User needs to sign-in using google login to fill form
+- Management Committee Members can register as `admin`.
+- Board Members hardcode as `superadmin` have some extra privileges.
+- Toggle `REGISTERATION_OPEN`=0/1 to block/unblock `/register` (To avoid non-mancom/board using IECSE FORMS).
+- Login as admin/superadmin from `/adminlogin` to open dashboard.
+- Dashboard only for admin/superadmin,User needs to sign-in using google login to fill form.
 
 ### Features Inside SuperAdmin/Admin DashBoard
 
-- Add/delete/edit are basic functionality of forms.
-- Has Many Ques Types which can be used while making form.Ques can be added/updated/deleted even adding ques between existing questions is possible. 
-- Form Contains Header,Description,Closing Time at which form can close automatically,also contains an option of manual close/open toggle button.
-- In case of admin once form is created by admin it can be just seen/edited by owner admin but IECSE FORMS also provide a feature to work in collabration with many admins by sharing ownership using give permit list.All Superadmins by default have view/edit access to all existing forms.  
+- Add/delete/edit form are basic functionality of forms system.
+- IECSE FORMS system has 9 Ques Types (Short text,Paragraph,MCQ,Checkbox,Dropdown,Linear Scale,Multiple Choice Grid,Checkbox grid,Email) which can be used while making form.Ques can be added/updated/deleted even adding ques between existing questions is possible to provide ease while making a form.A question can even be made required to be mandatorily filled by user. 
+- A form contains Header,Description,Closing Time at which form can close automatically,also contains an option of manual close/open toggle button.
+- In case of admin once form is created by admin it can be just seen/edited/deleted by owner admin but IECSE FORMS also provide a feature to work in collabration with many admins by sharing ownership using permission list using which admin can be added or removed from ownership of a form.All Superadmins by default have view/edit/delete access to all existing forms.  
 - Forms can be of three types: 
-    - `Editable`: Forms which can be editted by user after submission,requires google login
-    - `Non Editable`: Forms which can't be editted/opened once submitted,requires google login
+    - `Editable`: Forms which can be edited by user after submission,requires google login.
+    - `Non Editable`: Forms which can't be edited/opened once submitted,requires google login.
     - `Anonymous`: Forms which keeps the user identity anonymous by not asking for google login to fill and can be filled many number of times as there isnt any record of user
-- After Making Form link of a form can be copied using share button which can be sent to users "...../login/formid" this redirects users to google login if form is non anonymous.In anonymous forms login isn't needed.
-- IECSE FORMS also provides a feature to admin/superadmin to save exisiting form as template which can be used later.As the name suggests templates are non editable and once created can just be used again or can be deleted.Admins cant delete superadmin templates.Superadmin can create a template from scratch as well as can edit/delete any template exisitng.
+- After making a form, link of a form can be copied using share button which can be sent to users `...../form/formid` this redirects users to google login if form is non anonymous(i.e. Editable and Non Ediatble types).In anonymous forms login isn't needed.
+- IECSE FORMS also provides a feature to admin/superadmin to save exisiting form as template which can be used later.As the name suggests templates are non-editable and once created can just be used again or can be deleted.Admins cant delete superadmin templates.Superadmin can create a template from scratch as well as can edit/delete any template exisitng.
 - User responses, responses count can be viewed in response tab inside form.
-- User Responses can even be downloaded as .csv file.
-- Users have an option to email a copy of response for future usage.
+- User responses can even be downloaded as .csv file.
+- Users have an option to email a copy of response(link of response will be sent) for future reference.
 - Login to dashboard follows all standard checks and email verification to verify user,along with an option to reset password.
 - That's it want more? contact Dev Team :)
 
