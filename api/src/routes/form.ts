@@ -102,7 +102,7 @@ export async function getFormForResponse(req: Request, res: Response) {
                 console.log("Form is closed")
                 return res
                     .status(400)
-                    .json({ success: false, form: "Form is closed" })
+                    .json({ success: false, msg: "Form is closed" })
             } else {
                 return res.json({ success: true, form: form })
             }

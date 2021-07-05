@@ -179,6 +179,7 @@ export const getResponsesByForm = async (req: Request, res: Response) => {
         let formResponses = await FormResponse.findOne({
             formId: formId,
         }).populate("userid", { password: 0 })
+        console.log("inside get resp by forms")
         res.status(200).send(formResponses)
     } catch (error) {
         console.log(error)
@@ -389,20 +390,28 @@ export const getResponseIdByFormFilled = async (
     res: Response
 ) => {
     try {
+        console.log("Inside getResp")
         let formId = req.params.formId
         console.log(formId)
         let responses: any
         responses = await FormResponse.find({
             formId: formId,
-        }).populate("userid",{password:0})
+        }).populate("userid",{password:0}).populate("formId ")
         console.log(responses)
         let ans: any = []
         for (let i = 0; i < responses.length; i++) {
-            ans.push({
-                responseid: responses[i]._id,
-                username: responses[i].username,
-                email: responses[i].userid.email
-            })
+            if(responses[i].formId.anonymous)
+            {
+                ans.push({responseid: responses[i]._id})
+            }
+            else
+            {
+                ans.push({
+                    responseid: responses[i]._id,
+                    username: responses[i].username,
+                    email: responses[i].userid.email
+                })
+            }
         }
 
         return res.status(200).send({ success: true, data: ans })
