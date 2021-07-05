@@ -39,7 +39,9 @@ const TemplatePage: React.FC = () => {
     }
     return (
         <div>
-            <NewForm isTemplate={true} />
+            {auth?.currentUser?.role === "superadmin" && (
+                <NewForm isTemplate={true} />
+            )}
             <FormList forms={forms} deleteForm={deleteForm} />
         </div>
     )

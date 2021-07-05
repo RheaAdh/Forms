@@ -11,7 +11,6 @@ export interface CurrentForm {
     multipleResponses?: boolean
     isActive?: boolean
     editors?: string[]
-    isQuestionsPage?: boolean
 }
 interface Props {
     children: ReactElement
@@ -33,7 +32,6 @@ export interface Form {
     ) => Promise<any>
     setActive: (isActive: boolean) => void
     setEditors: (editor: string[]) => void
-    setQuestionsPage: (isQuestionsPage: boolean) => void
 }
 
 const CurrentFormContext = React.createContext<Form | null>(null)
@@ -52,7 +50,6 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
     const [multipleResponses, setMultipleResponses] = useState<boolean>()
     const [editors, setEditors] = useState<string[]>()
     const [isActive, setActive] = useState<boolean>()
-    const [isQuestionsPage, setQuestionsPage] = useState<boolean>()
     const [isTemplate, setIsTemplate] = useState<boolean>()
 
     const setFormDetails = async (
@@ -186,7 +183,6 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         editable,
         multipleResponses,
         editors,
-        isQuestionsPage,
         isTemplate,
     }
 
@@ -203,7 +199,6 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         setMultipleResponses,
         setActive,
         setEditors,
-        setQuestionsPage,
     }
 
     return (

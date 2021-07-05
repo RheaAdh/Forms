@@ -1,20 +1,15 @@
 Frontend
-there is some bug in google login button for user response
-create predefined templates for events we know  --- templates is done so now form just needs to be created with no delete option 
+there is some bug in google login button for user response 
 show message like requires editor access, form is closed, registration closed,verificaton email sent/verified etc whereever required
 form input character limit, error color change
 date picker needs styling
 edit form button functionality
 add section
-open trashcan trasnition on delete
+open trashcan transition on delete
 prevent first update in question list context
-text area adjust height according to content
 background blur
-non anonymous responses dropdown issue 
-
 Complete Email verification frontend, make a fetch request when email sent is clicked to verify and after verificaton redirect to login 
 file upload
-Templates in context
 form-admin page - redirect to responses or just change state?
 
 BACKEND

@@ -146,6 +146,7 @@ const QuestionResponse: React.FC<props> = ({
             setEmailError("Please enter a valid email")
             submit = false
         } else {
+            submit = true
             setEmailError(null)
         }
         const answer = {

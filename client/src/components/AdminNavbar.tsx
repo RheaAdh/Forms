@@ -20,12 +20,6 @@ const AdminNavbar = ({ questionsPage }: props) => {
     const history = useHistory()
     const { formId }: any = useParams()
 
-    useEffect(() => {
-        if (questionsPage !== undefined) {
-            form?.setQuestionsPage(questionsPage)
-        }
-    }, [questionsPage])
-
     return (
         <div className="navbar">
             <div className="navbar-row1">
@@ -81,17 +75,12 @@ const AdminNavbar = ({ questionsPage }: props) => {
             <div className="navbar-row2">
                 <Link
                     to={`/form-admin/${formId}`}
-                    onClick={() =>
-                        form?.setQuestionsPage(
-                            !form?.currentForm?.isQuestionsPage
-                        )
-                    }
                     style={{
                         textDecoration: "none",
-                        borderColor: form?.currentForm?.isQuestionsPage
+                        borderColor: questionsPage
                             ? "var(--fontColor)"
                             : "var(--secondaryBackground)",
-                        backgroundColor: form?.currentForm?.isQuestionsPage
+                        backgroundColor: questionsPage
                             ? "var(--secondaryBackground)"
                             : "inherit",
                     }}
@@ -103,10 +92,10 @@ const AdminNavbar = ({ questionsPage }: props) => {
                     to={`/responses/${formId}`}
                     style={{
                         textDecoration: "none",
-                        borderColor: !form?.currentForm?.isQuestionsPage
+                        borderColor: !questionsPage
                             ? "var(--fontColor)"
                             : "var(--secondaryBackground)",
-                        backgroundColor: !form?.currentForm?.isQuestionsPage
+                        backgroundColor: !questionsPage
                             ? "var(--secondaryBackground)"
                             : "inherit",
                     }}

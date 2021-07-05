@@ -45,7 +45,8 @@ const FormForUser = () => {
                 (auth?.currentUser && auth.currentUser.role !== "x")
             ) {
                 form?.setFormDetails(formId, false).then((data) => {
-                    if (data.status >= 400) {
+                    if (!data.success) {
+                        console.log(data)
                         setError(data.msg)
                         setLoading(false)
                     }
@@ -89,7 +90,7 @@ const FormForUser = () => {
     }
 
     if (error) {
-        return <div>{error}</div>
+        return <div className="display-form-page">{error}</div>
     }
 
     if (thankYou) {
@@ -116,9 +117,7 @@ const FormForUser = () => {
                     <div>We accept only 1 response per user</div>
                 )}
                 {form?.currentForm?.editable ? (
-                    <button onClick={() => setThankYou(false)}>
-                        Edit form?
-                    </button>
+                    <a href={`/form/${formId}`}>Edit form?</a>
                 ) : (
                     <div>You cannot edit this form</div>
                 )}

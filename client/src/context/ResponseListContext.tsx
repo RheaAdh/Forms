@@ -89,7 +89,9 @@ export default function ResponseListProvider({
                 answerType: resp.answerType || resp.questionType,
                 questionId: resp.questionId || resp._id,
                 formId: resp.formId || resp.formid,
-                canSubmit: !requiredData[i],
+                canSubmit: prevResponses?.responses?.length
+                    ? true
+                    : !requiredData[i],
                 shortText: resp.shortText !== undefined ? resp.shortText : "",
                 paragraphText:
                     resp.paragraphText !== undefined ? resp.paragraphText : "",

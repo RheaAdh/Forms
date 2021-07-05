@@ -11,7 +11,6 @@ export const questionTypes = [
     "multiplechoicegrid-answer",
     "checkboxgrid-answer",
     "email-answer",
-    "file-upload",
 ]
 // Rendering JSX elements from an array (such as <input>) requires a unique key, but db doesn't store unique key for options
 // Schema in db is [{type:string}]. Modified schema on frontend stores unique key for each option

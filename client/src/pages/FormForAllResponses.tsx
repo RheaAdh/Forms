@@ -129,9 +129,6 @@ const FormForAllResponses = () => {
                         datas={dataForDownload ? dataForDownload : []}
                         text={"Click  to download responses"}
                     />
-                    {
-                        //UNIQUE USERNAME PROBLEM
-                    }
                     {!form?.currentForm?.anonymous &&
                     responseList?.users?.length ? (
                         <div className="select">

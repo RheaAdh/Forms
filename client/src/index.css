@@ -59,6 +59,12 @@ button {
     text-shadow: 0px 0px 0px transparent;
 }
 
+a {
+    text-decoration: none;
+    outline: none;
+    color: var(--fontColor);
+}
+
 input {
     display: block;
     font-size: 1rem;
