@@ -22,15 +22,19 @@ export async function getForms(req: Request, res: Response) {
             const myForms = await Form.find({
                 isTemplate: false,
                 editors: req.session.userId,
-            }).sort({ createdAt: -1 })
+            })
+                .populate({ path: "questions", perDocumentLimit: 1 })
+                .sort({ createdAt: -1 })
             console.log("My form is ")
             console.log(myForms)
             res.send({ success: true, forms: myForms })
         } else if (req.session.role === "superadmin") {
             //superadmin
-            const forms = await Form.find({ isTemplate: false }).sort({
-                createdAt: -1,
-            })
+            const forms = await Form.find({ isTemplate: false })
+                .populate({ path: "questions", perDocumentLimit: 1 })
+                .sort({
+                    createdAt: -1,
+                })
             res.json({ success: true, forms: forms })
         }
     } catch (error) {
@@ -48,13 +52,15 @@ export async function getForm(req: Request, res: Response) {
             if (
                 req.session.role == "superadmin" ||
                 form.editors.indexOf(req.session.userId) != -1 ||
-                String(form.owner) == String(req.session.userId)
+                String(form.owner) == String(req.session.userId) ||
+                form.isTemplate
             ) {
                 return res.json({ success: true, form: form })
             } else {
                 return res.status(403).send({
                     success: false,
-                    msg: "You dont have edit access to the form",
+                    msg:
+                        "You dont have edit access to the form,ask owner or superadmin to give access",
                 })
             }
         } else {
@@ -171,11 +177,12 @@ export async function addForm(req: any, res: Response) {
             isEditable: req.body.isEditable,
             multipleResponses: req.multipleResponses,
             role: req.session.role,
+            isTemplate: req.body.isTemplate,
         })
         newForm.editors.push(req.session.userId)
         const form = await newForm.save()
         console.log("Form added!")
-        return res.json(form)
+        return res.json({ succes: true, data: form })
     } catch (error) {
         return res.send(error)
     }
@@ -185,6 +192,19 @@ export async function updateForm(req: Request, res: Response) {
     try {
         let updatedForm: any
         let isActive: boolean = req.body.isActive
+        console.log("body is here")
+        console.log(req.body)
+        console.log(req.body.isTemplate)
+        console.log(req.session.role)
+
+        if (req.body.isTemplate && req.session.role != "superadmin") {
+            console.log("You cant edit Template, try contacting SuperAdmin")
+            return res.status(400).send({
+                success: false,
+                msg: "You cant edit Template, try contacting SuperAdmin",
+            })
+        }
+        console.log("Here")
         if (!isActive && new Date() < new Date(req.body.closes)) {
             isActive = true
         }

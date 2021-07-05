@@ -1,38 +1,196 @@
 import React, { useEffect, useState } from "react"
 import "../styles/DashboardPage.css"
-import FormsPage from "./FormsPage"
 import { useAuth } from "../context/AuthContext"
-import AdminLoginPage from "./AdminLoginPage"
 import { useHistory } from "react-router"
-import TemplatePage from "../pages/TemplatePage"
-import Error from "../components/Error"
-import ResponseList from "../components/ResponseList"
-import { Link } from "react-router-dom"
 import Loading from "../components/Loading"
+import DashboardNavbar from "../components/DashboardNavbar"
+import { CurrentForm } from "../context/CurrentFormContext"
+import FormCard from "../components/FormCard"
+import { Question } from "../context/QuestionListContext"
+import { ReactComponent as AddQuestionIcon } from "../images/AddQuestionIcon.svg"
 
 const DashboardPage: React.FC = () => {
     const auth = useAuth()
-    const [loading, setLoading] = useState<boolean>(true)
-    const [current, setCurrent] = useState<string>("allForms")
-
-    // Sidenav
-    const handleChange = (e: any) => {
-        let element = document.getElementById(current)
-        element?.setAttribute("style", "color : var(--fontColor);")
-        e.target.style.color = "red"
-        setCurrent(e.target.id)
-    }
 
     const history = useHistory()
 
+    const [loading, setLoading] = useState<boolean>(true)
+    const [allForms, setAllForms] = useState<CurrentForm[]>()
+    const [templates, setTemplates] = useState<CurrentForm[]>()
+    const [searchListForms, setSearchList] = useState<CurrentForm[]>()
+
     useEffect(() => {
-        auth?.getCurrentUser().then((res: any) => setLoading(false))
+        if (auth?.currentUser === null) auth?.getCurrentUser()
     }, [])
 
-    const handleLogout = async () => {
-        auth?.logout()
-            .then((res) => history.push("/adminlogin"))
-            .catch((err) => console.log(err))
+    useEffect(() => {
+        if (auth?.currentUser && auth?.currentUser?.userid !== "x") {
+            fetch(`/api/getforms`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            })
+                .then((resp: any) => {
+                    return resp.json()
+                })
+                .then((data: any) => {
+                    //console.log({ data })
+                    if (data.success === true) {
+                        setAllForms(
+                            data.forms.map((form: any) => {
+                                const question: Question | undefined =
+                                    form.questions[0] !== undefined
+                                        ? {
+                                              formId: form._id,
+                                              qid: form.questions[0]._id,
+                                              questionText:
+                                                  form.questions[0]
+                                                      .questionText,
+                                              questionType:
+                                                  form.questions[0]
+                                                      .questionType,
+                                              required:
+                                                  form.questions[0].required,
+                                              options:
+                                                  form.questions[0].options,
+                                              cols: form.questions[0].colLabel,
+                                              rows: form.questions[0].rowLabel,
+                                              lowRating:
+                                                  form.questions[0].lowRating,
+                                              highRating:
+                                                  form.questions[0].highRating,
+                                              lowRatingLabel:
+                                                  form.questions[0]
+                                                      .lowRatingLabel,
+                                              highRatingLabel:
+                                                  form.questions[0]
+                                                      .highRatingLabel,
+                                          }
+                                        : undefined
+
+                                return {
+                                    id: form.id,
+                                    date: form.closes,
+                                    title: form.title,
+                                    description: form.description,
+                                    isActive: form.isActive,
+                                    isTemplate: form.isTemplate,
+                                    question,
+                                }
+                            })
+                        )
+                        setSearchList(
+                            data.forms.map((form: any) => {
+                                const question: Question | undefined =
+                                    form.questions[0] !== undefined
+                                        ? {
+                                              formId: form._id,
+                                              qid: form.questions[0]._id,
+                                              questionText:
+                                                  form.questions[0]
+                                                      .questionText,
+                                              questionType:
+                                                  form.questions[0]
+                                                      .questionType,
+                                              required:
+                                                  form.questions[0].required,
+                                              options:
+                                                  form.questions[0].options,
+                                              cols: form.questions[0].colLabel,
+                                              rows: form.questions[0].rowLabel,
+                                              lowRating:
+                                                  form.questions[0].lowRating,
+                                              highRating:
+                                                  form.questions[0].highRating,
+                                              lowRatingLabel:
+                                                  form.questions[0]
+                                                      .lowRatingLabel,
+                                              highRatingLabel:
+                                                  form.questions[0]
+                                                      .highRatingLabel,
+                                          }
+                                        : undefined
+
+                                return {
+                                    id: form._id,
+                                    date: form.closes,
+                                    title: form.title,
+                                    description: form.description,
+                                    isActive: form.isActive,
+                                    isTemplate: form.isTemplate,
+                                    question,
+                                }
+                            })
+                        )
+                    } else {
+                        //HANDLE ERROR
+                    }
+                    setLoading(false)
+                })
+                .catch((e) => console.log(e))
+
+            fetch(`/api/viewAllTemplates`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            })
+                .then((resp: any) => {
+                    return resp.json()
+                })
+                .catch((e) => console.log(e))
+
+                .then((data: any) => {
+                    if (data.success === true) {
+                        setTemplates(
+                            data.forms.map((form: any) => ({
+                                id: form._id,
+                                title: form.title,
+                                description: form.description,
+                                isTemplate: form.isTemplate,
+                            }))
+                        )
+                    } else {
+                        // HANDLE ERROR
+                    }
+                })
+        }
+    }, [auth?.currentUser])
+
+    const addForm = (isTemplate: boolean) => {
+        const form = {
+            title: "Untitled",
+            isTemplate,
+        }
+
+        //UPDATE ON BACKEND
+        fetch("/api/addForm", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(form),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    history.push(`/form-admin/${data.data._id}`)
+                } else {
+                    //HANDLE ERROR
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error)
+            })
+    }
+
+    const handleDelete = (id: string) => {
+        setAllForms((prev) => prev?.filter((form) => form.id !== id))
+        setSearchList((prev) => prev?.filter((form) => form.id !== id))
     }
 
     if (loading) {
@@ -41,86 +199,52 @@ const DashboardPage: React.FC = () => {
 
     return (
         <div className="dashboard-page">
-            <div className="dashboard">
-                <div className="sidebar">
-                    {auth?.currentUser?.role === "admin" ||
-                    auth?.currentUser?.role === "superadmin" ? (
-                        <button
-                            className="btn"
-                            id="allForms"
-                            onClick={(e) => handleChange(e)}
-                        >
-                            All Forms / Create Form
-                        </button>
-                    ) : null}
-                    {auth?.currentUser?.role === "superadmin" ||
-                    auth?.currentUser?.role === "admin" ? (
-                        <button
-                            className="btn"
-                            id="templates"
-                            onClick={(e) => handleChange(e)}
-                        >
-                            Templates(Create Copy and work)
-                        </button>
-                    ) : null}
-                    {auth?.currentUser?.role === "admin" ||
-                    auth?.currentUser?.role === "superadmin" ? (
-                        <button
-                            className="btn"
-                            id="adminForms"
-                            onClick={(e) => handleChange(e)}
-                        >
-                            Mancomm Form Responses
-                        </button>
-                    ) : null}
-                    {auth?.currentUser?.role === "superadmin" ? (
-                        <button
-                            className="btn"
-                            id="superAdminForms"
-                            onClick={(e) => handleChange(e)}
-                        >
-                            Board Form responses
-                        </button>
-                    ) : null}
-                    {auth?.currentUser?.userid === "x" ||
-                    auth?.currentUser === null ? (
-                        <div>
-                            <Link
-                                to="/adminlogin"
-                                style={{
-                                    textDecoration: "none",
-                                    color: "#FFF",
-                                }}
-                            >
-                                Login (ADMIN ONLY)
-                            </Link>
-                        </div>
-                    ) : (
-                        <p className="btn" id="logout" onClick={handleLogout}>
-                            Logout
-                        </p>
-                    )}
+            <DashboardNavbar />
+            <div className="dashboard-container">
+                <h3>
+                    {"Templates  "}
+
+                    <button
+                        onClick={() => {
+                            addForm(true)
+                        }}
+                    >
+                        <AddQuestionIcon />
+                        <span className="icon-info">Create New Form</span>
+                        <span className="text-info-arrow" />
+                    </button>
+                </h3>
+                <div className="forms-container">
+                    {templates?.map((form: CurrentForm) => (
+                        <FormCard
+                            key={form.id}
+                            form={form}
+                            handleDelete={handleDelete}
+                        />
+                    ))}
                 </div>
-                <div className="main-column">
-                    {auth?.currentUser?.role === "admin" ||
-                    auth?.currentUser?.role === "superadmin" ? (
-                        current === "allForms" ? (
-                            <FormsPage />
-                        ) : current === "adminForms" ? (
-                            <ResponseList creatorRole="admin" />
-                        ) : current === "superAdminForms" &&
-                          auth?.currentUser?.role === "superadmin" ? (
-                            <ResponseList creatorRole="superadmin" />
-                        ) : current === "admin-login" ? (
-                            <AdminLoginPage />
-                        ) : current === "templates" ? (
-                            <TemplatePage />
-                        ) : (
-                            <p>lmao</p>
-                        )
-                    ) : (
-                        <div>What are you doing here??</div>
-                    )}
+
+                <h3>
+                    {"All Forms  "}
+                    <button
+                        onClick={() => {
+                            addForm(false)
+                        }}
+                    >
+                        <AddQuestionIcon />
+                        <span className="icon-info">Create New Form</span>
+                        <span className="text-info-arrow" />
+                    </button>
+                </h3>
+
+                <div className="forms-container">
+                    {searchListForms?.map((form: CurrentForm) => (
+                        <FormCard
+                            key={form.id}
+                            form={form}
+                            handleDelete={handleDelete}
+                        />
+                    ))}
                 </div>
             </div>
         </div>

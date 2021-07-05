@@ -1,0 +1,92 @@
+.form-card {
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 0.5em;
+    position: relative;
+    height: auto;
+    width: 20vw;
+    overflow: hidden;
+    margin: 2rem 0;
+}
+
+.card-display-form {
+    background: var(--backgroundImage) no-repeat;
+    background-position: right top;
+    background-size: 20em 22em;
+    background-color: var(--backgroundColor);
+    position: relative;
+    overflow: hidden;
+    height: 10rem;
+    width: 20vw;
+    font-size: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+}
+
+.card-form-component {
+    position: absolute;
+    z-index: 2;
+    font-size: inherit;
+    position: relative;
+    background: rgba(190, 190, 190, 0.1);
+    backdrop-filter: saturate(180%) blur(25px);
+    border-radius: 1em;
+    width: 80%;
+    padding: 1em 1em 2em 1.5em;
+    margin: 2em auto;
+}
+
+.card-form-component {
+    font-size: 1.2em;
+}
+
+.card-form-component h2 {
+    font-size: 2em;
+}
+
+.card-display-form > .display-form-component {
+    margin: 0 auto !important;
+}
+
+.card-info {
+    padding: 0.5em 1em;
+}
+
+.card-info button .icon-info {
+    z-index: 2;
+    position: absolute;
+    width: max-content;
+    display: block;
+    font-size: 0.9rem;
+    height: 0;
+    padding: 0;
+    background-color: rebeccapurple;
+    overflow: hidden;
+    transition: 250ms;
+    -webkit-transition: 250ms;
+    -moz-transition: 250ms;
+    transform: translateX(-0.45em) translateY(0.1em);
+}
+
+.card-info button:hover .icon-info {
+    padding: 0.5em;
+    overflow: visible;
+    height: auto;
+}
+
+.card-info button .text-info-arrow {
+    z-index: 1;
+    position: absolute;
+    display: block;
+    width: 1.5rem;
+    height: 0rem;
+    overflow: hidden;
+    transform: translateY(-0.5rem) translateX(-0.1em) rotate(-45deg);
+    -webkit-transform: translateY(-0.5rem) translateX(-0.1em) rotate(-45deg);
+    background-color: rebeccapurple;
+}
+
+.card-info button:hover .text-info-arrow {
+    overflow: visible;
+    height: 1.5rem;
+}

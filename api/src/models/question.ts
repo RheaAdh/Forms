@@ -3,7 +3,7 @@ const options = { discriminatorKey: "questionType" }
 
 export interface QuesDoc extends Document {
     formid: { type: Schema.Types.ObjectId; ref: "Form" }
-    quesIndex:number
+    quesIndex: number
 }
 
 //!BASE QUESTION SCHEMA
@@ -11,7 +11,7 @@ export interface QuesDoc extends Document {
 const questionSchema: Schema = new Schema(
     {
         formid: { type: Schema.Types.ObjectId, ref: "Form" },
-        quesIndex:{type:Number,default:0},
+        quesIndex: { type: Number, default: 0 },
         questionText: { type: String, required: true },
         required: { type: Boolean, default: false },
         //questionType: String This is  made by default by the discriminator key

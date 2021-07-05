@@ -1,4 +1,5 @@
 import React, { ReactElement, useContext, useState } from "react"
+import { Question } from "./QuestionListContext"
 
 export interface CurrentForm {
     id: string
@@ -11,6 +12,7 @@ export interface CurrentForm {
     multipleResponses?: boolean
     isActive?: boolean
     editors?: string[]
+    question?: Question // For form card in dashboard only
 }
 interface Props {
     children: ReactElement

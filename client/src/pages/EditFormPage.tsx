@@ -68,6 +68,42 @@ const EditFormPage: React.FC = () => {
             <AdminNavbar questionsPage={true} />
             <div className="edit-form-container">
                 <div className="edit-form-component">
+                    {!form?.currentForm?.isTemplate && (
+                        <div
+                            className="switch-slider"
+                            style={
+                                form?.currentForm?.isActive
+                                    ? { backgroundColor: "green" }
+                                    : { backgroundColor: "red" }
+                            }
+                        >
+                            <button
+                                className="switch-btn"
+                                style={
+                                    form?.currentForm?.isActive
+                                        ? { right: "0" }
+                                        : { left: "0" }
+                                }
+                                onClick={() => {
+                                    if (form?.currentForm?.isActive) {
+                                        form?.setDate(new Date())
+                                    } else {
+                                        form?.setDate(null)
+                                    }
+                                    form?.setActive(
+                                        !form?.currentForm?.isActive
+                                    )
+                                }}
+                            >
+                                <span className="icon-info">
+                                    {form?.currentForm?.isActive
+                                        ? "Active"
+                                        : "Closed"}
+                                </span>
+                                <span className="text-info-arrow" />
+                            </button>
+                        </div>
+                    )}
                     <input
                         type="text"
                         className="form-title-editable"
@@ -76,9 +112,7 @@ const EditFormPage: React.FC = () => {
                     ></input>
                     {!form?.currentForm?.isTemplate && (
                         <div className="date-wrapper">
-                            <h3 style={{ marginBottom: "0" }}>
-                                Closing date :
-                            </h3>
+                            <h3>Closing date :</h3>
                             <DatePicker
                                 selected={form?.currentForm?.date}
                                 showTimeSelect
@@ -97,13 +131,6 @@ const EditFormPage: React.FC = () => {
                             form?.setDescription(e.target.value)
                         }}
                     ></textarea>
-                    {!form?.currentForm?.isTemplate && (
-                        <button onClick={toggleForm}>
-                            {form?.currentForm?.isActive
-                                ? `Form is active, click to toggle`
-                                : `Form has closed, click to toggle`}
-                        </button>
-                    )}
                 </div>
                 {!form?.currentForm?.isTemplate && (
                     <div className="radio-checkbox">

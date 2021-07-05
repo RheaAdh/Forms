@@ -35,16 +35,57 @@
 }
 
 .form-title-editable {
-    border: none !important;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 500;
 }
 
 .date-wrapper {
     position: absolute;
     right: 0;
-    top: 0;
+    top: 4rem;
 }
 .date-wrapper h3 {
-    margin: calc(var(--marginTop) + 0.5rem);
+    margin: 0;
+    position: relative;
+    left: 1em;
+}
+.date-wrapper input[type="text"] {
+    margin-top: 0;
+}
+
+.switch-btn .icon-info {
+    z-index: 5;
+    position: absolute;
+    width: max-content;
+    display: block;
+    font-size: 0.9rem;
+    height: 0;
+    background-color: rebeccapurple;
+    overflow: hidden;
+    transition: 250ms;
+    -webkit-transition: 250ms;
+    -moz-transition: 250ms;
+    transform: translateX(-0.4em) translateY(1.5em);
+}
+
+.switch-btn:hover .icon-info {
+    padding: 0.5em 1em;
+    overflow: visible;
+    height: auto;
+}
+
+.switch-btn .text-info-arrow {
+    z-index: 1;
+    position: absolute;
+    display: block;
+    width: 1.5rem;
+    height: 0rem;
+    overflow: hidden;
+    transform: translateY(0.9rem) translateX(-0.1em) rotate(-45deg);
+    -webkit-transform: translateY(0.9rem) translateX(-0.1em) rotate(-45deg);
+    background-color: rebeccapurple;
+}
+.switch-btn:hover .text-info-arrow {
+    overflow: visible;
+    height: 1.5rem;
 }

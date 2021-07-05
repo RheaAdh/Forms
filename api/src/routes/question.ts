@@ -50,7 +50,7 @@ export async function addQuestion(req: Request, res: Response) {
 
         console.log("Inside add ques")
         console.log("isTemplate is " + form.isTemplate)
-        if (form.isTemplate) {
+        if (form.isTemplate && req.session.role!="superadmin") {
             console.log("Template cant be editted")
             return res
                 .status(400)
@@ -240,7 +240,7 @@ export async function updateQuestion(req: Request, res: Response) {
         let { formId } = req.body
         let form: any
         form = await Form.findById(formId)
-        if (form.isTemplate) {
+        if (form.isTemplate && req.session.role!="superadmin") {
             console.log("Template cant be editted")
             return res
                 .status(400)

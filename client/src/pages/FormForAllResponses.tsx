@@ -199,6 +199,42 @@ const FormForAllResponses = () => {
                     ) : null}
                 </div>
                 <div className="display-form-component form-header">
+                    {!form?.currentForm?.isTemplate && (
+                        <div
+                            className="switch-slider"
+                            style={
+                                form?.currentForm?.isActive
+                                    ? { backgroundColor: "green" }
+                                    : { backgroundColor: "red" }
+                            }
+                        >
+                            <button
+                                className="switch-btn"
+                                style={
+                                    form?.currentForm?.isActive
+                                        ? { right: "0" }
+                                        : { left: "0" }
+                                }
+                                onClick={() => {
+                                    if (form?.currentForm?.isActive) {
+                                        form?.setDate(new Date())
+                                    } else {
+                                        form?.setDate(null)
+                                    }
+                                    form?.setActive(
+                                        !form?.currentForm?.isActive
+                                    )
+                                }}
+                            >
+                                <span className="icon-info">
+                                    {form?.currentForm?.isActive
+                                        ? "Active"
+                                        : "Closed"}
+                                </span>
+                                <span className="text-info-arrow" />
+                            </button>
+                        </div>
+                    )}
                     <h2>{`${responseList?.users?.length} responses`}</h2>
                     <p>{form?.currentForm?.description}</p>
                 </div>

@@ -652,7 +652,7 @@ const QuestionResponse: React.FC<props> = ({
         <div className="display-form-component">
             <b style={{ display: "inline" }}>{question.questionText}</b>
             {question["required"] ? (
-                <span style={{ color: "red", fontSize: "1.5rem" }}>*</span>
+                <span style={{ color: "red", fontSize: "1.5em" }}>*</span>
             ) : null}
             {types[typeToIdx.indexOf(question["questionType"])]}
         </div>

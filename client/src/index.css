@@ -10,9 +10,8 @@ body {
     --backgroundColor: #252525;
     --fontColor: #fff;
     --borderBottom: #02b7db;
-    --marginTop: 1.5rem;
-    --linScaleLine: #585858;
-    --adminNavbarHeight: 8rem;
+    --marginTop: 1.5em;
+    --adminNavbarHeight: 8em;
     --secondaryBackground: rgba(255, 255, 255, 0.12);
     --secondaryBorder: #fff;
     font-size: 20px;
@@ -31,7 +30,7 @@ b {
 
 h2 {
     margin: 0;
-    font-size: 2.5rem;
+    font-size: 2.5em;
     font-weight: 600;
 }
 
@@ -67,7 +66,7 @@ a {
 
 input {
     display: block;
-    font-size: 1rem;
+    font-size: 1em;
     background: none;
     outline: none;
     box-shadow: 0px 0px 0px transparent;
@@ -122,11 +121,11 @@ textarea {
     outline: none;
     background: none;
     display: block;
-    height: 3rem;
+    height: 3em;
     padding: 0;
     width: 60vw;
     color: var(--fontColor);
-    font-size: 1rem;
+    font-size: 1em;
     font-family: "Catamaran";
     font-weight: 400;
     margin-top: var(--marginTop);
@@ -149,8 +148,8 @@ textarea:active {
 .radio-checkbox input[type="checkbox"] {
     display: block;
     opacity: 0;
-    width: 1rem;
-    height: 1rem;
+    width: 1em;
+    height: 1em;
     margin: 0;
     padding: 0;
     cursor: pointer;
@@ -159,8 +158,8 @@ textarea:active {
 
 .radio-checkbox .styled-radio-checkbox {
     display: block;
-    width: 1rem;
-    height: 1rem;
+    width: 1em;
+    height: 1em;
     border-radius: 50%;
     border: 1px solid var(--borderBottom);
 }
@@ -194,7 +193,7 @@ select {
     padding: 0 1em 0 0;
     margin: 0;
     width: 100%;
-    font-size: 1rem;
+    font-size: 1em;
     font-family: "Catamaran";
     cursor: pointer;
     color: var(--fontColor);
@@ -211,7 +210,7 @@ select::-ms-expand {
     border: 1px solid var(--borderBottom);
     border-radius: 0.25em;
     padding: 0.25em 0.5em;
-    font-size: 1.25rem;
+    font-size: 1.25em;
     cursor: pointer;
     background-color: inherit;
 }
@@ -282,9 +281,28 @@ option:hover {
 .loading {
     background: var(--backgroundImage) no-repeat;
     background-position: right top;
-    background-size: 40rem 44rem;
+    background-size: 40em 44em;
     background-color: var(--backgroundColor);
     overflow: hidden;
     height: 100vh;
     width: 100vw;
+}
+
+.switch-slider {
+    height: 2em;
+    width: 4em;
+    border-radius: 1em;
+    position: relative;
+    left: 90%;
+}
+
+.switch-btn {
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    transition: 500ms;
+    cursor: pointer;
 }

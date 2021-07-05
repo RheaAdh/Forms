@@ -143,21 +143,6 @@ const FormForUser = () => {
 
                     <p>{form?.currentForm?.description}</p>
                 </div>
-                {responseList?.readOnly === false ? (
-                    <button
-                        onClick={() => {
-                            setLoading(true)
-                            responseList?.responseActions?.clearResponse(
-                                questions?.questions ? questions.questions : []
-                            )
-                            setTimeout(() => {
-                                setLoading(false)
-                            }, 10)
-                        }}
-                    >
-                        Click to clear responses
-                    </button>
-                ) : null}
                 {questions?.questions?.map((q: Question, idx: number) => {
                     return (
                         <QuestionResponse
@@ -185,19 +170,35 @@ const FormForUser = () => {
                 >
                     Submit
                 </button>
-
+                {responseList?.readOnly === false ? (
+                    <button
+                        className="form-submit-btn"
+                        onClick={() => {
+                            setLoading(true)
+                            responseList?.responseActions?.clearResponse(
+                                questions?.questions ? questions.questions : []
+                            )
+                            setTimeout(() => {
+                                setLoading(false)
+                            }, 10)
+                        }}
+                    >
+                        Click to clear responses
+                    </button>
+                ) : null}
                 {!form?.currentForm?.anonymous && (
-                    <>
+                    <div className="radio-checkbox">
                         <input
                             type="checkbox"
                             defaultChecked={sendMail}
                             onChange={() => setSendMail(!sendMail)}
                             id="email-response-btn"
                         ></input>
+                        <span className="styled-radio-checkbox"> </span>
                         <label htmlFor="email-response-btn">
                             Send me a mail of my response
                         </label>
-                    </>
+                    </div>
                 )}
             </div>
         </div>

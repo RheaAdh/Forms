@@ -99,7 +99,7 @@
     transition: 250ms;
     -webkit-transition: 250ms;
     -moz-transition: 250ms;
-    transform: translateX(-0.4em) translateY(0.1em);
+    transform: translateX(-0.45em) translateY(0.1em);
 }
 
 .question-component-primary-row3 button:hover .icon-info {

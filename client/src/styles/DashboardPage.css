@@ -6,30 +6,65 @@
     overflow: hidden;
     height: 100vh;
     width: 100vw;
+    --dashboardNavbarHeight: 5rem;
 }
-.dashboard {
-    height: 100vh;
-    width: 100vw;
+
+.dashboard-container {
+    position: relative;
+    height: calc(100vh - var(--dashboardNavbarHeight));
+    width: 92.5vw;
+    left: 7.5vw;
+    overflow-y: auto;
+    padding-right: 7.5vw;
+}
+
+.dashboard-container h3 {
+    font-size: 1.5rem;
+    margin: 1rem 0;
+}
+
+.forms-container {
     display: flex;
     flex-direction: row;
-    overflow-y: auto;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
-.sidebar {
-    background: inherit;
-    font-size: large;
-    font-weight: bold;
-    width: 15vw;
-    height: 100vh;
-    border-right: 1px solid black;
-    padding-right: 10px;
-    padding-top: 50px;
-    justify-content: center;
-    position: relative;
+
+.dashboard-container button .icon-info {
+    z-index: 2;
+    position: absolute;
+    width: max-content;
+    display: block;
+    font-size: 0.9rem;
+    height: 0;
+    padding: 0;
+    background-color: rebeccapurple;
+    overflow: hidden;
+    transition: 250ms;
+    -webkit-transition: 250ms;
+    -moz-transition: 250ms;
+    transform: translateX(-0.45em) translateY(0.1em);
 }
-.main-column {
-    background: inherit;
-    position: relative;
-    height: 100vh;
-    width: 85vw;
-    overflow: auto;
+
+.dashboard-container button:hover .icon-info {
+    padding: 0.5em;
+    overflow: visible;
+    height: auto;
+}
+
+.dashboard-container button .text-info-arrow {
+    z-index: 1;
+    position: absolute;
+    display: block;
+    width: 1.5rem;
+    height: 0rem;
+    overflow: hidden;
+    transform: translateY(-0.5rem) translateX(-0.1em) rotate(-45deg);
+    -webkit-transform: translateY(-0.5rem) translateX(-0.1em) rotate(-45deg);
+    background-color: rebeccapurple;
+}
+
+.dashboard-container button:hover .text-info-arrow {
+    overflow: visible;
+    height: 1.5rem;
 }
