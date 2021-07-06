@@ -23,7 +23,7 @@ export async function getForms(req: Request, res: Response) {
                 isTemplate: false,
                 editors: req.session.userId,
             })
-                .populate({ path: "questions" ,match:{quesIndex:0}})
+                .populate({ path: "questions", match: { quesIndex: 0 } })
                 .sort({ createdAt: -1 })
             console.log("My form is ")
             console.log(myForms)
@@ -31,7 +31,7 @@ export async function getForms(req: Request, res: Response) {
         } else if (req.session.role === "superadmin") {
             //superadmin
             const forms = await Form.find({ isTemplate: false })
-                .populate({ path: "questions", match:{quesIndex:0}})
+                .populate({ path: "questions", match: { quesIndex: 0 } })
                 .sort({
                     createdAt: -1,
                 })
@@ -453,7 +453,9 @@ export async function useTemplate(req: Request, res: Response) {
 export async function viewAllTempalates(req: Request, res: Response) {
     const forms = await Form.find({
         isTemplate: true,
-    }).sort({ createdAt: -1 })
+    })
+        .populate({ path: "questions", match: { quesIndex: 0 } })
+        .sort({ createdAt: -1 })
     console.log(forms)
     return res.send({ success: true, forms: forms })
 }

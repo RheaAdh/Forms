@@ -23,6 +23,25 @@ const DashboardPage: React.FC = () => {
         if (auth?.currentUser === null) auth?.getCurrentUser()
     }, [])
 
+    const returnQuestionFromData = (form: any) => {
+        return form.questions[0] !== undefined
+            ? {
+                  formId: form._id,
+                  qid: form.questions[0]._id,
+                  questionText: form.questions[0].questionText,
+                  questionType: form.questions[0].questionType,
+                  required: form.questions[0].required,
+                  options: form.questions[0].options,
+                  cols: form.questions[0].colLabel,
+                  rows: form.questions[0].rowLabel,
+                  lowRating: form.questions[0].lowRating,
+                  highRating: form.questions[0].highRating,
+                  lowRatingLabel: form.questions[0].lowRatingLabel,
+                  highRatingLabel: form.questions[0].highRatingLabel,
+              }
+            : undefined
+    }
+
     useEffect(() => {
         if (auth?.currentUser && auth?.currentUser?.userid !== "x") {
             fetch(`/api/getforms`, {
@@ -40,36 +59,9 @@ const DashboardPage: React.FC = () => {
                     if (data.success === true) {
                         setAllForms(
                             data.forms.map((form: any) => {
-                                const question: Question | undefined =
-                                    form.questions[0] !== undefined
-                                        ? {
-                                              formId: form._id,
-                                              qid: form.questions[0]._id,
-                                              questionText:
-                                                  form.questions[0]
-                                                      .questionText,
-                                              questionType:
-                                                  form.questions[0]
-                                                      .questionType,
-                                              required:
-                                                  form.questions[0].required,
-                                              options:
-                                                  form.questions[0].options,
-                                              cols: form.questions[0].colLabel,
-                                              rows: form.questions[0].rowLabel,
-                                              lowRating:
-                                                  form.questions[0].lowRating,
-                                              highRating:
-                                                  form.questions[0].highRating,
-                                              lowRatingLabel:
-                                                  form.questions[0]
-                                                      .lowRatingLabel,
-                                              highRatingLabel:
-                                                  form.questions[0]
-                                                      .highRatingLabel,
-                                          }
-                                        : undefined
-
+                                const question:
+                                    | Question
+                                    | undefined = returnQuestionFromData(form)
                                 return {
                                     id: form.id,
                                     date: form.closes,
@@ -83,35 +75,9 @@ const DashboardPage: React.FC = () => {
                         )
                         setSearchList(
                             data.forms.map((form: any) => {
-                                const question: Question | undefined =
-                                    form.questions[0] !== undefined
-                                        ? {
-                                              formId: form._id,
-                                              qid: form.questions[0]._id,
-                                              questionText:
-                                                  form.questions[0]
-                                                      .questionText,
-                                              questionType:
-                                                  form.questions[0]
-                                                      .questionType,
-                                              required:
-                                                  form.questions[0].required,
-                                              options:
-                                                  form.questions[0].options,
-                                              cols: form.questions[0].colLabel,
-                                              rows: form.questions[0].rowLabel,
-                                              lowRating:
-                                                  form.questions[0].lowRating,
-                                              highRating:
-                                                  form.questions[0].highRating,
-                                              lowRatingLabel:
-                                                  form.questions[0]
-                                                      .lowRatingLabel,
-                                              highRatingLabel:
-                                                  form.questions[0]
-                                                      .highRatingLabel,
-                                          }
-                                        : undefined
+                                const question:
+                                    | Question
+                                    | undefined = returnQuestionFromData(form)
 
                                 return {
                                     id: form._id,
@@ -151,6 +117,7 @@ const DashboardPage: React.FC = () => {
                                 title: form.title,
                                 description: form.description,
                                 isTemplate: form.isTemplate,
+                                question: returnQuestionFromData(form),
                             }))
                         )
                     } else {
@@ -188,9 +155,25 @@ const DashboardPage: React.FC = () => {
             })
     }
 
-    const handleDelete = (id: string) => {
-        setAllForms((prev) => prev?.filter((form) => form.id !== id))
-        setSearchList((prev) => prev?.filter((form) => form.id !== id))
+    const handleDelete = (id: string, isTemplate: boolean | undefined) => {
+        if (isTemplate) {
+            setTemplates((prevForms) =>
+                prevForms?.filter((form: CurrentForm) => {
+                    return form.id !== id
+                })
+            )
+            return
+        }
+        setAllForms((prevForms) =>
+            prevForms?.filter((form: CurrentForm) => {
+                return form.id !== id
+            })
+        )
+        setSearchList((prevForms) =>
+            prevForms?.filter((form: CurrentForm) => {
+                return form.id !== id
+            })
+        )
     }
 
     if (loading) {
@@ -199,22 +182,29 @@ const DashboardPage: React.FC = () => {
 
     return (
         <div className="dashboard-page">
-            <DashboardNavbar />
+            <DashboardNavbar
+                allForms={allForms}
+                setSearchList={setSearchList}
+            />
             <div className="dashboard-container">
                 <h3>
                     {"Templates  "}
 
-                    <button
-                        onClick={() => {
-                            addForm(true)
-                        }}
-                    >
-                        <AddQuestionIcon />
-                        <span className="icon-info">Create New Form</span>
-                        <span className="text-info-arrow" />
-                    </button>
+                    {auth?.currentUser?.role === "superadmin" && (
+                        <button
+                            onClick={() => {
+                                addForm(true)
+                            }}
+                        >
+                            <AddQuestionIcon />
+                            <span className="icon-info">
+                                Create New Template
+                            </span>
+                            <span className="text-info-arrow" />
+                        </button>
+                    )}
                 </h3>
-                <div className="forms-container">
+                <div className="templates-container">
                     {templates?.map((form: CurrentForm) => (
                         <FormCard
                             key={form.id}

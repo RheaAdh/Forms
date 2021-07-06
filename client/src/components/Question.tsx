@@ -44,36 +44,42 @@ const Question: React.FC<props> = ({ question, index }) => {
         </div>,
 
         <div className="admin-question-container">
-            <b>Multiple choice</b>
-            {question?.options?.map((a: Option, i: number) => (
-                <div className="option-container" key={a.key}>
-                    <input
-                        type="text"
-                        onChange={(event) =>
-                            questionActions?.updateOptions(question.qid, i, {
-                                text: event.target.value,
-                                key: a.key,
-                            })
-                        }
-                        value={a.text}
-                    />
-                    <button
-                        onClick={() =>
-                            questionActions?.deleteOption(question.qid, i)
-                        }
-                    >
-                        <DeleteIcon className="delete-option-btn" />
-                    </button>
-                </div>
-            ))}
+            <div>
+                <b>Multiple choice</b>
+                {question?.options?.map((a: Option, i: number) => (
+                    <div className="option-container" key={a.key}>
+                        <input
+                            type="text"
+                            onChange={(event) =>
+                                questionActions?.updateOptions(
+                                    question.qid,
+                                    i,
+                                    {
+                                        text: event.target.value,
+                                        key: a.key,
+                                    }
+                                )
+                            }
+                            value={a.text}
+                        />
+                        <button
+                            onClick={() =>
+                                questionActions?.deleteOption(question.qid, i)
+                            }
+                        >
+                            <DeleteIcon className="delete-option-btn" />
+                        </button>
+                    </div>
+                ))}
 
-            <button
-                className="add-option-btn"
-                onClick={() => questionActions?.addOptions(question.qid)}
-            >
-                {" "}
-                Add Option{" "}
-            </button>
+                <button
+                    className="add-option-btn"
+                    onClick={() => questionActions?.addOptions(question.qid)}
+                >
+                    {" "}
+                    Add Option{" "}
+                </button>
+            </div>
         </div>,
 
         <div className="admin-question-container">
@@ -215,131 +221,161 @@ const Question: React.FC<props> = ({ question, index }) => {
         </div>,
 
         <div className="admin-question-container">
-            <b>Multiple choice grid</b>
-            <p>Rows:</p>
-            {question?.rows?.map((a: Option, i: number) => (
-                <div className="option-container" key={a.key}>
-                    <input
-                        type="text"
-                        onChange={(event) =>
-                            questionActions?.updateRows(question.qid, i, {
-                                text: event.target.value,
-                                key: a.key,
-                            })
-                        }
-                        value={a.text}
-                    />
+            <div>
+                <b>Multiple choice grid</b>
+            </div>
+            <div className="grid-container">
+                <div>
+                    <p>Rows:</p>
+                    {question?.rows?.map((a: Option, i: number) => (
+                        <div className="option-container" key={a.key}>
+                            <input
+                                type="text"
+                                onChange={(event) =>
+                                    questionActions?.updateRows(
+                                        question.qid,
+                                        i,
+                                        {
+                                            text: event.target.value,
+                                            key: a.key,
+                                        }
+                                    )
+                                }
+                                value={a.text}
+                            />
+                            <button
+                                onClick={() =>
+                                    questionActions?.deleteRow(question.qid, i)
+                                }
+                            >
+                                <DeleteIcon className="delete-option-btn" />
+                            </button>
+                        </div>
+                    ))}
                     <button
-                        onClick={() =>
-                            questionActions?.deleteRow(question.qid, i)
-                        }
+                        className="add-option-btn"
+                        onClick={() => {
+                            questionActions?.addRows(question.qid)
+                        }}
                     >
-                        <DeleteIcon className="delete-option-btn" />
+                        Add row
                     </button>
                 </div>
-            ))}
-            <button
-                className="add-option-btn"
-                onClick={() => {
-                    questionActions?.addRows(question.qid)
-                }}
-            >
-                Add row
-            </button>
-            <p>Columns:</p>
-            {question?.cols?.map((a: Option, i: number) => (
-                <div className="option-container" key={a.key}>
-                    <input
-                        type="text"
-                        onChange={(event) =>
-                            questionActions?.updateCols(question.qid, i, {
-                                text: event.target.value,
-                                key: a.key,
-                            })
-                        }
-                        value={a.text}
-                    />
+                <div>
+                    <p>Columns:</p>
+                    {question?.cols?.map((a: Option, i: number) => (
+                        <div className="option-container" key={a.key}>
+                            <input
+                                type="text"
+                                onChange={(event) =>
+                                    questionActions?.updateCols(
+                                        question.qid,
+                                        i,
+                                        {
+                                            text: event.target.value,
+                                            key: a.key,
+                                        }
+                                    )
+                                }
+                                value={a.text}
+                            />
+                            <button
+                                onClick={() =>
+                                    questionActions?.deleteCol(question.qid, i)
+                                }
+                            >
+                                <DeleteIcon className="delete-option-btn" />
+                            </button>
+                        </div>
+                    ))}
                     <button
-                        onClick={() =>
-                            questionActions?.deleteCol(question.qid, i)
-                        }
+                        className="add-option-btn"
+                        onClick={() => {
+                            questionActions?.addCols(question.qid)
+                        }}
                     >
-                        <DeleteIcon className="delete-option-btn" />
+                        Add column
                     </button>
                 </div>
-            ))}
-            <button
-                className="add-option-btn"
-                onClick={() => {
-                    questionActions?.addCols(question.qid)
-                }}
-            >
-                Add column
-            </button>
+            </div>
         </div>,
 
         <div className="admin-question-container">
             <b>Checkbox grid</b>
-            <p>Rows:</p>
-            {question?.rows?.map((a: Option, i: number) => (
-                <div className="option-container" key={a.key}>
-                    <input
-                        type="text"
-                        onChange={(event) =>
-                            questionActions?.updateRows(question.qid, i, {
-                                text: event.target.value,
-                                key: a.key,
-                            })
-                        }
-                        value={a.text}
-                    />
+            <div className="grid-container">
+                <div>
+                    <p>Rows:</p>
+                    {question?.rows?.map((a: Option, i: number) => (
+                        <div className="option-container" key={a.key}>
+                            <input
+                                type="text"
+                                onChange={(event) =>
+                                    questionActions?.updateRows(
+                                        question.qid,
+                                        i,
+                                        {
+                                            text: event.target.value,
+                                            key: a.key,
+                                        }
+                                    )
+                                }
+                                value={a.text}
+                            />
+                            <button
+                                onClick={() =>
+                                    questionActions?.deleteRow(question.qid, i)
+                                }
+                            >
+                                <DeleteIcon className="delete-option-btn" />
+                            </button>
+                        </div>
+                    ))}
                     <button
-                        onClick={() =>
-                            questionActions?.deleteRow(question.qid, i)
-                        }
+                        className="add-option-btn"
+                        onClick={() => {
+                            questionActions?.addRows(question.qid)
+                        }}
                     >
-                        <DeleteIcon className="delete-option-btn" />
+                        Add row
                     </button>
                 </div>
-            ))}
-            <button
-                className="add-option-btn"
-                onClick={() => {
-                    questionActions?.addRows(question.qid)
-                }}
-            >
-                Add row
-            </button>
-            <p>Columns:</p>
-            {question?.cols?.map((a: Option, i: number) => (
-                <div className="option-container" key={a.key}>
-                    <input
-                        type="text"
-                        onChange={(event) =>
-                            questionActions?.updateCols(question.qid, i, {
-                                text: event.target.value,
-                                key: a.key,
-                            })
-                        }
-                        value={a.text}
-                    />
+                <div>
+                    <p>Columns:</p>
+                    {question?.cols?.map((a: Option, i: number) => (
+                        <div className="option-container" key={a.key}>
+                            <input
+                                type="text"
+                                onChange={(event) =>
+                                    questionActions?.updateCols(
+                                        question.qid,
+                                        i,
+                                        {
+                                            text: event.target.value,
+                                            key: a.key,
+                                        }
+                                    )
+                                }
+                                value={a.text}
+                            />
+                            <button
+                                onClick={() =>
+                                    questionActions?.deleteCol(question.qid, i)
+                                }
+                            >
+                                <DeleteIcon className="delete-option-btn" />
+                            </button>
+                        </div>
+                    ))}
                     <button
-                        onClick={() =>
-                            questionActions?.deleteCol(question.qid, i)
-                        }
+                        className="add-option-btn"
+                        onClick={() => {
+                            questionActions?.addCols(question.qid)
+                        }}
                     >
-                        <DeleteIcon className="delete-option-btn" />
+                        Add column
                     </button>
                 </div>
-            ))}
-            <button
-                className="add-option-btn"
-                onClick={() => {
-                    questionActions?.addCols(question.qid)
-                }}
-            >
-                Add column
-            </button>
+            </div>
         </div>,
 
         <div className="admin-question-container">

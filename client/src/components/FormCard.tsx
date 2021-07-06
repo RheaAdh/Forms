@@ -8,7 +8,7 @@ import { useAuth } from "../context/AuthContext"
 
 interface props {
     form: CurrentForm
-    handleDelete: (id: string) => void
+    handleDelete: (id: string, isTemplate: boolean | undefined) => void
 }
 
 const FormCard: React.FC<props> = ({ form, handleDelete }) => {
@@ -56,7 +56,9 @@ const FormCard: React.FC<props> = ({ form, handleDelete }) => {
                     return
                 }
                 //CHANGE ON FRONT END
-                handleDelete(form.id)
+                console.log(form.id, form.title)
+
+                handleDelete(form.id, form.isTemplate)
             })
             .catch((error) => {
                 console.error("Error:", error)
@@ -105,6 +107,7 @@ const FormCard: React.FC<props> = ({ form, handleDelete }) => {
                         <h2>{form.title}</h2>
                         <p>{form.description}</p>
                     </div>
+
                     {form.question && (
                         <QuestionResponse question={form.question} index={0} />
                     )}
@@ -131,8 +134,6 @@ const FormCard: React.FC<props> = ({ form, handleDelete }) => {
                         }}
                     >
                         <DeleteIcon />
-                        <span className="icon-info">Delete Form</span>
-                        <span className="text-info-arrow" />
                     </button>
                 </div>
             ) : (
@@ -145,8 +146,6 @@ const FormCard: React.FC<props> = ({ form, handleDelete }) => {
                             }}
                         >
                             <DeleteIcon />
-                            <span className="icon-info">Delete Form</span>
-                            <span className="text-info-arrow" />
                         </button>
                     )}
                 </div>

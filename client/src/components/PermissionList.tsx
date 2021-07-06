@@ -52,16 +52,26 @@ const PermissionList: React.FC<props> = ({ close }) => {
                     type="text"
                     onChange={(e) =>
                         setSearchString(
-                            e.target.value.replace(/[^a-zA-Z ]/g, "")
+                            e.target.value
+                                .replace(/[^a-zA-Z ]/g, "")
+                                .toLowerCase()
                         )
                     }
                 ></input>
                 {console.log(form?.currentForm?.editors)}
                 <ul className="permission-list">
+                    {
+                        // Search using search string and then if the admin is in editors list
+                        // return checked box, or else return uncheckedd box.
+                        // if search string doesn't match admin return null
+                    }
                     {admins?.map((admin) =>
                         admin.email !== currentEmail &&
-                        (admin.email.search(searchString) !== -1 ||
-                            admin.username.search(searchString) !== -1) ? (
+                        (admin.email.toLowerCase().search(searchString) !==
+                            -1 ||
+                            admin.username
+                                .toLowerCase()
+                                .search(searchString) !== -1) ? (
                             <li key={admin._id} className="radio-checkbox">
                                 {form?.currentForm?.editors &&
                                 form?.currentForm?.editors?.findIndex(

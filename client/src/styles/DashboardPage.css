@@ -27,7 +27,20 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.templates-container {
+    display: flex;
+    flex-direction: row;
     justify-content: space-between;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.templates-container > .form-card {
+    flex: none;
+    margin-right: 1em;
 }
 
 .dashboard-container button .icon-info {

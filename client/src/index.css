@@ -209,8 +209,8 @@ select::-ms-expand {
     max-width: 35%;
     border: 1px solid var(--borderBottom);
     border-radius: 0.25em;
-    padding: 0.25em 0.5em;
-    font-size: 1.25em;
+    padding: 1em;
+    font-size: 1em;
     cursor: pointer;
     background-color: inherit;
 }
@@ -218,8 +218,8 @@ select::-ms-expand {
     width: 1.5em;
     height: 1.5em;
     position: absolute;
-    top: 0.6em;
-    right: 0.25em;
+    top: 1em;
+    right: 0.45em;
     display: block;
     pointer-events: none;
 }
