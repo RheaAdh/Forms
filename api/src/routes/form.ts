@@ -23,7 +23,7 @@ export async function getForms(req: Request, res: Response) {
                 isTemplate: false,
                 editors: req.session.userId,
             })
-                .populate({ path: "questions", perDocumentLimit: 1 })
+                .populate({ path: "questions" ,match:{quesIndex:0}})
                 .sort({ createdAt: -1 })
             console.log("My form is ")
             console.log(myForms)
@@ -31,7 +31,7 @@ export async function getForms(req: Request, res: Response) {
         } else if (req.session.role === "superadmin") {
             //superadmin
             const forms = await Form.find({ isTemplate: false })
-                .populate({ path: "questions", perDocumentLimit: 1 })
+                .populate({ path: "questions", match:{quesIndex:0}})
                 .sort({
                     createdAt: -1,
                 })
