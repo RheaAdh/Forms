@@ -41,11 +41,33 @@ import {
     getResponseByBothFormidAndResponseid,
     getResponsebyRespid,
 } from "./response"
+import {
+    getAllThemes,
+    getTheme,
+    addTheme,
+    deleteTheme,
+    useTheme,
+    updateTheme,
+} from "./theme"
 import { checkAuthentication, isAnonymous } from "./user"
 
 const router = express.Router()
 
 ///////////////////////ADMIN AND SUPERADMIN/////////////////////////////////
+router.post("/addtheme", addTheme)
+router.get("/allthemes", getAllThemes)
+router.get("/theme/:themeId", getTheme)
+router.delete("/deletetheme", deleteTheme)
+router.put("/usetheme/:formId", useTheme)
+router.put("/updatetheme/:themeId", updateTheme)
+
+// router.post("/addtheme", isValidAdmin, addTheme)
+// router.get("/allthemes", isValidAdmin, getAllThemes)
+// router.get("/theme/:themeId", isValidAdmin, getTheme)
+// router.delete("/deletetheme", isValidAdmin, deleteTheme)
+// router.put("/usetheme/:formId", isValidAdmin, useTheme)
+// router.put("/updatetheme/:themeId", isValidAdmin, updateTheme)
+
 router.get("/getforms", isValidAdmin, getForms)
 router.put("/updateform", isValidAdmin, updateForm)
 router.post("/addform", isValidAdmin, addForm)
@@ -117,6 +139,6 @@ router.post("/submitresponse", checkAuthentication, submitResponse)
 
 ////////////////////NO-AUTH///////////////////////////////////////////////////
 router.get("/emailverification/:token", verifyEmail)
-router.get("/response/:respid", getResponsebyRespid)    //To view emailed responses
+router.get("/response/:respid", getResponsebyRespid) //To view emailed responses
 
 export default router

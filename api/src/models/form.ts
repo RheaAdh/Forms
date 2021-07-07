@@ -21,6 +21,7 @@ export interface FormDoc extends Document {
     editors: [Schema.Types.ObjectId]
     dontdelete: boolean
     anonymous: boolean
+    theme: any
 }
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
 const form: Schema = new Schema(
@@ -37,8 +38,9 @@ const form: Schema = new Schema(
         isTemplate: { type: Boolean, default: false },
         role: { type: String },
         editors: [{ type: Schema.Types.ObjectId, ref: "user" }],
-        dontdelete: { type: Boolean, default: false },     //To be used only with default Templates
-        anonymous:{ type: Boolean, default: false },
+        dontdelete: { type: Boolean, default: false }, //To be used only with default Templates
+        anonymous: { type: Boolean, default: false },
+        theme: { type: Schema.Types.ObjectId, ref: "theme" },
     },
     {
         timestamps: true,
