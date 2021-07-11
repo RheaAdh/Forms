@@ -308,6 +308,7 @@ export const downloadResponse = async (req: Request, res: Response) => {
             }
             data.push(datarow)
         }
+        console.log("Download ready data")
         console.log(data)
 
         //Converting data to .csv and writting to a file  --- this part is now in frontend
@@ -396,20 +397,19 @@ export const getResponseIdByFormFilled = async (
         let responses: any
         responses = await FormResponse.find({
             formId: formId,
-        }).populate("userid",{password:0}).populate("formId ")
+        })
+            .populate("userid", { password: 0 })
+            .populate("formId ")
         console.log(responses)
         let ans: any = []
         for (let i = 0; i < responses.length; i++) {
-            if(responses[i].formId.anonymous)
-            {
-                ans.push({responseid: responses[i]._id})
-            }
-            else
-            {
+            if (responses[i].formId.anonymous) {
+                ans.push({ responseid: responses[i]._id })
+            } else {
                 ans.push({
                     responseid: responses[i]._id,
                     username: responses[i].username,
-                    email: responses[i].userid.email
+                    email: responses[i].userid.email,
                 })
             }
         }
