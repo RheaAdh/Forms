@@ -8,6 +8,8 @@ import "../styles/Question.css"
 import { ReactComponent as DeleteIcon } from "../images/DeleteIcon.svg"
 import { ReactComponent as DropdownArrow } from "../images/DropdownArrow.svg"
 import { ReactComponent as AddQuestionIcon } from "../images/AddQuestionIcon.svg"
+import { AddQuestion, addQuestion } from "../context/Actions"
+import { useMutation } from "react-query"
 
 interface props {
     question: any
@@ -34,56 +36,64 @@ const Question: React.FC<props> = ({ question, index }) => {
         question.required,
         question.rows,
     ])
+
+    const { mutateAsync } = useMutation(
+        (data: AddQuestion) => addQuestion(data),
+        {
+            onSuccess: (data) => {
+                questionActions?.updateQuestionByIndex(index + 1, data._id)
+            },
+        }
+    )
+
+    const onAddQuestion = async (after: number) => {
+        await mutateAsync({ after, formId: question.formId })
+    }
+
     const types = [
-        <div className="admin-question-container">
-            <b>Short answer text</b>
+        <div className="admin-question-container text-only">
+            <p>Short answer text</p>
+        </div>,
+
+        <div className="admin-question-container text-only">
+            <p>Paragraph text</p>
         </div>,
 
         <div className="admin-question-container">
-            <b>Paragraph text</b>
+            <p>Multiple choice</p>
+            {question?.options?.map((a: Option, i: number) => (
+                <div className="option-container" key={a.key}>
+                    <input
+                        type="text"
+                        onChange={(event) =>
+                            questionActions?.updateOptions(question.qid, i, {
+                                text: event.target.value,
+                                key: a.key,
+                            })
+                        }
+                        value={a.text}
+                    />
+                    <button
+                        onClick={() =>
+                            questionActions?.deleteOption(question.qid, i)
+                        }
+                    >
+                        <DeleteIcon className="delete-option-btn" />
+                    </button>
+                </div>
+            ))}
+
+            <button
+                className="add-option-btn"
+                onClick={() => questionActions?.addOptions(question.qid)}
+            >
+                {" "}
+                Add Option{" "}
+            </button>
         </div>,
 
         <div className="admin-question-container">
-            <div>
-                <b>Multiple choice</b>
-                {question?.options?.map((a: Option, i: number) => (
-                    <div className="option-container" key={a.key}>
-                        <input
-                            type="text"
-                            onChange={(event) =>
-                                questionActions?.updateOptions(
-                                    question.qid,
-                                    i,
-                                    {
-                                        text: event.target.value,
-                                        key: a.key,
-                                    }
-                                )
-                            }
-                            value={a.text}
-                        />
-                        <button
-                            onClick={() =>
-                                questionActions?.deleteOption(question.qid, i)
-                            }
-                        >
-                            <DeleteIcon className="delete-option-btn" />
-                        </button>
-                    </div>
-                ))}
-
-                <button
-                    className="add-option-btn"
-                    onClick={() => questionActions?.addOptions(question.qid)}
-                >
-                    {" "}
-                    Add Option{" "}
-                </button>
-            </div>
-        </div>,
-
-        <div className="admin-question-container">
-            <b>Checkbox</b>
+            <p>Checkbox</p>
             {question?.options?.map((a: Option, i: number) => (
                 <div className="option-container" key={a.key}>
                     <input
@@ -114,7 +124,7 @@ const Question: React.FC<props> = ({ question, index }) => {
         </div>,
 
         <div className="admin-question-container">
-            <b>Dropdown</b>
+            <p>Dropdown</p>
             {question?.options?.map((a: Option, i: number) => (
                 <div className="option-container" key={a.key}>
                     <input
@@ -145,85 +155,88 @@ const Question: React.FC<props> = ({ question, index }) => {
         </div>,
 
         <div className="admin-question-container">
-            <b>Linear scale</b>
+            <p>Linear scale</p>
             <div className="linear-scale-flexbox">
-                <div className="select">
-                    <select
-                        name="minVal"
+                <div className="linear-scale-flexbox-item">
+                    <div className="select">
+                        <select
+                            name="minVal"
+                            onChange={(event) => {
+                                event.persist()
+                                questionActions?.setLowRating(
+                                    question.qid,
+                                    parseInt(event.target.value)
+                                )
+                            }}
+                            value={question.lowRating}
+                        >
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                        </select>
+                        <span className="select-arrow">
+                            <DropdownArrow />
+                        </span>
+                    </div>
+                    <input
+                        type="text"
+                        name=""
+                        placeholder="Low Rating Label (Optional)"
+                        value={question.lowRatingLabel}
                         onChange={(event) => {
-                            event.persist()
-                            questionActions?.setLowRating(
+                            questionActions?.setLowRatingLabel(
                                 question.qid,
-                                parseInt(event.target.value)
+                                event.target.value
                             )
                         }}
-                        value={question.lowRating}
-                    >
-                        <option value="0">0</option>
-                        <option value="1">1</option>
-                    </select>
-                    <span className="select-arrow">
-                        <DropdownArrow />
-                    </span>
+                    />
                 </div>
-                <span>to</span>
-                <div className="select">
-                    <select
-                        name="maxVal"
+                <div className="linear-scale-flexbox-item">
+                    <div className="select">
+                        <select
+                            name="maxVal"
+                            onChange={(event) => {
+                                event.persist()
+                                questionActions?.setHighRating(
+                                    question.qid,
+                                    parseInt(event.target.value)
+                                )
+                            }}
+                            value={question.highRating}
+                        >
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+
+                        <span className="select-arrow">
+                            <DropdownArrow />
+                        </span>
+                    </div>
+
+                    <input
+                        type="text"
+                        name=""
+                        placeholder="High Rating Label (Optional)"
+                        value={question.highRatingLabel}
                         onChange={(event) => {
-                            event.persist()
-                            questionActions?.setHighRating(
+                            questionActions?.setHighRatingLabel(
                                 question.qid,
-                                parseInt(event.target.value)
+                                event.target.value
                             )
                         }}
-                        value={question.highRating}
-                    >
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                    </select>
-                    <span className="select-arrow">
-                        <DropdownArrow />
-                    </span>
+                    />
                 </div>
             </div>
-            <input
-                type="text"
-                name=""
-                placeholder="Low Rating Label (Optional)"
-                value={question.lowRatingLabel}
-                onChange={(event) => {
-                    questionActions?.setLowRatingLabel(
-                        question.qid,
-                        event.target.value
-                    )
-                }}
-            />
-            <input
-                type="text"
-                name=""
-                placeholder="High Rating Label (Optional)"
-                value={question.highRatingLabel}
-                onChange={(event) => {
-                    questionActions?.setHighRatingLabel(
-                        question.qid,
-                        event.target.value
-                    )
-                }}
-            />
         </div>,
 
         <div className="admin-question-container">
-            <div>
-                <b>Multiple choice grid</b>
-            </div>
+            <p>Multiple choice grid</p>
             <div className="grid-container">
                 <div>
                     <p>Rows:</p>
@@ -301,7 +314,7 @@ const Question: React.FC<props> = ({ question, index }) => {
         </div>,
 
         <div className="admin-question-container">
-            <b>Checkbox grid</b>
+            <p>Checkbox grid</p>
             <div className="grid-container">
                 <div>
                     <p>Rows:</p>
@@ -378,8 +391,8 @@ const Question: React.FC<props> = ({ question, index }) => {
             </div>
         </div>,
 
-        <div className="admin-question-container">
-            <b>Email</b>
+        <div className="admin-question-container text-only">
+            <p>Email</p>
         </div>,
 
         <div className="admin-question-container">
@@ -470,6 +483,8 @@ const Question: React.FC<props> = ({ question, index }) => {
                 </div>
                 <div className="question-component-primary-row3">
                     <div className="required-checkbox radio-checkbox">
+                        <label htmlFor={question.qid}>Required</label>
+
                         {question.required ? (
                             <input
                                 type="checkbox"
@@ -494,8 +509,9 @@ const Question: React.FC<props> = ({ question, index }) => {
                                 }
                             ></input>
                         )}
-                        <span className="styled-radio-checkbox"></span>
-                        <label htmlFor={question.qid}>Required</label>
+
+                        <span className="styled-checkbox"></span>
+                        <span className="checkbox-tick"></span>
                     </div>
 
                     <button
@@ -511,6 +527,7 @@ const Question: React.FC<props> = ({ question, index }) => {
                     <button
                         onClick={() => {
                             questionActions?.addQuestion(index)
+                            onAddQuestion(index)
                         }}
                     >
                         <AddQuestionIcon />

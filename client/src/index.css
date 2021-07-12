@@ -156,7 +156,7 @@ textarea:active {
     position: absolute;
 }
 
-.radio-checkbox .styled-radio-checkbox {
+.radio-checkbox .styled-radio {
     display: block;
     width: 1em;
     height: 1em;
@@ -164,19 +164,41 @@ textarea:active {
     border: 1px solid var(--borderBottom);
 }
 
-.radio-checkbox input[type="radio"]:checked + .styled-radio-checkbox,
-.radio-checkbox input[type="checkbox"]:checked + .styled-radio-checkbox {
+.radio-checkbox .styled-checkbox {
+    display: block;
+    width: 1em;
+    height: 1em;
+    border: 1px solid var(--borderBottom);
+}
+
+.radio-checkbox .checkbox-tick {
+    position: absolute;
+    height: 0.5em;
+    width: 0.9em;
+    transform: rotate(-45deg) translateX(0.1em);
+    border-bottom: 2px solid var(--fontColor);
+    border-left: 2px solid var(--fontColor);
+    pointer-events: none;
+    opacity: 0;
+}
+
+.grid-question-row-item .checkbox-tick {
+    transform: translateY(-0.9em) translateX(0.1em) rotate(-45deg);
+}
+
+.radio-checkbox input[type="radio"]:checked + .styled-radio {
     background: radial-gradient(
         var(--borderBottom) 50%,
         var(--backgroundColor) 51%
     );
 }
 
-.radio-checkbox input[type="radio"]:checked + .styled-radio-checkbox + label,
-.radio-checkbox
-    input[type="checkbox"]:checked
-    + .styled-radio-checkbox
-    + label {
+.radio-checkbox input[type="checkbox"]:checked ~ .checkbox-tick {
+    opacity: 1;
+}
+
+.radio-checkbox input[type="radio"]:checked ~ label,
+.radio-checkbox input[type="checkbox"]:checked ~ label {
     color: var(--borderBottom);
 }
 

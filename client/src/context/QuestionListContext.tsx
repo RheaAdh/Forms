@@ -56,6 +56,7 @@ export interface QuestionActions {
     setHighRatingLabel: (qid: string, label: string) => void
     setQuestionText: (qid: string, text: string) => void
     setRequired: (qid: string, req: boolean) => void
+    updateQuestionByIndex: (index: number, id: string) => void
 }
 
 export interface QuestionsList {
@@ -129,8 +130,6 @@ export default function QuestionsListProvider({
         )
     }
     const addQuestion = (after: number) => {
-        console.log(after)
-
         if (!formId) return
         const newQuestion = {
             questionText: "Question",
@@ -140,28 +139,11 @@ export default function QuestionsListProvider({
             qid: "",
             after: after,
         }
-        console.log(newQuestion)
-
-        fetch("/api/addquestion", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify(newQuestion),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                newQuestion.qid = data._id
-                setQuestions((prevQuestions) => [
-                    ...prevQuestions.slice(0, after + 1),
-                    newQuestion,
-                    ...prevQuestions.slice(after + 1),
-                ])
-            })
-            .catch((error) => {
-                console.log("Error: ", error)
-            })
+        setQuestions((prevQuestions) => [
+            ...prevQuestions.slice(0, after + 1),
+            newQuestion,
+            ...prevQuestions.slice(after + 1),
+        ])
     }
     const deleteQuestion = async (qid: string) => {
         const res = await fetch("/api/deletequestion", {
@@ -422,6 +404,15 @@ export default function QuestionsListProvider({
             body: body,
         })
     }
+
+    const updateQuestionByIndex = (index: number, id: string) => {
+        setQuestions((prevQuestions) => {
+            const newQuestions = prevQuestions.slice()
+            newQuestions[index].qid = id
+            return newQuestions
+        })
+    }
+
     const questionActions: QuestionActions = {
         getQuestions,
         deleteQuestion,
@@ -443,6 +434,7 @@ export default function QuestionsListProvider({
         setHighRatingLabel,
         setQuestionText,
         setRequired,
+        updateQuestionByIndex,
     }
     const questionsList = {
         questions,

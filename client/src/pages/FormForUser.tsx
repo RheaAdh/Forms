@@ -46,7 +46,6 @@ const FormForUser = () => {
             ) {
                 form?.setFormDetails(formId, false).then((data) => {
                     if (!data.success) {
-                        console.log(data)
                         setError(data.msg)
                         setLoading(false)
                     }
@@ -194,7 +193,7 @@ const FormForUser = () => {
                             onChange={() => setSendMail(!sendMail)}
                             id="email-response-btn"
                         ></input>
-                        <span className="styled-radio-checkbox"> </span>
+                        <span className="styled-radio"> </span>
                         <label htmlFor="email-response-btn">
                             Send me a mail of my response
                         </label>

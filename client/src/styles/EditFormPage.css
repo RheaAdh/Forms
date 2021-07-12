@@ -16,6 +16,7 @@
     height: calc(100vh - var(--adminNavbarHeight));
     position: relative;
     left: 15vw;
+    z-index: 3;
 }
 
 .edit-form-component {
@@ -24,14 +25,17 @@
     backdrop-filter: saturate(180%) blur(25px);
     border-radius: 1em;
     width: 65vw;
-    padding: 1em 1em 2em 1.5em;
+    padding: 1em 2em;
     margin: 2em 0;
+    z-index: 4;
 }
 
 .edit-form-component textarea,
 .edit-form-component h3,
-.edit-form-component input[type="text"] {
-    margin: var(--marginTop);
+.edit-form-component .form-title-editable {
+    margin: 0;
+    margin-bottom: var(--marginTop);
+    position: relative;
 }
 
 .form-title-editable {
@@ -47,10 +51,10 @@
 .date-wrapper h3 {
     margin: 0;
     position: relative;
-    left: 1em;
+    left: 0.5em;
 }
 .date-wrapper input[type="text"] {
-    margin-top: 0;
+    margin: 0.5em 1em 0.5em 0.5em;
 }
 
 .switch-btn .icon-info {

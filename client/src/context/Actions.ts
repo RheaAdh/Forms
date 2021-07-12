@@ -65,4 +65,38 @@ export const downloadResponse = async (formId: string) => {
     return { columns, dataForDownload }
 }
 
+export interface AddQuestion {
+    formId: string
+    after: number
+}
+
+export const addQuestion = async ({ after, formId }: AddQuestion) => {
+    const newQuestion = {
+        questionText: "Question",
+        questionType: "short-answer",
+        required: false,
+        formId: formId,
+        qid: undefined, // not recieved from db
+        after: after,
+    }
+
+    console.log(formId)
+
+    const resp = await fetch("/api/addquestion", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(newQuestion),
+    })
+
+    const data = await resp.json()
+    if (resp.status >= 400) {
+        throw new Error(data.msg)
+    }
+
+    return data
+}
+
 export default getQuestionsAndResponses

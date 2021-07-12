@@ -54,168 +54,167 @@ const EditFormPage: React.FC = () => {
         ]
     )
 
-    const toggleForm = () => {
-        form?.setActive(!form?.currentForm?.isActive)
-        if (form?.currentForm?.isActive) form?.setDate(new Date())
-        else form?.setDate(null)
-    }
-
     if (loading) {
         return <Loading />
     }
     return (
         <div className="edit-form-page">
             <AdminNavbar questionsPage={true} />
-            <div className="edit-form-container">
-                <div className="edit-form-component">
-                    {!form?.currentForm?.isTemplate && (
-                        <div
-                            className="switch-slider"
-                            style={
-                                form?.currentForm?.isActive
-                                    ? { backgroundColor: "green" }
-                                    : { backgroundColor: "red" }
-                            }
-                        >
-                            <button
-                                className="switch-btn"
+            {loading ? (
+                <Loading />
+            ) : (
+                <div className="edit-form-container">
+                    <div className="edit-form-component">
+                        {!form?.currentForm?.isTemplate && (
+                            <div
+                                className="switch-slider"
                                 style={
                                     form?.currentForm?.isActive
-                                        ? { right: "0" }
-                                        : { left: "0" }
+                                        ? { backgroundColor: "green" }
+                                        : { backgroundColor: "red" }
                                 }
-                                onClick={() => {
-                                    if (form?.currentForm?.isActive) {
-                                        form?.setDate(new Date())
-                                    } else {
-                                        form?.setDate(null)
-                                    }
-                                    form?.setActive(
-                                        !form?.currentForm?.isActive
-                                    )
-                                }}
                             >
-                                <span className="icon-info">
-                                    {form?.currentForm?.isActive
-                                        ? "Active"
-                                        : "Closed"}
-                                </span>
-                                <span className="text-info-arrow" />
-                            </button>
-                        </div>
-                    )}
-                    <input
-                        type="text"
-                        className="form-title-editable"
-                        defaultValue={form?.currentForm?.title}
-                        onChange={(e) => form?.setTitle(e.target.value)}
-                    ></input>
+                                <button
+                                    className="switch-btn"
+                                    style={
+                                        form?.currentForm?.isActive
+                                            ? { right: "0" }
+                                            : { left: "0" }
+                                    }
+                                    onClick={() => {
+                                        if (form?.currentForm?.isActive) {
+                                            form?.setDate(new Date())
+                                        } else {
+                                            form?.setDate(null)
+                                        }
+                                        form?.setActive(
+                                            !form?.currentForm?.isActive
+                                        )
+                                    }}
+                                >
+                                    <span className="icon-info">
+                                        {form?.currentForm?.isActive
+                                            ? "Active"
+                                            : "Closed"}
+                                    </span>
+                                    <span className="text-info-arrow" />
+                                </button>
+                            </div>
+                        )}
+                        <input
+                            type="text"
+                            className="form-title-editable"
+                            defaultValue={form?.currentForm?.title}
+                            onChange={(e) => form?.setTitle(e.target.value)}
+                        ></input>
+                        {!form?.currentForm?.isTemplate && (
+                            <div className="date-wrapper">
+                                <h3>Closing date :</h3>
+                                <DatePicker
+                                    selected={form?.currentForm?.date}
+                                    showTimeSelect
+                                    dateFormat="MMMM d, yyyy h:mm aa"
+                                    onChange={(date: Date) => {
+                                        form?.setDate(date)
+                                    }}
+                                    placeholderText="dd/mm/yyyy"
+                                />
+                            </div>
+                        )}
+                        <h3>Description:</h3>
+                        <textarea
+                            value={form?.currentForm?.description}
+                            onChange={(e) => {
+                                autoAdjustHeight(e)
+                                form?.setDescription(e.target.value)
+                            }}
+                        ></textarea>
+                    </div>
                     {!form?.currentForm?.isTemplate && (
-                        <div className="date-wrapper">
-                            <h3>Closing date :</h3>
-                            <DatePicker
-                                selected={form?.currentForm?.date}
-                                showTimeSelect
-                                dateFormat="MMMM d, yyyy h:mm aa"
-                                onChange={(date: Date) => {
-                                    form?.setDate(date)
+                        <div className="radio-checkbox">
+                            <input
+                                id="set-editable"
+                                type="radio"
+                                checked={form?.currentForm?.editable || false}
+                                onChange={(e) => {
+                                    if (e.target.checked) {
+                                        form?.setEditable(true)
+                                        form?.setMultipleResponses(false)
+                                        form?.setAnonymity(false)
+                                    }
                                 }}
-                            />
+                            ></input>
+                            <span className="styled-radio"></span>
+                            <label htmlFor="set-editable">Editable</label>
                         </div>
                     )}
-                    <h3>Description:</h3>
-                    <textarea
-                        value={form?.currentForm?.description}
-                        onChange={(e) => {
-                            autoAdjustHeight(e)
-                            form?.setDescription(e.target.value)
-                        }}
-                    ></textarea>
-                </div>
-                {!form?.currentForm?.isTemplate && (
-                    <div className="radio-checkbox">
-                        <input
-                            id="set-editable"
-                            type="checkbox"
-                            checked={form?.currentForm?.editable || false}
-                            onChange={(e) => {
-                                if (e.target.checked) {
-                                    form?.setEditable(true)
-                                    form?.setMultipleResponses(false)
-                                    form?.setAnonymity(false)
+                    {!form?.currentForm?.isTemplate && (
+                        <div className="radio-checkbox">
+                            <input
+                                className="radio-checkbox"
+                                id="non-editable"
+                                type="radio"
+                                checked={
+                                    (!form?.currentForm?.editable &&
+                                        !form?.currentForm?.anonymous) ||
+                                    false
                                 }
-                            }}
-                        ></input>
-                        <span className="styled-radio-checkbox"></span>
-                        <label htmlFor="set-editable">Editable</label>
-                    </div>
-                )}
-                {!form?.currentForm?.isTemplate && (
-                    <div className="radio-checkbox">
-                        <input
-                            className="radio-checkbox"
-                            id="non-editable"
-                            type="checkbox"
-                            checked={
-                                (!form?.currentForm?.editable &&
-                                    !form?.currentForm?.anonymous) ||
-                                false
-                            }
-                            onChange={(e) => {
-                                if (e.target.checked) {
-                                    form?.setEditable(false)
-                                    form?.setAnonymity(false)
-                                    form?.setMultipleResponses(false)
-                                }
-                            }}
-                        ></input>
-                        <span className="styled-radio-checkbox"></span>
-                        <label htmlFor="non-editable">Non Editable</label>
-                    </div>
-                )}
-                {!form?.currentForm?.isTemplate && (
-                    <div className="radio-checkbox">
-                        <input
-                            className="radio-checkbox"
-                            id="anonymous"
-                            type="checkbox"
-                            checked={form?.currentForm?.anonymous || false}
-                            onChange={(e) => {
-                                if (e.target.checked) {
-                                    form?.setAnonymity(true)
-                                    form?.setMultipleResponses(true)
-                                    form?.setEditable(false)
-                                }
-                            }}
-                        ></input>
-                        <span className="styled-radio-checkbox"></span>
-                        <label htmlFor="anonymous">
-                            Anonymous (no login required)
-                        </label>
-                    </div>
-                )}
+                                onChange={(e) => {
+                                    if (e.target.checked) {
+                                        form?.setEditable(false)
+                                        form?.setAnonymity(false)
+                                        form?.setMultipleResponses(false)
+                                    }
+                                }}
+                            ></input>
+                            <span className="styled-radio"></span>
+                            <label htmlFor="non-editable">Non Editable</label>
+                        </div>
+                    )}
+                    {!form?.currentForm?.isTemplate && (
+                        <div className="radio-checkbox">
+                            <input
+                                className="radio-checkbox"
+                                id="anonymous"
+                                type="radio"
+                                checked={form?.currentForm?.anonymous || false}
+                                onChange={(e) => {
+                                    if (e.target.checked) {
+                                        form?.setAnonymity(true)
+                                        form?.setMultipleResponses(true)
+                                        form?.setEditable(false)
+                                    }
+                                }}
+                            ></input>
+                            <span className="styled-radio"></span>
+                            <label htmlFor="anonymous">
+                                Anonymous (no login required)
+                            </label>
+                        </div>
+                    )}
 
-                {!form?.currentForm?.isTemplate && (
-                    <button
-                        onClick={() => {
-                            setDisplayPermission(true)
-                        }}
-                    >
-                        Set edit permissions
-                    </button>
-                )}
-                {!form?.currentForm?.isTemplate && displayPermission ? (
-                    <PermissionList
-                        close={() => {
-                            setDisplayPermission(false)
-                        }}
-                    />
-                ) : (
-                    ""
-                )}
-                <h2>Questions:</h2>
-                <QuestionList />
-            </div>
+                    {!form?.currentForm?.isTemplate && (
+                        <button
+                            onClick={() => {
+                                setDisplayPermission(true)
+                            }}
+                        >
+                            Set edit permissions
+                        </button>
+                    )}
+                    {!form?.currentForm?.isTemplate && displayPermission ? (
+                        <PermissionList
+                            close={() => {
+                                setDisplayPermission(false)
+                            }}
+                        />
+                    ) : (
+                        ""
+                    )}
+                    <h2>Questions:</h2>
+                    <QuestionList />
+                </div>
+            )}
         </div>
     )
 }

@@ -1,4 +1,4 @@
-import React, { createElement, useEffect } from "react"
+import React from "react"
 import { Redirect, Route, RouteProps, useParams } from "react-router"
 import Error from "./components/Error"
 import { useAuth } from "./context/AuthContext"

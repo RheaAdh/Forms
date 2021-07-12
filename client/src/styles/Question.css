@@ -6,12 +6,11 @@
 
 .question-component-primary {
     padding: 1em;
-    border: 1px solid gray;
     width: 65vw;
     margin: 2em 1.5em 2em 0;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     position: relative;
     background: rgba(190, 190, 190, 0.1);
@@ -22,15 +21,20 @@
 .question-component-primary-row1 {
     position: relative;
     display: flex;
-    width: 90%;
-    left: 5%;
+    width: 100%;
     justify-content: space-around;
 }
 
-.question-text-editable {
+.question-component-primary-row1 > .question-text-editable {
     border: none !important;
     padding: 1em;
     background-color: var(--secondaryBackground);
+    position: relative;
+    width: 50% !important;
+}
+
+.question-component-primary-row1 > .select {
+    width: 30% !important;
 }
 
 .question-component-primary-row2 {
@@ -38,37 +42,43 @@
     margin-top: 1em;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: left;
 }
 
 .admin-question-container {
-    padding: 1em;
+    padding-top: 1em;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
 }
 
-.admin-question-container > b {
-    text-align: center;
+.admin-question-container > p {
+    position: relative;
+    left: 0;
 }
 
 .grid-container {
     width: 100%;
     display: flex;
     margin-top: 2em;
-    justify-content: space-around;
+    justify-content: space-between;
+}
+
+.grid-container button {
+    margin: 1em 0;
 }
 
 .option-container {
     display: flex;
 }
 
-.admin-question-container > .add-option-btn {
+.admin-question-container .add-option-btn {
     border-bottom: 1px solid var(--fontColor);
-    margin-top: var(--marginTop);
+    margin: 1em 0;
+    text-align: left;
     width: 20vw;
+}
+
+.admin-question-container > input[type="text"]:last-child {
+    margin-bottom: 1em;
 }
 
 .delete-option-btn {
@@ -80,12 +90,19 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 50%;
+    width: 100%;
     margin-bottom: 2em;
 }
 
-.linear-scale-flexbox > span {
-    padding-top: 1.8em;
+.linear-scale-flexbox-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.linear-scale-flexbox-item > .select {
+    min-width: 35%;
+    max-width: 35%;
 }
 
 .question-component-primary-row3 {
@@ -99,6 +116,27 @@
     border-left: 1px solid var(--fontColor);
     margin-top: 0.8em !important;
     padding: 0.5em 0.5em;
+    position: relative;
+}
+
+.required-checkbox .styled-checkbox {
+    border: 1px solid var(--fontColor);
+    transform: translateX(0.5em);
+    pointer-events: none;
+}
+
+.required-checkbox input[type="checkbox"] {
+    right: 0;
+}
+
+.required-checkbox label {
+    margin-left: 0;
+    margin-right: 1em;
+}
+
+.required-checkbox .checkbox-tick {
+    right: 0;
+    transform: rotate(-45deg) translateY(-0.1em);
 }
 
 .question-component-primary-row3 button {
@@ -125,6 +163,7 @@
     padding: 0.5em;
     overflow: visible;
     height: auto;
+    box-shadow: 4px 5px 5px -2px black;
 }
 
 .question-component-primary-row3 button .text-info-arrow {
@@ -142,13 +181,4 @@
 .question-component-primary-row3 button:hover .text-info-arrow {
     overflow: visible;
     height: 1.5rem;
-}
-
-.question-component-secondary {
-    height: 100%;
-    width: 5vw;
-    background: rgba(190, 190, 190, 0.1);
-    backdrop-filter: saturate(180%) blur(25px);
-    border-radius: 1em;
-    position: relative;
 }

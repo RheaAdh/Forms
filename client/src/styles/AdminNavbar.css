@@ -8,8 +8,9 @@
     backdrop-filter: saturate(180%) blur(25px);
     display: flex;
     flex-direction: column;
-    padding-right: 1em;
+    padding: 0.5em 1em 0 0;
     z-index: 4;
+    align-items: center;
 }
 
 .navbar-row1 {
@@ -17,6 +18,7 @@
     flex-direction: row-reverse;
     position: relative;
     z-index: 4;
+    width: 100%;
 }
 
 .navbar-row1 h2 {
@@ -65,15 +67,23 @@
     padding: 0.5em;
     overflow: visible;
     height: auto;
+    box-shadow: 4px 5px 5px -2px black;
 }
 
 .navbar-icon-btn .profile-icon {
     transform: translateX(calc(-100% + 1.9em)) translateY(0.1em);
+    border-radius: 0.5em;
+}
+
+.navbar-icon-btn:hover .profile-icon {
+    padding: 1em;
+    box-shadow: 4px 5px 5px -0.5px black;
 }
 
 .navbar-icon-btn .profile-icon p {
     font-size: 1.2rem;
     cursor: default;
+    margin-bottom: 0.5em;
 }
 
 .navbar-icon-btn .profile-icon .logout-btn {
@@ -103,15 +113,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100vw;
+    width: 35rem;
     height: 4rem;
+    justify-content: space-between;
 }
 
 .navbar-row2-btn {
     font-size: 1.25rem;
     width: 15rem;
     height: 3rem;
-    margin: 1em;
     border: 1px solid var(--fontColor);
     border-radius: 0.25rem;
     color: var(--fontColor);

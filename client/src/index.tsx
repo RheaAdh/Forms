@@ -8,19 +8,24 @@ import AuthProvider from "./context/AuthContext"
 import CurrentFormProvider from "./context/CurrentFormContext"
 import QuestionsListProvider from "./context/QuestionListContext"
 import ResponseListProvider from "./context/ResponseListContext"
+import { QueryClient, QueryClientProvider } from "react-query"
+
+const queryClient = new QueryClient()
 
 ReactDOM.render(
-    <BrowserRouter>
-        <AuthProvider>
-            <CurrentFormProvider>
-                <QuestionsListProvider>
-                    <ResponseListProvider>
-                        <App />
-                    </ResponseListProvider>
-                </QuestionsListProvider>
-            </CurrentFormProvider>
-        </AuthProvider>
-    </BrowserRouter>,
+    <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+            <AuthProvider>
+                <CurrentFormProvider>
+                    <QuestionsListProvider>
+                        <ResponseListProvider>
+                            <App />
+                        </ResponseListProvider>
+                    </QuestionsListProvider>
+                </CurrentFormProvider>
+            </AuthProvider>
+        </BrowserRouter>
+    </QueryClientProvider>,
     document.getElementById("root")
 )
 

@@ -25,6 +25,7 @@ const FormForAllResponses = () => {
     const [columnsForDownload, setColumnsForDownload] = useState<any[]>()
     const [currentUser, setCurrentUser] = useState<user | null>(null)
     const [loading, setLoading] = useState<boolean>(true)
+    const [responseLoading, setResponseLoading] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
 
     const { formId }: any = useParams()
@@ -88,7 +89,7 @@ const FormForAllResponses = () => {
     useEffect(() => {
         if (currentUser) {
             // Get response for current user, when current user changes
-            if (!loading) setLoading(true)
+            setResponseLoading(true)
             getByResponseId(currentUser.responseid).then((data) => {
                 if (data.status === 404 || data.status === 403) {
                     return setError(data.msg)
@@ -104,7 +105,7 @@ const FormForAllResponses = () => {
                         questions.questions.map((q) => q.required),
                         true
                     )
-                setLoading(false)
+                setResponseLoading(false)
             })
         }
     }, [currentUser])
@@ -238,16 +239,17 @@ const FormForAllResponses = () => {
                     <h2>{`${responseList?.users?.length} responses`}</h2>
                     <p>{form?.currentForm?.description}</p>
                 </div>
-                {questions?.questions?.map((q: Question, idx: number) => {
-                    return (
-                        <QuestionResponse
-                            question={q}
-                            prevResponse={responseList?.responses?.[idx]}
-                            index={idx}
-                            key={q.qid}
-                        />
-                    )
-                })}
+                {!responseLoading &&
+                    questions?.questions?.map((q: Question, idx: number) => {
+                        return (
+                            <QuestionResponse
+                                question={q}
+                                prevResponse={responseList?.responses?.[idx]}
+                                index={idx}
+                                key={q.qid}
+                            />
+                        )
+                    })}
             </div>
         </div>
     )

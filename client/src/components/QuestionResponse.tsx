@@ -310,7 +310,7 @@ const QuestionResponse: React.FC<props> = ({
                                     />
                                 </>
                             )}
-                            <span className="styled-radio-checkbox"></span>
+                            <span className="styled-radio"></span>
 
                             <label htmlFor={option.text + question.qid}>
                                 {option.text}
@@ -363,10 +363,11 @@ const QuestionResponse: React.FC<props> = ({
                                     onClick={(e) => handleCheckbox(e, option)}
                                 />
                             )}
-                            <span className="styled-radio-checkbox"></span>
+                            <span className="styled-checkbox"></span>
                             <label htmlFor={option.text + question.qid}>
                                 {option.text}
                             </label>
+                            <span className="checkbox-tick"></span>
                         </div>
                     )
                 })}
@@ -497,7 +498,7 @@ const QuestionResponse: React.FC<props> = ({
                                             name={row.text}
                                         />
                                     )}
-                                    <span className="styled-radio-checkbox"></span>
+                                    <span className="styled-radio"></span>
                                 </div>
                             )
                         })}
@@ -564,7 +565,7 @@ const QuestionResponse: React.FC<props> = ({
                                         )
                                     ) : responseList?.readOnly ? (
                                         <input
-                                            readOnly
+                                            disabled
                                             type="checkbox"
                                             key={col.key}
                                             name={row.text}
@@ -585,7 +586,8 @@ const QuestionResponse: React.FC<props> = ({
                                             id={row.text + col.text}
                                         />
                                     )}
-                                    <span className="styled-radio-checkbox"></span>
+                                    <span className="styled-checkbox"></span>
+                                    <span className="checkbox-tick"></span>
                                 </div>
                             )
                         })}
@@ -639,7 +641,7 @@ const QuestionResponse: React.FC<props> = ({
                             onChange={() => handleLinearScale(num)}
                         ></input>
                     )}
-                    <span className="styled-radio-checkbox"></span>
+                    <span className="styled-radio"></span>
                     <label htmlFor={question.qid + num}>{num}</label>
                 </div>
             ))}
