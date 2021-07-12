@@ -94,11 +94,11 @@ const PermissionList: React.FC<props> = ({ close }) => {
                                         }
                                     ></input>
                                 )}
-                                <span className="styled-radio"></span>
-
+                                <span className="styled-checkbox"></span>
                                 <label htmlFor={admin._id}>
                                     {admin.username + " " + admin.email}
                                 </label>
+                                <span className="checkbox-tick"></span>
                             </li>
                         ) : null
                     )}
