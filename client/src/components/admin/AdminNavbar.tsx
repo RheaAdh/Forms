@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react"
 import { Redirect, useHistory, useParams } from "react-router"
-import { useAuth } from "../context/AuthContext"
-import { useCurrentForm } from "../context/CurrentFormContext"
-import "../styles/AdminNavbar.css"
+import { useAuth } from "../../context/auth/AuthContext"
+import { useCurrentForm } from "../../context/form/CurrentFormContext"
+import "../../styles/AdminNavbar.css"
 import { Link } from "react-router-dom"
-import { ReactComponent as PreviewIcon } from "../images/PreviewForm.svg"
-import { ReactComponent as ProfileIcon } from "../images/ProfileIcon.svg"
-import { ReactComponent as CopyIcon } from "../images/CopyIcon.svg"
+import { ReactComponent as PreviewIcon } from "../../images/PreviewForm.svg"
+import { ReactComponent as ProfileIcon } from "../../images/ProfileIcon.svg"
+import { ReactComponent as CopyIcon } from "../../images/CopyIcon.svg"
 import { CopyToClipboard } from "react-copy-to-clipboard"
-import { ReactComponent as HomeIcon } from "../images/HomeIcon.svg"
+import { ReactComponent as HomeIcon } from "../../images/HomeIcon.svg"
 
 interface props {
     questionsPage: boolean

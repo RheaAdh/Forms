@@ -1,5 +1,14 @@
-import React, { ReactElement, useContext, useState } from "react"
-// import { v4 as uuidv4 } from "uuid"
+import React, { ReactElement, useCallback, useContext, useState } from "react"
+import {
+    AddQuestion,
+    addQuestionAction,
+    DeleteQuestion,
+    deleteQuestionAction,
+    UpdateQuestion,
+    updateQuestionAction,
+} from "./QuestionActions"
+import { useMutation, useQueryClient } from "react-query"
+import { v4 as uuidv4 } from "uuid"
 
 export const questionTypes = [
     "short-answer",
@@ -14,10 +23,9 @@ export const questionTypes = [
 ]
 // Rendering JSX elements from an array (such as <input>) requires a unique key, but db doesn't store unique key for options
 // Schema in db is [{type:string}]. Modified schema on frontend stores unique key for each option
-// Local state key and keyGen function achieve this
 export interface Option {
     text: string
-    key: number
+    key: string
 }
 
 export interface Question {
@@ -56,12 +64,13 @@ export interface QuestionActions {
     setHighRatingLabel: (qid: string, label: string) => void
     setQuestionText: (qid: string, text: string) => void
     setRequired: (qid: string, req: boolean) => void
-    updateQuestionByIndex: (index: number, id: string) => void
+    setQuestionError: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 export interface QuestionsList {
     questions: Question[]
     questionActions: QuestionActions
+    questionError: string | null
 }
 
 interface Props {
@@ -80,14 +89,26 @@ export default function QuestionsListProvider({
     children,
 }: Props): ReactElement {
     const [questions, setQuestions] = useState<Question[]>([])
-    const [formId, setFormid] = useState<string | null>(null)
-    let key = 1
+    const [formId, setFormid] = useState<string>()
+    const [questionError, setQuestionError] = useState<string | null>(null)
+
+    const queryClient = useQueryClient()
 
     const keyGen = () => {
-        const k = key
-        key = key + 1
-        return k
+        return uuidv4()
     }
+
+    const {
+        mutateAsync: addQuestionMutation,
+    } = useMutation((data: AddQuestion) => addQuestionAction({ ...data }))
+
+    const {
+        mutateAsync: deleteQuestionMutation,
+    } = useMutation((data: DeleteQuestion) => deleteQuestionAction({ ...data }))
+
+    const {
+        mutateAsync: updateQuestionMutation,
+    } = useMutation((data: UpdateQuestion) => updateQuestionAction({ ...data }))
 
     const getQuestions = async (formId: string, quesData: any) => {
         setFormid(formId)
@@ -136,7 +157,7 @@ export default function QuestionsListProvider({
             questionType: "short-answer",
             required: false,
             formId: formId,
-            qid: "",
+            qid: uuidv4(),
             after: after,
         }
         setQuestions((prevQuestions) => [
@@ -144,36 +165,35 @@ export default function QuestionsListProvider({
             newQuestion,
             ...prevQuestions.slice(after + 1),
         ])
+        addQuestionMutation({ formId, after })
+            .then((data) => {
+                queryClient.invalidateQueries("questionsAndResponses")
+            })
+            .catch((error) => {
+                if (!questionError) setQuestionError(error.message)
+                queryClient.invalidateQueries("questionsAndResponses")
+            })
     }
     const deleteQuestion = async (qid: string) => {
-        const res = await fetch("/api/deletequestion", {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({
-                id: qid,
-                formId: questions[0].formId,
-            }),
+        if (!formId) return
+        setQuestions((prevQuestions) =>
+            prevQuestions.filter((q) => q.qid !== qid)
+        )
+        deleteQuestionMutation({ qid, formId }).catch((error) => {
+            if (!questionError) setQuestionError(error.message)
+            queryClient.invalidateQueries("questionsAndResponses")
         })
-        const data = await res.json()
-        if (data.success) {
-            setQuestions((prevQuestions) =>
-                prevQuestions.filter((q) => q.qid !== qid)
-            )
-        } else console.log(data)
     }
     const addOptions = (qid: string) => {
         var q = questions.find((question) => question.qid === qid)
         var idx = questions.findIndex((question) => question.qid === qid)
-        const k = keyGen()
         if (q?.options)
             q.options = [
                 ...q?.options,
-                { text: `Option${q.options.length + 1}`, key: k },
+                { text: `Option${q.options.length + 1}`, key: keyGen() },
             ]
-        else if (q !== undefined) q.options = [{ text: `Option1`, key: k }]
+        else if (q !== undefined)
+            q.options = [{ text: `Option1`, key: keyGen() }]
         else return
         const newQuestions = questions.slice()
 
@@ -345,72 +365,15 @@ export default function QuestionsListProvider({
         setQuestions(newQuestions)
     }
     const updateQuestion = (qid: string | undefined) => {
-        if (qid === undefined || qid.length === 0) return
-        const q = questions.find((question) => question.qid === qid)
-        if (q === undefined) return
-        let body = null
-        if (q.options?.length && q.options.length >= 2) {
-            body = JSON.stringify({
-                ...q,
-                _id: q.qid,
-                questionText: q.questionText,
-                required: q.required,
-                options: q.options.map((option) => option.text),
-                lowRating: q.lowRating,
-                highRating: q.highRating,
-                lowRatingLabel: q.lowRatingLabel,
-                highRatingLabel: q.highRatingLabel,
-                questionType:
-                    questionTypes[questionTypes.indexOf(q.questionType)],
-            })
-        } else {
-            body = JSON.stringify({
-                ...q,
-                options: [],
-                _id: q.qid,
-                questionText: q.questionText,
-                required: q.required,
-                lowRating: q.lowRating,
-                highRating: q.highRating,
-                lowRatingLabel: q.lowRatingLabel,
-                highRatingLabel: q.highRatingLabel,
-                questionType:
-                    questionTypes[questionTypes.indexOf(q.questionType)],
-            })
+        if (qid?.length !== 24) {
+            return
         }
-        if (q?.rows && q?.cols && q.rows.length >= 2 && q.cols.length >= 2) {
-            body = JSON.stringify({
-                ...q,
-                _id: q.qid,
-                questionText: q.questionText,
-                required: q.required,
-                options: q?.options?.map((option) => option.text),
-                rowLabel: q.rows.map((row) => row.text),
-                colLabel: q.cols.map((col) => col.text),
-                lowRating: q.lowRating,
-                highRating: q.highRating,
-                lowRatingLabel: q.lowRatingLabel,
-                highRatingLabel: q.highRatingLabel,
-                questionType:
-                    questionTypes[questionTypes.indexOf(q.questionType)],
+        const question = questions.find((question) => question.qid === qid)
+        if (question !== undefined && qid !== undefined)
+            updateQuestionMutation({ qid, question }).catch((error) => {
+                if (!questionError) setQuestionError(error.message)
+                queryClient.invalidateQueries("questionsAndResponses")
             })
-        }
-        fetch("/api/updatequestion", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: body,
-        })
-    }
-
-    const updateQuestionByIndex = (index: number, id: string) => {
-        setQuestions((prevQuestions) => {
-            const newQuestions = prevQuestions.slice()
-            newQuestions[index].qid = id
-            return newQuestions
-        })
     }
 
     const questionActions: QuestionActions = {
@@ -434,11 +397,12 @@ export default function QuestionsListProvider({
         setHighRatingLabel,
         setQuestionText,
         setRequired,
-        updateQuestionByIndex,
+        setQuestionError,
     }
     const questionsList = {
         questions,
         questionActions,
+        questionError,
     }
 
     return (

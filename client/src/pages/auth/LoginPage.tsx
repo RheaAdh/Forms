@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react"
-import "../styles/Login.css"
-import { useHistory, Redirect } from "react-router"
+import "../../styles/Login.css"
+import { Redirect } from "react-router"
 import { useParams } from "react-router-dom"
-import { useAuth } from "../context/AuthContext"
+import { useAuth } from "../../context/auth/AuthContext"
 
 const LoginPage: React.FC = () => {
     const auth = useAuth()

@@ -1,6 +1,6 @@
 import React, { useState } from "react"
-import "../styles/Login.css"
-import useFormState from "../hooks/useFormState"
+import "../../styles/Login.css"
+import useFormState from "../../hooks/useFormState"
 import { Redirect } from "react-router"
 import { useParams } from "react-router-dom"
 

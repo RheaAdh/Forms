@@ -1,45 +1,79 @@
 import React, { useEffect, useState } from "react"
-import "../styles/DashboardPage.css"
-import { useAuth } from "../context/AuthContext"
+import "../../styles/DashboardPage.css"
+import { useAuth } from "../../context/auth/AuthContext"
 import { useHistory } from "react-router"
-import Loading from "../components/Loading"
-import DashboardNavbar from "../components/DashboardNavbar"
-import { CurrentForm } from "../context/CurrentFormContext"
-import FormCard from "../components/FormCard"
-import { Question } from "../context/QuestionListContext"
-import { ReactComponent as AddQuestionIcon } from "../images/AddQuestionIcon.svg"
+import Loading from "../../components/shared/Loading"
+import DashboardNavbar from "../../components/dashboard/DashboardNavbar"
+import { CurrentForm } from "../../context/form/CurrentFormContext"
+import FormCard from "../../components/dashboard/FormCard"
+import {
+    Question,
+    useQuestionsList,
+} from "../../context/questions/QuestionListContext"
+import { ReactComponent as AddQuestionIcon } from "../../images/AddQuestionIcon.svg"
+import { v4 as uuidv4 } from "uuid"
+import { useMutation } from "react-query"
+import { deleteFormAction } from "../../context/form/FormActions"
+import ErrorPopup from "../../components/shared/ErrorPopup"
 
 const DashboardPage: React.FC = () => {
     const auth = useAuth()
-
     const history = useHistory()
+    const questions = useQuestionsList()
 
     const [loading, setLoading] = useState<boolean>(true)
     const [allForms, setAllForms] = useState<CurrentForm[]>()
     const [templates, setTemplates] = useState<CurrentForm[]>()
     const [searchListForms, setSearchList] = useState<CurrentForm[]>()
 
+    const { mutateAsync: deleteFormMutation } = useMutation((id: string) =>
+        deleteFormAction(id)
+    )
+
     useEffect(() => {
         if (auth?.currentUser === null) auth?.getCurrentUser()
     }, [])
 
+    const keyGen = () => {
+        return uuidv4()
+    }
+
     const returnQuestionFromData = (form: any) => {
-        return form.questions[0] !== undefined
-            ? {
-                  formId: form._id,
-                  qid: form.questions[0]._id,
-                  questionText: form.questions[0].questionText,
-                  questionType: form.questions[0].questionType,
-                  required: form.questions[0].required,
-                  options: form.questions[0].options,
-                  cols: form.questions[0].colLabel,
-                  rows: form.questions[0].rowLabel,
-                  lowRating: form.questions[0].lowRating,
-                  highRating: form.questions[0].highRating,
-                  lowRatingLabel: form.questions[0].lowRatingLabel,
-                  highRatingLabel: form.questions[0].highRatingLabel,
-              }
-            : undefined
+        const question = form?.questions[0]
+
+        if (question === undefined) {
+            return undefined
+        }
+
+        return {
+            formId: form._id,
+            qid: question._id,
+            questionText: question.questionText,
+            questionType: question.questionType,
+            required: question.required,
+            options:
+                question.options !== undefined
+                    ? question.options.map((opt: string) => {
+                          return { text: opt, key: keyGen() }
+                      })
+                    : [{ text: "", key: keyGen() }],
+            cols:
+                question.rowLabel !== undefined
+                    ? question.rowLabel.map((opt: string) => {
+                          return { text: opt, key: keyGen() }
+                      })
+                    : [{ text: "", key: keyGen() }],
+            rows:
+                question.colLabel !== undefined
+                    ? question.colLabel.map((opt: string) => {
+                          return { text: opt, key: keyGen() }
+                      })
+                    : [{ text: "", key: keyGen() }],
+            lowRating: question.lowRating,
+            highRating: question.highRating,
+            lowRatingLabel: question.lowRatingLabel,
+            highRatingLabel: question.highRatingLabel,
+        }
     }
 
     useEffect(() => {
@@ -145,6 +179,7 @@ const DashboardPage: React.FC = () => {
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
+                    console.log(`/form-admin/${data.data._id}`)
                     history.push(`/form-admin/${data.data._id}`)
                 } else {
                     //HANDLE ERROR
@@ -162,18 +197,22 @@ const DashboardPage: React.FC = () => {
                     return form.id !== id
                 })
             )
-            return
+        } else {
+            setAllForms((prevForms) =>
+                prevForms?.filter((form: CurrentForm) => {
+                    return form.id !== id
+                })
+            )
+            setSearchList((prevForms) =>
+                prevForms?.filter((form: CurrentForm) => {
+                    return form.id !== id
+                })
+            )
         }
-        setAllForms((prevForms) =>
-            prevForms?.filter((form: CurrentForm) => {
-                return form.id !== id
-            })
-        )
-        setSearchList((prevForms) =>
-            prevForms?.filter((form: CurrentForm) => {
-                return form.id !== id
-            })
-        )
+        deleteFormMutation(id).catch((error) => {
+            if (!questions?.questionError)
+                questions?.questionActions?.setQuestionError(error.message)
+        })
     }
 
     if (loading) {
@@ -182,6 +221,7 @@ const DashboardPage: React.FC = () => {
 
     return (
         <div className="dashboard-page">
+            <ErrorPopup />
             <DashboardNavbar
                 allForms={allForms}
                 setSearchList={setSearchList}

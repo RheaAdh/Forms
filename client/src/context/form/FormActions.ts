@@ -1,4 +1,8 @@
-const getQuestionsAndResponses = async (formId: string, admin: boolean) => {
+const getQuestionsAndResponses = async (
+    formId: string | undefined,
+    admin: boolean
+) => {
+    if (formId === undefined) return
     const res = await fetch(`/api/getquestionsbyformid/${formId}`, {
         method: "POST",
         headers: {
@@ -55,7 +59,7 @@ export const downloadResponse = async (formId: string) => {
         columns.push({ id: i, displayName: Object.keys(data.data[0])[i] })
     }
     const dataForDownload = []
-    for (var i = 0; i < data.data.length; i++) {
+    for (i = 0; i < data.data.length; i++) {
         const newObj = {} as any
         for (var j = 0; j < columns.length; j++) {
             newObj[columns[j].id] = data.data[i][columns[j].displayName]
@@ -65,34 +69,21 @@ export const downloadResponse = async (formId: string) => {
     return { columns, dataForDownload }
 }
 
-export interface AddQuestion {
-    formId: string
-    after: number
-}
-
-export const addQuestion = async ({ after, formId }: AddQuestion) => {
-    const newQuestion = {
-        questionText: "Question",
-        questionType: "short-answer",
-        required: false,
-        formId: formId,
-        qid: undefined, // not recieved from db
-        after: after,
-    }
-
-    console.log(formId)
-
-    const resp = await fetch("/api/addquestion", {
-        method: "POST",
+export const deleteFormAction = async (id: string) => {
+    //!CHANGE ON BACK END
+    const body = { _id: id }
+    const resp = await fetch("/api/deleteform", {
+        method: "DELETE",
         headers: {
             "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(newQuestion),
+        body: JSON.stringify(body),
     })
 
     const data = await resp.json()
-    if (resp.status >= 400) {
+
+    if (!data.success || resp.status >= 400) {
         throw new Error(data.msg)
     }
 

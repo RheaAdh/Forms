@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
-import { useAuth } from "../context/AuthContext"
-import { useCurrentForm } from "../context/CurrentFormContext"
-import "../styles/PermissionList.css"
+import { useAuth } from "../../context/auth/AuthContext"
+import { useCurrentForm } from "../../context/form/CurrentFormContext"
+import "../../styles/PermissionList.css"
 
 interface Admin {
     _id: string

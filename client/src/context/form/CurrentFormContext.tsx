@@ -1,5 +1,5 @@
 import React, { ReactElement, useContext, useState } from "react"
-import { Question } from "./QuestionListContext"
+import { Question } from "../questions/QuestionListContext"
 
 export interface CurrentForm {
     id: string

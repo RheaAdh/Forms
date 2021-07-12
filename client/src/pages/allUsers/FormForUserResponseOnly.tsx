@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router"
-import { getByResponseIdPublic } from "../context/Actions"
-import { useAuth } from "../context/AuthContext"
-import { useCurrentForm } from "../context/CurrentFormContext"
-import { Question, useQuestionsList } from "../context/QuestionListContext"
-import { useResponses } from "../context/ResponseListContext"
-import QuestionResponse from "../components/QuestionResponse"
-import "../styles/DisplayForm.css"
-import Loading from "../components/Loading"
+import { getByResponseIdPublic } from "../../context/form/FormActions"
+import { useAuth } from "../../context/auth/AuthContext"
+import { useCurrentForm } from "../../context/form/CurrentFormContext"
+import {
+    Question,
+    useQuestionsList,
+} from "../../context/questions/QuestionListContext"
+import { useResponses } from "../../context/responses/ResponseListContext"
+import QuestionResponse from "../../components/shared/QuestionResponse"
+import "../../styles/DisplayForm.css"
+import Loading from "../../components/shared/Loading"
 
 const FormForUserResponseOnly = () => {
     const auth = useAuth()

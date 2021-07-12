@@ -1,5 +1,5 @@
 import React, { createContext, ReactElement, useContext, useState } from "react"
-import { questionTypes } from "./QuestionListContext"
+import { questionTypes } from "../questions/QuestionListContext"
 
 export interface gridOptions {
     row: string
@@ -36,7 +36,7 @@ export interface ResponseActions {
     findPreviousUser: (currentUser: user) => user
     findNextUser: (currentUser: user) => user
     updateResponse: (index: number, response: Response) => void
-    setFormId: (formiId: string) => void
+    setFormId: React.Dispatch<React.SetStateAction<string>>
     clearResponse: (questions: any[]) => void
     submit: (sendMail: boolean) => Promise<any>
 }

@@ -11,6 +11,9 @@ background blur
 Complete Email verification frontend, make a fetch request when email sent is clicked to verify and after verificaton redirect to login 
 file upload
 form-admin page - redirect to responses or just change state?
+dashboard search does not work
+if delete form / template not allowed for an admin, don't keep delete button
+painful question (unique key) instant update issue
 
 BACKEND
 sort response based on time ---> done i guess

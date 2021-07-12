@@ -1,7 +1,7 @@
 import React from "react"
 import { Redirect, Route, RouteProps, useParams } from "react-router"
 import Error from "./components/Error"
-import { useAuth } from "./context/AuthContext"
+import { useAuth } from "./context/auth/AuthContext"
 
 export interface props extends RouteProps {}
 

@@ -1,10 +1,10 @@
 import React, { useState } from "react"
 import { useHistory } from "react-router"
-import { useAuth } from "../context/AuthContext"
-import { CurrentForm } from "../context/CurrentFormContext"
-import { ReactComponent as ProfileIcon } from "../images/ProfileIcon.svg"
-import "../styles/AdminNavbar.css"
-import "../styles/DashboardNavbar.css"
+import { useAuth } from "../../context/auth/AuthContext"
+import { CurrentForm } from "../../context/form/CurrentFormContext"
+import { ReactComponent as ProfileIcon } from "../../images/ProfileIcon.svg"
+import "../../styles/AdminNavbar.css"
+import "../../styles/DashboardNavbar.css"
 
 interface props {
     allForms: CurrentForm[] | undefined

@@ -3,13 +3,11 @@ import {
     Option,
     questionTypes,
     useQuestionsList,
-} from "../context/QuestionListContext"
-import "../styles/Question.css"
-import { ReactComponent as DeleteIcon } from "../images/DeleteIcon.svg"
-import { ReactComponent as DropdownArrow } from "../images/DropdownArrow.svg"
-import { ReactComponent as AddQuestionIcon } from "../images/AddQuestionIcon.svg"
-import { AddQuestion, addQuestion } from "../context/Actions"
-import { useMutation } from "react-query"
+} from "../../context/questions/QuestionListContext"
+import "../../styles/Question.css"
+import { ReactComponent as DeleteIcon } from "../../images/DeleteIcon.svg"
+import { ReactComponent as DropdownArrow } from "../../images/DropdownArrow.svg"
+import { ReactComponent as AddQuestionIcon } from "../../images/AddQuestionIcon.svg"
 
 interface props {
     question: any
@@ -22,6 +20,7 @@ const Question: React.FC<props> = ({ question, index }) => {
         question ? questionTypes.indexOf(question["questionType"]) : 0
     )
     //CALL UPDATE QUESTION EVERY TIME QUESTIONS TITLE CHANGES
+
     useEffect(() => {
         questions?.questionActions?.updateQuestion(question.qid)
     }, [
@@ -36,19 +35,6 @@ const Question: React.FC<props> = ({ question, index }) => {
         question.required,
         question.rows,
     ])
-
-    const { mutateAsync } = useMutation(
-        (data: AddQuestion) => addQuestion(data),
-        {
-            onSuccess: (data) => {
-                questionActions?.updateQuestionByIndex(index + 1, data._id)
-            },
-        }
-    )
-
-    const onAddQuestion = async (after: number) => {
-        await mutateAsync({ after, formId: question.formId })
-    }
 
     const types = [
         <div className="admin-question-container text-only">
@@ -516,7 +502,6 @@ const Question: React.FC<props> = ({ question, index }) => {
 
                     <button
                         onClick={() => {
-                            console.log(question.qid)
                             questionActions?.deleteQuestion(question.qid)
                         }}
                     >
@@ -525,9 +510,8 @@ const Question: React.FC<props> = ({ question, index }) => {
                         <span className="text-info-arrow" />
                     </button>
                     <button
-                        onClick={() => {
+                        onClick={async () => {
                             questionActions?.addQuestion(index)
-                            onAddQuestion(index)
                         }}
                     >
                         <AddQuestionIcon />

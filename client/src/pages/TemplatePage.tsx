@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import NewForm from "../components/NewForm"
 
-import { useAuth } from "../context/AuthContext"
+import { useAuth } from "../context/auth/AuthContext"
 const TemplatePage: React.FC = () => {
     const [forms, setForms] = useState<any[]>([])
     const auth = useAuth()

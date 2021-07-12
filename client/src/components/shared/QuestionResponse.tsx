@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react"
-import autoAdjustHeight from "../util"
-import { Option, Question } from "../context/QuestionListContext"
-import { Response, useResponses } from "../context/ResponseListContext"
-import { ReactComponent as DropdownArrow } from "../images/DropdownArrow.svg"
+import autoAdjustHeight from "../../util"
+import { Option, Question } from "../../context/questions/QuestionListContext"
+import {
+    Response,
+    useResponses,
+} from "../../context/responses/ResponseListContext"
+import { ReactComponent as DropdownArrow } from "../../images/DropdownArrow.svg"
 
 interface props {
     question: Question

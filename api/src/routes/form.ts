@@ -182,7 +182,7 @@ export async function addForm(req: any, res: Response) {
         newForm.editors.push(req.session.userId)
         const form = await newForm.save()
         console.log("Form added!")
-        return res.json({ succes: true, data: form })
+        return res.json({ success: true, data: form })
     } catch (error) {
         return res.send(error)
     }

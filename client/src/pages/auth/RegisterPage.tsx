@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react"
-import "../styles/Login.css"
-import useFormState from "../hooks/useFormState"
+import "../../styles/Login.css"
+import useFormState from "../../hooks/useFormState"
 import { Redirect, useHistory } from "react-router"
-import { useAuth } from "../context/AuthContext"
+import { useAuth } from "../../context/auth/AuthContext"
 
 const RegisterPage: React.FC = () => {
     const [username, handleUsername] = useFormState("")

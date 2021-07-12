@@ -50,7 +50,7 @@ export async function addQuestion(req: Request, res: Response) {
 
         console.log("Inside add ques")
         console.log("isTemplate is " + form.isTemplate)
-        if (form.isTemplate && req.session.role!="superadmin") {
+        if (form.isTemplate && req.session.role != "superadmin") {
             console.log("Template cant be editted")
             return res
                 .status(400)
@@ -155,7 +155,12 @@ export async function addQuestion(req: Request, res: Response) {
             )
             console.log("Form updated!!  and new Ques Added!!")
             console.log(newQuestion)
-            return res.json(newQuestion)
+            return res.json({
+                success: true,
+                newQuestion,
+                index: after + 1,
+                msg: "Something went wrong",
+            })
         }
     } catch (error) {
         console.log(error)
@@ -240,7 +245,7 @@ export async function updateQuestion(req: Request, res: Response) {
         let { formId } = req.body
         let form: any
         form = await Form.findById(formId)
-        if (form.isTemplate && req.session.role!="superadmin") {
+        if (form.isTemplate && req.session.role != "superadmin") {
             console.log("Template cant be editted")
             return res
                 .status(400)
@@ -363,11 +368,11 @@ export async function updateQuestion(req: Request, res: Response) {
                 default:
                     updatedQuestion = { data: { msg: "Something went wrong" } }
             }
-            return res.status(200).send(updatedQuestion)
+            return res.send({ updatedQuestion, success: true })
         }
     } catch (error) {
         console.log(error)
-        return res.status(500).send({ success: false, data: "Server Error" })
+        return res.status(500).send({ success: false, msg: "Server Error" })
     }
 }
 
@@ -386,12 +391,10 @@ export async function deleteQuestion(req: Request, res: Response) {
             { _id: req.body.formid },
             { $pull: { questions: req.body.id } as any }
         )
-        return res
-            .status(200)
-            .send({ success: true, data: "Deleted successfully" })
+        return res.send({ success: true, data: "Deleted successfully" })
     } catch (error) {
         console.log(error)
-        return res.status(500).send({ success: false, data: "Server Error" })
+        return res.status(500).send({ success: false, msg: "Server Error" })
     }
 }
 

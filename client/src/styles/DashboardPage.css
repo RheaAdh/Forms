@@ -23,6 +23,12 @@
     margin: 1rem 0;
 }
 
+.dashboard-container h3 > button {
+    position: relative;
+    left: 0.5em;
+    top: 0.15em;
+}
+
 .forms-container {
     display: flex;
     flex-direction: row;

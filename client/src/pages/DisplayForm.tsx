@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import QuestionResponse from "../components/QuestionResponse"
-import { useAuth } from "../context/AuthContext"
-import { useCurrentForm } from "../context/CurrentFormContext"
+import QuestionResponse from "../components/shared/QuestionResponse"
+import { useAuth } from "../context/auth/AuthContext"
+import { useCurrentForm } from "../context/form/CurrentFormContext"
 import getQuestionsAndResponses, {
     getByResponseIdPublic,
     downloadResponse,
     getByResponseId,
-} from "../context/Actions"
+} from "../context/form/FormActions"
 import CsvDownloader from "react-csv-downloader"
-import { useResponses, user } from "../context/ResponseListContext"
-import { Question, useQuestionsList } from "../context/QuestionListContext"
+import { useResponses, user } from "../context/responses/ResponseListContext"
+import {
+    Question,
+    useQuestionsList,
+} from "../context/questions/QuestionListContext"
 import "../styles/DisplayForm.css"
-import AdminNavbar from "../components/AdminNavbar"
-import Loading from "../components/Loading"
+import AdminNavbar from "../components/admin/AdminNavbar"
+import Loading from "../components/shared/Loading"
 
 interface props {
     readonly: boolean

@@ -1,23 +1,26 @@
 import React, { useState, useEffect, useRef } from "react"
 import { Link, Redirect, useParams } from "react-router-dom"
 
-import QuestionList from "../components/QuestionList"
-import PermissionList from "../components/PermissionList"
+import QuestionList from "../../components/admin/QuestionList"
+import PermissionList from "../../components/admin/PermissionList"
 
-import { useAuth } from "../context/AuthContext"
+import { useAuth } from "../../context/auth/AuthContext"
 
 import DatePicker from "react-datepicker"
 
 import "react-datepicker/dist/react-datepicker.css"
 
-import "../styles/EditFormPage.css"
-import { useCurrentForm } from "../context/CurrentFormContext"
-import autoAdjustHeight from "../util"
-import AdminNavbar from "../components/AdminNavbar"
-import Loading from "../components/Loading"
+import "../../styles/EditFormPage.css"
+import { useCurrentForm } from "../../context/form/CurrentFormContext"
+import autoAdjustHeight from "../../util"
+import AdminNavbar from "../../components/admin/AdminNavbar"
+import Loading from "../../components/shared/Loading"
+import { useQuestionsList } from "../../context/questions/QuestionListContext"
+import ErrorPopup from "../../components/shared/ErrorPopup"
 
 const EditFormPage: React.FC = () => {
     const { formId }: any = useParams()
+    const questionActions = useQuestionsList()?.questionActions
 
     const [loading, setLoading] = useState<boolean>(true)
     const [displayPermission, setDisplayPermission] = useState<boolean>(false)
@@ -59,6 +62,7 @@ const EditFormPage: React.FC = () => {
     }
     return (
         <div className="edit-form-page">
+            <ErrorPopup />
             <AdminNavbar questionsPage={true} />
             {loading ? (
                 <Loading />

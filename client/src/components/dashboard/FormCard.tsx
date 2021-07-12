@@ -1,10 +1,10 @@
 import React from "react"
 import { Link, useHistory } from "react-router-dom"
-import { CurrentForm } from "../context/CurrentFormContext"
-import "../styles/FormCard.css"
-import QuestionResponse from "./QuestionResponse"
-import { ReactComponent as DeleteIcon } from "../images/DeleteIcon.svg"
-import { useAuth } from "../context/AuthContext"
+import { CurrentForm } from "../../context/form/CurrentFormContext"
+import "../../styles/FormCard.css"
+import QuestionResponse from "../shared/QuestionResponse"
+import { ReactComponent as DeleteIcon } from "../../images/DeleteIcon.svg"
+import { useAuth } from "../../context/auth/AuthContext"
 
 interface props {
     form: CurrentForm
@@ -38,45 +38,6 @@ const FormCard: React.FC<props> = ({ form, handleDelete }) => {
     //         })
     // }
 
-    const deleteForm = () => {
-        //!CHANGE ON BACK END
-        const body = { _id: form.id }
-        fetch("/api/deleteform", {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify(body),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                if (!data.success) {
-                    //HANDLE ERROR
-                    return
-                }
-                //CHANGE ON FRONT END
-                console.log(form.id, form.title)
-
-                handleDelete(form.id, form.isTemplate)
-            })
-            .catch((error) => {
-                console.error("Error:", error)
-            })
-    }
-    // const handleMakeTemplate = () => {
-    //     fetch(`/api/makeTemplate/${form._id}`, {
-    //         method: "GET",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //         credentials: "include",
-    //     })
-    //         .then((response) => response.json())
-    //         .catch((error) => {
-    //             console.error("Error:", error)
-    //         })
-    // }
     const useTemplate = () => {
         fetch(`/api/useTemplate/${form.id}`, {
             method: "GET",
@@ -130,7 +91,7 @@ const FormCard: React.FC<props> = ({ form, handleDelete }) => {
                     )}
                     <button
                         onClick={() => {
-                            deleteForm()
+                            handleDelete(form.id, form.isTemplate)
                         }}
                     >
                         <DeleteIcon />
@@ -142,7 +103,7 @@ const FormCard: React.FC<props> = ({ form, handleDelete }) => {
                     {auth?.currentUser?.role === "superadmin" && (
                         <button
                             onClick={() => {
-                                deleteForm()
+                                handleDelete(form.id, form.isTemplate)
                             }}
                         >
                             <DeleteIcon />
