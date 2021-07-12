@@ -50,6 +50,7 @@ import {
     updateTheme,
 } from "./theme"
 import { checkAuthentication, isAnonymous } from "./user"
+import {writeToNewSheet } from "./googlesheet"
 
 const router = express.Router()
 
@@ -140,5 +141,8 @@ router.post("/submitresponse", checkAuthentication, submitResponse)
 ////////////////////NO-AUTH///////////////////////////////////////////////////
 router.get("/emailverification/:token", verifyEmail)
 router.get("/response/:respid", getResponsebyRespid) //To view emailed responses
+
+
+router.get("/createnewsheet/:formId",writeToNewSheet)
 
 export default router

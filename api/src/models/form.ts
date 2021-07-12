@@ -22,6 +22,7 @@ export interface FormDoc extends Document {
     dontdelete: boolean
     anonymous: boolean
     theme: any
+    sheetId:string
 }
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
 const form: Schema = new Schema(
@@ -41,6 +42,7 @@ const form: Schema = new Schema(
         dontdelete: { type: Boolean, default: false }, //To be used only with default Templates
         anonymous: { type: Boolean, default: false },
         theme: { type: Schema.Types.ObjectId, ref: "theme" },
+        sheetId:{type: String}
     },
     {
         timestamps: true,
