@@ -12,8 +12,12 @@ import {
 } from "../../context/questions/QuestionListContext"
 import { ReactComponent as AddQuestionIcon } from "../../images/AddQuestionIcon.svg"
 import { v4 as uuidv4 } from "uuid"
-import { useMutation } from "react-query"
-import { deleteFormAction } from "../../context/form/FormActions"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import {
+    deleteFormAction,
+    getFormsAction,
+    getTemplatesAction,
+} from "../../context/form/FormActions"
 import ErrorPopup from "../../components/shared/ErrorPopup"
 
 const DashboardPage: React.FC = () => {
@@ -26,6 +30,8 @@ const DashboardPage: React.FC = () => {
     const [templates, setTemplates] = useState<CurrentForm[]>()
     const [searchListForms, setSearchList] = useState<CurrentForm[]>()
 
+    const queryClient = useQueryClient()
+
     const { mutateAsync: deleteFormMutation } = useMutation((id: string) =>
         deleteFormAction(id)
     )
@@ -37,6 +43,69 @@ const DashboardPage: React.FC = () => {
     const keyGen = () => {
         return uuidv4()
     }
+
+    const {} = useQuery("forms", () => getFormsAction(), {
+        onSuccess: (data) => {
+            if (data.success === true) {
+                setAllForms(
+                    data.forms.map((form: any) => {
+                        const question:
+                            | Question
+                            | undefined = returnQuestionFromData(form)
+                        return {
+                            id: form._id,
+                            date: form.closes,
+                            title: form.title,
+                            description: form.description,
+                            isActive: form.isActive,
+                            isTemplate: form.isTemplate,
+                            question,
+                        }
+                    })
+                )
+                setSearchList(
+                    data.forms.map((form: any) => {
+                        const question:
+                            | Question
+                            | undefined = returnQuestionFromData(form)
+
+                        return {
+                            id: form._id,
+                            date: form.closes,
+                            title: form.title,
+                            description: form.description,
+                            isActive: form.isActive,
+                            isTemplate: form.isTemplate,
+                            question,
+                        }
+                    })
+                )
+            } else {
+                // Not the right way to handle error
+                console.log(data.msg)
+            }
+            setLoading(false)
+        },
+    })
+
+    const {} = useQuery("templates", () => getTemplatesAction(), {
+        onSuccess: (data) => {
+            if (data.success === true) {
+                setTemplates(
+                    data.forms.map((form: any) => ({
+                        id: form._id,
+                        title: form.title,
+                        description: form.description,
+                        isTemplate: form.isTemplate,
+                        question: returnQuestionFromData(form),
+                    }))
+                )
+            } else {
+                // HANDLE ERROR
+                console.log(data.msg)
+            }
+        },
+    })
 
     const returnQuestionFromData = (form: any) => {
         const question = form?.questions[0]
@@ -51,6 +120,7 @@ const DashboardPage: React.FC = () => {
             questionText: question.questionText,
             questionType: question.questionType,
             required: question.required,
+            pageNo: 1,
             options:
                 question.options !== undefined
                     ? question.options.map((opt: string) => {
@@ -76,97 +146,11 @@ const DashboardPage: React.FC = () => {
         }
     }
 
-    useEffect(() => {
-        if (auth?.currentUser && auth?.currentUser?.userid !== "x") {
-            fetch(`/api/getforms`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-            })
-                .then((resp: any) => {
-                    return resp.json()
-                })
-                .then((data: any) => {
-                    //console.log({ data })
-                    if (data.success === true) {
-                        setAllForms(
-                            data.forms.map((form: any) => {
-                                const question:
-                                    | Question
-                                    | undefined = returnQuestionFromData(form)
-                                return {
-                                    id: form.id,
-                                    date: form.closes,
-                                    title: form.title,
-                                    description: form.description,
-                                    isActive: form.isActive,
-                                    isTemplate: form.isTemplate,
-                                    question,
-                                }
-                            })
-                        )
-                        setSearchList(
-                            data.forms.map((form: any) => {
-                                const question:
-                                    | Question
-                                    | undefined = returnQuestionFromData(form)
-
-                                return {
-                                    id: form._id,
-                                    date: form.closes,
-                                    title: form.title,
-                                    description: form.description,
-                                    isActive: form.isActive,
-                                    isTemplate: form.isTemplate,
-                                    question,
-                                }
-                            })
-                        )
-                    } else {
-                        //HANDLE ERROR
-                    }
-                    setLoading(false)
-                })
-                .catch((e) => console.log(e))
-
-            fetch(`/api/viewAllTemplates`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-            })
-                .then((resp: any) => {
-                    return resp.json()
-                })
-                .catch((e) => console.log(e))
-
-                .then((data: any) => {
-                    if (data.success === true) {
-                        setTemplates(
-                            data.forms.map((form: any) => ({
-                                id: form._id,
-                                title: form.title,
-                                description: form.description,
-                                isTemplate: form.isTemplate,
-                                question: returnQuestionFromData(form),
-                            }))
-                        )
-                    } else {
-                        // HANDLE ERROR
-                    }
-                })
-        }
-    }, [auth?.currentUser])
-
     const addForm = (isTemplate: boolean) => {
         const form = {
             title: "Untitled",
             isTemplate,
         }
-
         //UPDATE ON BACKEND
         fetch("/api/addForm", {
             method: "POST",
@@ -179,7 +163,6 @@ const DashboardPage: React.FC = () => {
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
-                    console.log(`/form-admin/${data.data._id}`)
                     history.push(`/form-admin/${data.data._id}`)
                 } else {
                     //HANDLE ERROR
@@ -210,8 +193,12 @@ const DashboardPage: React.FC = () => {
             )
         }
         deleteFormMutation(id).catch((error) => {
-            if (!questions?.questionError)
+            if (!questions?.questionError) {
                 questions?.questionActions?.setQuestionError(error.message)
+                // invalidate
+                queryClient.invalidateQueries("forms")
+                queryClient.invalidateQueries("templates")
+            }
         })
     }
 
@@ -222,6 +209,7 @@ const DashboardPage: React.FC = () => {
     return (
         <div className="dashboard-page">
             <ErrorPopup />
+
             <DashboardNavbar
                 allForms={allForms}
                 setSearchList={setSearchList}

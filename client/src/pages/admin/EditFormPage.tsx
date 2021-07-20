@@ -1,43 +1,42 @@
 import React, { useState, useEffect, useRef } from "react"
-import { Link, Redirect, useParams } from "react-router-dom"
-
+import { useParams } from "react-router-dom"
 import QuestionList from "../../components/admin/QuestionList"
 import PermissionList from "../../components/admin/PermissionList"
-
 import { useAuth } from "../../context/auth/AuthContext"
-
 import DatePicker from "react-datepicker"
-
 import "react-datepicker/dist/react-datepicker.css"
-
 import "../../styles/EditFormPage.css"
 import { useCurrentForm } from "../../context/form/CurrentFormContext"
 import autoAdjustHeight from "../../util"
 import AdminNavbar from "../../components/admin/AdminNavbar"
 import Loading from "../../components/shared/Loading"
-import { useQuestionsList } from "../../context/questions/QuestionListContext"
 import ErrorPopup from "../../components/shared/ErrorPopup"
+import SwitchButton from "../../components/shared/SwitchButton"
+import { useQuery } from "react-query"
+import { getForm } from "../../context/form/FormActions"
+import { useQuestionsList } from "../../context/questions/QuestionListContext"
 
 const EditFormPage: React.FC = () => {
     const { formId }: any = useParams()
-    const questionActions = useQuestionsList()?.questionActions
-
     const [loading, setLoading] = useState<boolean>(true)
     const [displayPermission, setDisplayPermission] = useState<boolean>(false)
+    const questions = useQuestionsList()
     const auth = useAuth()
     const form = useCurrentForm()
 
+    const {} = useQuery("currentForm", () => getForm(formId, true), {
+        onSuccess: (data) => {
+            console.log(data.data)
+            if (data.success) form?.setFormDetails(formId, data.data)
+            setLoading(false)
+        },
+    })
+
     useEffect(() => {
         if (!auth?.currentUser) auth?.getCurrentUser().then((res: any) => {})
-        if (formId !== undefined) {
-            form?.setFormDetails(formId, true).then((data) => {
-                // ERROR HANDLING NEEDED
-                setLoading(false)
-            })
-        }
-
         return () => {
-            form?.setFormDetails("", false, null)
+            form?.setFormDetails("", null)
+            questions?.questionActions?.getQuestions("", [])
         }
     }, [formId])
 
@@ -54,6 +53,7 @@ const EditFormPage: React.FC = () => {
             form?.currentForm?.title,
             form?.currentForm?.editors,
             form?.currentForm?.multipleResponses,
+            form?.currentForm?.pages,
         ]
     )
 
@@ -70,40 +70,21 @@ const EditFormPage: React.FC = () => {
                 <div className="edit-form-container">
                     <div className="edit-form-component">
                         {!form?.currentForm?.isTemplate && (
-                            <div
-                                className="switch-slider"
-                                style={
-                                    form?.currentForm?.isActive
-                                        ? { backgroundColor: "green" }
-                                        : { backgroundColor: "red" }
-                                }
-                            >
-                                <button
-                                    className="switch-btn"
-                                    style={
-                                        form?.currentForm?.isActive
-                                            ? { right: "0" }
-                                            : { left: "0" }
-                                    }
-                                    onClick={() => {
-                                        if (form?.currentForm?.isActive) {
-                                            form?.setDate(new Date())
-                                        } else {
-                                            form?.setDate(null)
-                                        }
-                                        form?.setActive(
-                                            !form?.currentForm?.isActive
-                                        )
-                                    }}
-                                >
-                                    <span className="icon-info">
-                                        {form?.currentForm?.isActive
-                                            ? "Active"
-                                            : "Closed"}
-                                    </span>
-                                    <span className="text-info-arrow" />
-                                </button>
-                            </div>
+                            <SwitchButton
+                                isActive={form?.currentForm?.isActive}
+                                setIsActive={() => {
+                                    form?.setActive(true)
+                                    form?.setDate(null)
+                                }}
+                                setNotActive={() => {
+                                    form?.setActive(false)
+                                    form?.setDate(new Date())
+                                }}
+                                activeColor={"green"}
+                                inactiveColor={"red"}
+                                activeText={"Active"}
+                                inactiveText={"Closed"}
+                            />
                         )}
                         <input
                             type="text"
@@ -206,14 +187,12 @@ const EditFormPage: React.FC = () => {
                             Set edit permissions
                         </button>
                     )}
-                    {!form?.currentForm?.isTemplate && displayPermission ? (
+                    {!form?.currentForm?.isTemplate && displayPermission && (
                         <PermissionList
                             close={() => {
                                 setDisplayPermission(false)
                             }}
                         />
-                    ) : (
-                        ""
                     )}
                     <h2>Questions:</h2>
                     <QuestionList />

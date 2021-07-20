@@ -17,7 +17,6 @@ const DashboardNavbar: React.FC<props> = ({ allForms, setSearchList }) => {
     const auth = useAuth()
 
     const history = useHistory()
-
     const produceResults = (searchString: string) => {
         setSearchList(
             allForms?.filter(

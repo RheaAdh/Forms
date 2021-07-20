@@ -1,6 +1,5 @@
 import React, { ReactElement, useCallback, useContext, useState } from "react"
 import {
-    AddQuestion,
     addQuestionAction,
     DeleteQuestion,
     deleteQuestionAction,
@@ -20,6 +19,7 @@ export const questionTypes = [
     "multiplechoicegrid-answer",
     "checkboxgrid-answer",
     "email-answer",
+    "page-header",
 ]
 // Rendering JSX elements from an array (such as <input>) requires a unique key, but db doesn't store unique key for options
 // Schema in db is [{type:string}]. Modified schema on frontend stores unique key for each option
@@ -31,6 +31,7 @@ export interface Option {
 export interface Question {
     formId: string
     qid?: string
+    pageNo: number
     questionText: string
     questionType: string
     required: boolean
@@ -41,13 +42,14 @@ export interface Question {
     highRating?: number
     lowRatingLabel?: string
     highRatingLabel?: string
+    description?: string
 }
 
 export interface QuestionActions {
     getQuestions: (formId: string, quesData: any) => void
     updateQuestion: (qid: string) => void
     deleteQuestion: (qid: string) => void
-    addQuestion: (after: number) => void
+    addQuestion: (after: number, pageNo: number, isPageHeader: boolean) => void
     addOptions: (qid: string) => void
     addRows: (qid: string) => void
     addCols: (qid: string) => void
@@ -63,6 +65,7 @@ export interface QuestionActions {
     setLowRatingLabel: (qid: string, label: string) => void
     setHighRatingLabel: (qid: string, label: string) => void
     setQuestionText: (qid: string, text: string) => void
+    setDescription: (qid: string, desc: string) => void
     setRequired: (qid: string, req: boolean) => void
     setQuestionError: React.Dispatch<React.SetStateAction<string | null>>
 }
@@ -98,9 +101,9 @@ export default function QuestionsListProvider({
         return uuidv4()
     }
 
-    const {
-        mutateAsync: addQuestionMutation,
-    } = useMutation((data: AddQuestion) => addQuestionAction({ ...data }))
+    const { mutateAsync: addQuestionMutation } = useMutation((data: Question) =>
+        addQuestionAction({ ...data })
+    )
 
     const {
         mutateAsync: deleteQuestionMutation,
@@ -120,6 +123,7 @@ export default function QuestionsListProvider({
                     questionText: q["questionText"],
                     questionType: q["questionType"],
                     required: q.required,
+                    pageNo: q.pageNo,
                     options:
                         q.options !== undefined
                             ? q.options.map((opt: string) => {
@@ -146,26 +150,32 @@ export default function QuestionsListProvider({
                         q.highRatingLabel !== undefined
                             ? q.highRatingLabel
                             : "",
+                    description: q.description,
                 }
             })
         )
     }
-    const addQuestion = (after: number) => {
+    const addQuestion = (
+        after: number,
+        pageNo: number,
+        isPageHeader: boolean
+    ) => {
         if (!formId) return
         const newQuestion = {
-            questionText: "Question",
-            questionType: "short-answer",
+            questionText: isPageHeader ? " " : "Question",
+            questionType: isPageHeader ? "page-header" : "short-answer",
             required: false,
-            formId: formId,
+            formId,
             qid: uuidv4(),
-            after: after,
+            after,
+            pageNo,
         }
         setQuestions((prevQuestions) => [
             ...prevQuestions.slice(0, after + 1),
             newQuestion,
             ...prevQuestions.slice(after + 1),
         ])
-        addQuestionMutation({ formId, after })
+        addQuestionMutation(newQuestion)
             .then((data) => {
                 queryClient.invalidateQueries("questionsAndResponses")
             })
@@ -174,6 +184,7 @@ export default function QuestionsListProvider({
                 queryClient.invalidateQueries("questionsAndResponses")
             })
     }
+
     const deleteQuestion = async (qid: string) => {
         if (!formId) return
         setQuestions((prevQuestions) =>
@@ -354,6 +365,15 @@ export default function QuestionsListProvider({
         newQuestions[idx] = q
         setQuestions(newQuestions)
     }
+    const setDescription = (qid: string, desc: string) => {
+        let q = questions.find((question) => question.qid === qid)
+        let idx = questions.findIndex((question) => question.qid === qid)
+        if (q === undefined) return
+        q.description = desc
+        const newQuestions = questions.slice()
+        newQuestions[idx] = q
+        setQuestions(newQuestions)
+    }
     const setRequired = (qid: string, req: boolean) => {
         var q = questions.find((question) => question.qid === qid)
         var idx = questions.findIndex((question) => question.qid === qid)
@@ -365,6 +385,10 @@ export default function QuestionsListProvider({
         setQuestions(newQuestions)
     }
     const updateQuestion = (qid: string | undefined) => {
+        // Not the best way
+        // during this  breif period where id is set to uuid, if any
+        // changes are made to question id, they won't be saved
+        // but error is not displayed
         if (qid?.length !== 24) {
             return
         }
@@ -396,6 +420,7 @@ export default function QuestionsListProvider({
         setLowRatingLabel,
         setHighRatingLabel,
         setQuestionText,
+        setDescription,
         setRequired,
         setQuestionError,
     }

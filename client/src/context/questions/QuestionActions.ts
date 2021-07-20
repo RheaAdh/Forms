@@ -1,20 +1,6 @@
 import { Question, questionTypes } from "./QuestionListContext"
 
-export interface AddQuestion {
-    formId: string
-    after: number
-}
-
-export const addQuestionAction = async ({ after, formId }: AddQuestion) => {
-    const newQuestion = {
-        questionText: "Question",
-        questionType: "short-answer",
-        required: false,
-        formId: formId,
-        qid: "", // not recieved from db
-        after: after,
-    }
-
+export const addQuestionAction = async (newQuestion: Question) => {
     const resp = await fetch("/api/addquestion", {
         method: "POST",
         headers: {
@@ -79,6 +65,8 @@ export const updateQuestionAction = async ({
             highRating: q.highRating,
             lowRatingLabel: q.lowRatingLabel,
             highRatingLabel: q.highRatingLabel,
+            description: q.description,
+            pageNo: q.pageNo,
             questionType: questionTypes[questionTypes.indexOf(q.questionType)],
         })
     } else {
@@ -92,6 +80,8 @@ export const updateQuestionAction = async ({
             highRating: q.highRating,
             lowRatingLabel: q.lowRatingLabel,
             highRatingLabel: q.highRatingLabel,
+            description: q.description,
+            pageNo: q.pageNo,
             questionType: questionTypes[questionTypes.indexOf(q.questionType)],
         })
     }
@@ -108,6 +98,8 @@ export const updateQuestionAction = async ({
             highRating: q.highRating,
             lowRatingLabel: q.lowRatingLabel,
             highRatingLabel: q.highRatingLabel,
+            description: q.description,
+            pageNo: q.pageNo,
             questionType: questionTypes[questionTypes.indexOf(q.questionType)],
         })
     }

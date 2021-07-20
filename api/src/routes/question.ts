@@ -16,6 +16,7 @@ import {
     dateQuestion,
     timeQuestion,
     emailQuestion,
+    pageHeaderQuestion,
 } from "../models/question"
 
 export async function addQuestion(req: Request, res: Response) {
@@ -34,6 +35,7 @@ export async function addQuestion(req: Request, res: Response) {
             highRatingLabel,
             rowLabel,
             colLabel,
+            pageNo,
         } = req.body
 
         //?FIND FORM
@@ -46,6 +48,7 @@ export async function addQuestion(req: Request, res: Response) {
             description: description,
             required: required,
             quesIndex: after + 1,
+            pageNo,
         }
 
         console.log("Inside add ques")
@@ -137,6 +140,11 @@ export async function addQuestion(req: Request, res: Response) {
                     break
                 }
 
+                case "page-header": {
+                    newQuestion = new pageHeaderQuestion({ ...common })
+                    break
+                }
+
                 default:
                     newQuestion = new Question({ ...common })
             }
@@ -159,7 +167,6 @@ export async function addQuestion(req: Request, res: Response) {
                 success: true,
                 newQuestion,
                 index: after + 1,
-                msg: "Something went wrong",
             })
         }
     } catch (error) {
@@ -211,9 +218,18 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
                 .status(400)
                 .json({ success: false, msg: "Form has closed" })
         }
-        const questions = await Question.find({ formid: formid }).sort({
+        let questions = await Question.find({ formid: formid }).sort({
             quesIndex: 1,
         })
+        // if (admin) {
+        //     questions = await Question.find({ formid: formid }).sort({
+        //         quesIndex: 1,
+        //     })
+        // } else {
+        //     questions = await Question.find({ formid: formid, pageNo }).sort({
+        //         quesIndex: 1,
+        //     })
+        //}
         let user = await FormResponse.findOne({
             userid: req.session.userId,
             formId: req.params.formId,
@@ -358,6 +374,15 @@ export async function updateQuestion(req: Request, res: Response) {
                     break
                 case "time-answer":
                     updatedQuestion = await timeQuestion.findOneAndUpdate(
+                        { _id: req.body._id },
+                        {
+                            ...moddedBody,
+                        },
+                        { new: true }
+                    )
+                    break
+                case "page-header":
+                    updatedQuestion = await pageHeaderQuestion.findOneAndUpdate(
                         { _id: req.body._id },
                         {
                             ...moddedBody,

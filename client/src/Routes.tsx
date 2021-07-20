@@ -23,6 +23,8 @@ export const Protected: React.FC<props> = ({ ...rest }: any) => {
     ) {
         return <Route {...rest} />
     }
+    // return 404 in case not logged in or normal user
+    // cannot send to admin login page
     return <Error />
 }
 

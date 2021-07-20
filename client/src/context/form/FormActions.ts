@@ -1,6 +1,7 @@
 const getQuestionsAndResponses = async (
     formId: string | undefined,
-    admin: boolean
+    admin: boolean,
+    currentPageNo: number
 ) => {
     if (formId === undefined) return
     const res = await fetch(`/api/getquestionsbyformid/${formId}`, {
@@ -8,7 +9,7 @@ const getQuestionsAndResponses = async (
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ admin }),
+        body: JSON.stringify({ admin, currentPageNo }),
         credentials: "include",
     })
     const data = await res.json()
@@ -29,7 +30,6 @@ export const getByResponseId = async (responseId: string) => {
     const data = await res.json()
     return { status: res.status, ...data }
 }
-
 export const getByResponseIdPublic = async (responseId: string) => {
     const res = await fetch(`/api/response/${responseId}`, {
         method: "GET",
@@ -41,34 +41,6 @@ export const getByResponseIdPublic = async (responseId: string) => {
     const data = await res.json()
     return { status: res.status, ...data }
 }
-
-export const downloadResponse = async (formId: string) => {
-    const res = await fetch(`/api/download/${formId}`, {
-        headers: {
-            "Content-type": "application/json",
-        },
-        method: "GET",
-        credentials: "include",
-    })
-    const data = await res.json()
-    if (data.data.length === 0) {
-        return null
-    }
-    const columns = []
-    for (var i = 0; i < Object.keys(data.data[0]).length; i++) {
-        columns.push({ id: i, displayName: Object.keys(data.data[0])[i] })
-    }
-    const dataForDownload = []
-    for (i = 0; i < data.data.length; i++) {
-        const newObj = {} as any
-        for (var j = 0; j < columns.length; j++) {
-            newObj[columns[j].id] = data.data[i][columns[j].displayName]
-        }
-        dataForDownload.push(newObj)
-    }
-    return { columns, dataForDownload }
-}
-
 export const deleteFormAction = async (id: string) => {
     //!CHANGE ON BACK END
     const body = { _id: id }
@@ -87,6 +59,76 @@ export const deleteFormAction = async (id: string) => {
         throw new Error(data.msg)
     }
 
+    return data
+}
+
+export const getFormsAction = async () => {
+    const resp = await fetch(`/api/getforms`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include",
+    })
+
+    const data = await resp.json()
+    // NEED TO THROW ERROR ON FAILURE
+    return data
+}
+
+export const getTemplatesAction = async () => {
+    const resp = await fetch(`/api/viewAllTemplates`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include",
+    })
+
+    const data = await resp.json()
+
+    return data
+}
+
+export const getForm = async (id: string, admin: boolean) => {
+    let route = ``
+    if (admin) {
+        route = `/api/getform/${id}`
+    } else {
+        route = `/api/getformforresp/${id}`
+    }
+
+    const res = await fetch(route, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include",
+    })
+
+    const data = await res.json()
+
+    return {
+        status: res.status,
+        success: data.success,
+        msg: data.msg,
+        data: data.form,
+    }
+}
+
+export const updateFormAction = async (updateData: any) => {
+    const resp = await fetch("/api/updateform", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(updateData),
+    })
+    const data = await resp.json()
+    if (data.success === false || resp.status >= 400) {
+        throw new Error(data.msg)
+    }
     return data
 }
 

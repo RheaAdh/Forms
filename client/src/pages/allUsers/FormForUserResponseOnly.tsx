@@ -34,7 +34,6 @@ const FormForUserResponseOnly = () => {
                         setError(data.msg)
                         return setLoading(false)
                     }
-                    console.log(data)
                     return
                 }
                 const formId = data.data.formId._id
@@ -43,13 +42,7 @@ const FormForUserResponseOnly = () => {
                     (q: any) => q.questionId
                 )
                 const responses = data.data
-                form?.setFormDetails(formId, false, formData).then((data) => {
-                    if (!data.success) {
-                        setError(data.msg)
-                    }
-                    setLoading(false)
-                })
-
+                form?.setFormDetails(formId, formData)
                 questions?.questionActions?.getQuestions(formId, questionsData)
                 responseList?.responseActions?.getResponse(
                     formId,

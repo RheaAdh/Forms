@@ -28,6 +28,7 @@ const QuestionResponse: React.FC<props> = ({
         "multiplechoicegrid-answer",
         "checkboxgrid-answer",
         "linearscale-answer",
+        "page-header",
     ]
 
     const responseList = useResponses()
@@ -420,7 +421,6 @@ const QuestionResponse: React.FC<props> = ({
                     defaultValue={prevResponse?.emailAnswer}
                 />
             )}
-            <br />
             <b>{emailError}</b>
         </div>,
         //MCQ grid
@@ -652,10 +652,20 @@ const QuestionResponse: React.FC<props> = ({
                 {question["highRatingLabel"]}
             </span>
         </div>,
+        <div>
+            {!(
+                question.questionText.length === 0 &&
+                question.description?.length === 0
+            ) && <p>{question.description}</p>}
+        </div>,
     ]
     return (
         <div className="display-form-component">
-            <b style={{ display: "inline" }}>{question.questionText}</b>
+            {question.questionType === "page-header" ? (
+                <h2>{question.questionText}</h2>
+            ) : (
+                <b style={{ display: "inline" }}>{question.questionText}</b>
+            )}
             {question["required"] ? (
                 <span style={{ color: "red", fontSize: "1.5em" }}>*</span>
             ) : null}

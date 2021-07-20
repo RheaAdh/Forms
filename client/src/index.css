@@ -10,7 +10,7 @@ body {
     --backgroundColor: #252525;
     --fontColor: #fff;
     --borderBottom: #02b7db;
-    --marginTop: 1.5em;
+    --marginTop: 1em;
     --adminNavbarHeight: 8em;
     --secondaryBackground: rgba(255, 255, 255, 0.12);
     --secondaryBorder: #fff;
@@ -80,7 +80,8 @@ svg path {
     fill: var(--fontColor);
 }
 
-.text-type > p {
+.text-type > p,
+.text-type > b {
     margin-top: var(--marginTop);
 }
 
@@ -121,9 +122,9 @@ textarea {
     outline: none;
     background: none;
     display: block;
-    height: 3em;
+    height: 2em;
     padding: 0;
-    width: 60vw;
+    width: 80%;
     color: var(--fontColor);
     font-size: 1em;
     font-family: "Catamaran";
@@ -278,6 +279,7 @@ option:hover {
     display: inline-block;
     flex: 3;
     flex-wrap: wrap;
+    margin-bottom: 1em;
 }
 
 .lin-scale-question {

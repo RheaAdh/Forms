@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import Question from "./Question"
 import "../../styles/QuestionList.css"
 import { useCurrentForm } from "../../context/form/CurrentFormContext"
@@ -12,7 +12,7 @@ const QuestionList: React.FC = () => {
 
     const {} = useQuery(
         "questionsAndResponses",
-        () => getQuestionsAndResponses(form?.currentForm?.id, true),
+        () => getQuestionsAndResponses(form?.currentForm?.id, true, -1),
         {
             onSuccess: (data) =>
                 questions?.questionActions?.getQuestions(
@@ -26,7 +26,9 @@ const QuestionList: React.FC = () => {
         <div>
             <div>
                 <button
-                    onClick={() => questions?.questionActions?.addQuestion(-1)}
+                    onClick={() =>
+                        questions?.questionActions?.addQuestion(-1, 1, false)
+                    }
                 >
                     Add Question
                 </button>

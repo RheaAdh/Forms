@@ -18,7 +18,7 @@ function App() {
     return (
         <div className="App">
             <Switch>
-                <Route path="/" exact render={() => <DashboardPage />} />
+                <Protected path="/" exact render={() => <DashboardPage />} />
 
                 <Protected
                     path="/form-admin/:formId"

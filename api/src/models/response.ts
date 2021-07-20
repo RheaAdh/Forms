@@ -26,6 +26,7 @@ const response: Schema = new Schema(
         username: { type: String },
         userid: { type: Schema.Types.ObjectId, ref: "user" },
         formId: { type: Schema.Types.ObjectId, ref: "Form" },
+        submitted: { type: Boolean, default: false },
         responses: [
             {
                 questionId: { type: Schema.Types.ObjectId, ref: "question" },

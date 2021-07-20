@@ -16,6 +16,7 @@ const questionSchema: Schema = new Schema(
         required: { type: Boolean, default: false },
         //questionType: String This is  made by default by the discriminator key
         userId: { type: Schema.Types.ObjectId, ref: "user" },
+        pageNo: { type: Number, default: 1 },
     },
     options
 )
@@ -33,6 +34,16 @@ const paragraphSchema: Schema = new Schema({})
 export const paragraphQuestion = Question.discriminator(
     "paragraph-answer",
     paragraphSchema
+)
+
+// PAGE TITLE and DESCRIPTION
+// questiontext is title
+const pageHeaderSchema: Schema = new Schema({
+    description: { type: String },
+})
+export const pageHeaderQuestion = Question.discriminator(
+    "page-header",
+    pageHeaderSchema
 )
 
 // EMAIL

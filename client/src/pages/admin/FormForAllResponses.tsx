@@ -4,10 +4,9 @@ import QuestionResponse from "../../components/shared/QuestionResponse"
 import { useAuth } from "../../context/auth/AuthContext"
 import { useCurrentForm } from "../../context/form/CurrentFormContext"
 import getQuestionsAndResponses, {
-    downloadResponse,
     getByResponseId,
+    getForm,
 } from "../../context/form/FormActions"
-import CsvDownloader from "react-csv-downloader"
 import { useResponses, user } from "../../context/responses/ResponseListContext"
 import {
     Question,
@@ -24,8 +23,6 @@ const FormForAllResponses = () => {
     const responseList = useResponses()
     const questions = useQuestionsList()
 
-    const [dataForDownload, setDataForDownload] = useState<any[]>()
-    const [columnsForDownload, setColumnsForDownload] = useState<any[]>()
     const [currentUser, setCurrentUser] = useState<user | null>(null)
     const [loading, setLoading] = useState<boolean>(true)
     const [responseLoading, setResponseLoading] = useState<boolean>(false)
@@ -36,30 +33,20 @@ const FormForAllResponses = () => {
     useEffect(() => {
         //Get current logged in user
         if (auth?.currentUser === null) auth?.getCurrentUser()
-        // Admin level access, fetch all responses for csv data
-        if (formId !== undefined) {
-            downloadResponse(formId).then((data) => {
-                if (data) {
-                    setColumnsForDownload(data.columns)
-                    setDataForDownload(data.dataForDownload)
-                }
-            })
-        }
-    }, [formId])
+    }, [])
 
     useEffect(() => {
         if (formId && auth?.currentUser && auth?.currentUser?.userid !== "x") {
-            form?.setFormDetails(formId, true)
+            getForm(formId, true)
                 .then((data) => {
-                    if (data.status >= 400) {
-                        setError(data.msg)
-                        setLoading(false)
+                    if (data.success) {
+                        form?.setFormDetails(formId, data.data)
                     }
                 })
-                .catch((err) => {
-                    console.log(err)
-                })
-            getQuestionsAndResponses(formId, true).then((data) => {
+
+                .catch((err) => console.log(err))
+            // fetch all pages in case of admin access, so current page is -1
+            getQuestionsAndResponses(formId, true, -1).then((data) => {
                 if (data.status >= 400) {
                     return
                 }
@@ -126,13 +113,6 @@ const FormForAllResponses = () => {
             <AdminNavbar questionsPage={false} />
             <div className="display-form-container">
                 <div>
-                    <CsvDownloader
-                        filename={form?.currentForm?.title || ""}
-                        extension={".csv"}
-                        columns={columnsForDownload}
-                        datas={dataForDownload ? dataForDownload : []}
-                        text={"Click  to download responses"}
-                    />
                     {!form?.currentForm?.anonymous &&
                     responseList?.users?.length ? (
                         <div className="select">

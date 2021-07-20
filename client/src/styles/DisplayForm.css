@@ -20,6 +20,7 @@
     position: relative;
     background: rgba(190, 190, 190, 0.1);
     backdrop-filter: saturate(180%) blur(25px);
+    -webkit-backdrop-filter: saturate(180%) blur(25px);
     border-radius: 1em;
     width: 80%;
     padding: 1em 1em 2em 1.5em;
@@ -61,7 +62,7 @@
     height: 3rem;
     text-align: center;
     background-color: #947fce;
-    padding: 0 1em;
+    padding: 0 2em;
     color: #000;
     font-size: 1.4rem;
     position: relative;

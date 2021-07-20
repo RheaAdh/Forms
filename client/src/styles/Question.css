@@ -55,6 +55,10 @@
     left: 0;
 }
 
+.admin-question-container > textarea {
+    margin-bottom: 1.5em;
+}
+
 .grid-container {
     width: 100%;
     display: flex;

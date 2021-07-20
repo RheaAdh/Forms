@@ -38,7 +38,7 @@ export interface ResponseActions {
     updateResponse: (index: number, response: Response) => void
     setFormId: React.Dispatch<React.SetStateAction<string>>
     clearResponse: (questions: any[]) => void
-    submit: (sendMail: boolean) => Promise<any>
+    submit: (sendMail: boolean, submitted: boolean) => Promise<any>
 }
 
 interface Props {
@@ -169,7 +169,7 @@ export default function ResponseListProvider({
         setResponses(newResponseList)
     }
 
-    const submit = async (sendMail: boolean) => {
+    const submit = async (sendMail: boolean, submitted: boolean) => {
         if (responses.some((res) => res.canSubmit === false)) {
             setSubmitError("Please fill all required details")
             return { success: false }
@@ -180,6 +180,7 @@ export default function ResponseListProvider({
             formId: formId,
             responses: responses.filter((resp: any) => JSON.stringify(resp)),
             sendMail,
+            submitted,
         }
         const res = await fetch("/api/submitresponse", {
             method: "POST",

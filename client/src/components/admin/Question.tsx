@@ -8,6 +8,9 @@ import "../../styles/Question.css"
 import { ReactComponent as DeleteIcon } from "../../images/DeleteIcon.svg"
 import { ReactComponent as DropdownArrow } from "../../images/DropdownArrow.svg"
 import { ReactComponent as AddQuestionIcon } from "../../images/AddQuestionIcon.svg"
+import { ReactComponent as NewPageIcon } from "../../images/NewPageIcon.svg"
+import autoAdjustHeight from "../../util"
+import { useCurrentForm } from "../../context/form/CurrentFormContext"
 
 interface props {
     question: any
@@ -19,6 +22,7 @@ const Question: React.FC<props> = ({ question, index }) => {
     const [type, setType] = useState<any>(
         question ? questionTypes.indexOf(question["questionType"]) : 0
     )
+    const form = useCurrentForm()
     //CALL UPDATE QUESTION EVERY TIME QUESTIONS TITLE CHANGES
 
     useEffect(() => {
@@ -34,6 +38,7 @@ const Question: React.FC<props> = ({ question, index }) => {
         question.questionType,
         question.required,
         question.rows,
+        question.description,
     ])
 
     const types = [
@@ -381,41 +386,18 @@ const Question: React.FC<props> = ({ question, index }) => {
             <p>Email</p>
         </div>,
 
-        <div className="admin-question-container">
-            <b>File upload</b>
-            <table cellSpacing="20">
-                <tr>
-                    <td>Allow only specific file types</td>
-                    <td>
-                        <label className="switch">
-                            <input type="checkbox" />
-                            <span className="slider round"></span>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Maximum number of files</td>
-                    <td>
-                        <select name="maxNum">
-                            <option value="1">1</option>
-                            <option value="5">5</option>
-                            <option value="10">10</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Maximum file size</td>
-                    <td>
-                        <select name="maxSize">
-                            <option value="1MB">1 MB</option>
-                            <option value="10MB">10 MB</option>
-                            <option value="100MB">100 MB</option>
-                            <option value="1GB">1 GB</option>
-                            <option value="10GB">10 GB</option>
-                        </select>
-                    </td>
-                </tr>
-            </table>
+        <div className="text-type admin-question-container">
+            <textarea
+                placeholder="Description(optional)"
+                onChange={(e) => {
+                    autoAdjustHeight(e)
+                    questionActions?.setDescription(
+                        question.qid,
+                        e.target.value
+                    )
+                }}
+                defaultValue={question.description}
+            ></textarea>
         </div>,
     ]
 
@@ -426,13 +408,22 @@ const Question: React.FC<props> = ({ question, index }) => {
                     <input
                         className="question-text-editable"
                         type="text"
+                        placeholder={
+                            question.questionType === "page-header"
+                                ? "Title(optional)"
+                                : ""
+                        }
                         onChange={(e) => {
                             questionActions?.setQuestionText(
                                 question.qid,
                                 e.target.value
                             )
                         }}
-                        value={question?.questionText}
+                        value={
+                            question.type === "page-header"
+                                ? null
+                                : question?.questionText
+                        }
                     />
                     <div className="select">
                         <select
@@ -457,7 +448,7 @@ const Question: React.FC<props> = ({ question, index }) => {
                             <option value={6}>Multiple choice grid</option>
                             <option value={7}>Checkbox grid</option>
                             <option value={8}>Email</option>
-                            <option value={9}>File upload</option>
+                            <option value={9}>Title and Description</option>
                         </select>
                         <span className="select-arrow">
                             <DropdownArrow />
@@ -468,41 +459,52 @@ const Question: React.FC<props> = ({ question, index }) => {
                     {types[type]}
                 </div>
                 <div className="question-component-primary-row3">
-                    <div className="required-checkbox radio-checkbox">
-                        <label htmlFor={question.qid}>Required</label>
+                    {
+                        // Required check box has to be removed if it's page-header
+                    }
+                    {question.questionType !== "page-header" && (
+                        <div className="required-checkbox radio-checkbox">
+                            <label htmlFor={question.qid}>Required</label>
 
-                        {question.required ? (
-                            <input
-                                type="checkbox"
-                                id={question.qid}
-                                defaultChecked
-                                onChange={(e) =>
-                                    questionActions?.setRequired(
-                                        question.qid,
-                                        e.target.checked
-                                    )
-                                }
-                            ></input>
-                        ) : (
-                            <input
-                                type="checkbox"
-                                id={question.qid}
-                                onChange={(e) =>
-                                    questionActions?.setRequired(
-                                        question.qid,
-                                        e.target.checked
-                                    )
-                                }
-                            ></input>
-                        )}
+                            {question.required ? (
+                                <input
+                                    type="checkbox"
+                                    id={question.qid}
+                                    defaultChecked
+                                    onChange={(e) =>
+                                        questionActions?.setRequired(
+                                            question.qid,
+                                            e.target.checked
+                                        )
+                                    }
+                                ></input>
+                            ) : (
+                                <input
+                                    type="checkbox"
+                                    id={question.qid}
+                                    onChange={(e) =>
+                                        questionActions?.setRequired(
+                                            question.qid,
+                                            e.target.checked
+                                        )
+                                    }
+                                ></input>
+                            )}
 
-                        <span className="styled-checkbox"></span>
-                        <span className="checkbox-tick"></span>
-                    </div>
-
+                            <span className="styled-checkbox"></span>
+                            <span className="checkbox-tick"></span>
+                        </div>
+                    )}
                     <button
                         onClick={() => {
                             questionActions?.deleteQuestion(question.qid)
+                            if (question.questionType === "page-header") {
+                                form?.setPages((pg) => {
+                                    if (pg) {
+                                        return pg - 1
+                                    }
+                                })
+                            }
                         }}
                     >
                         <DeleteIcon />
@@ -511,11 +513,33 @@ const Question: React.FC<props> = ({ question, index }) => {
                     </button>
                     <button
                         onClick={async () => {
-                            questionActions?.addQuestion(index)
+                            questionActions?.addQuestion(
+                                index,
+                                question.pageNo,
+                                false
+                            )
                         }}
                     >
                         <AddQuestionIcon />
                         <span className="icon-info">New Question</span>
+                        <span className="text-info-arrow" />
+                    </button>
+                    <button
+                        onClick={async () => {
+                            questionActions?.addQuestion(
+                                index,
+                                question.pageNo + 1,
+                                true
+                            )
+                            form?.setPages((pg) => {
+                                if (pg) {
+                                    return pg + 1
+                                }
+                            })
+                        }}
+                    >
+                        <NewPageIcon />
+                        <span className="icon-info">New Page</span>
                         <span className="text-info-arrow" />
                     </button>
                 </div>

@@ -1,5 +1,7 @@
 import React, { ReactElement, useContext, useState } from "react"
+import { useMutation, useQueryClient } from "react-query"
 import { Question } from "../questions/QuestionListContext"
+import { updateFormAction } from "./FormActions"
 
 export interface CurrentForm {
     id: string
@@ -12,6 +14,7 @@ export interface CurrentForm {
     multipleResponses?: boolean
     isActive?: boolean
     editors?: string[]
+    pages?: number
     question?: Question // For form card in dashboard only
 }
 interface Props {
@@ -21,19 +24,18 @@ export interface Form {
     currentForm: CurrentForm | null
     updateForm: () => void
     getAnonymity: (formId: string) => Promise<any>
-    setTitle: (title: string) => void
-    setDescription: (description: string) => void
-    setDate: (date: Date | null) => void
-    setEditable: (editable: boolean) => void
-    setMultipleResponses: (multiple: boolean) => void
-    setAnonymity: (anonymous: boolean) => void
-    setFormDetails: (
-        id: string,
-        toEdit: boolean,
-        formData?: any
-    ) => Promise<any>
-    setActive: (isActive: boolean) => void
-    setEditors: (editor: string[]) => void
+    setTitle: React.Dispatch<React.SetStateAction<string | undefined>>
+    setDescription: React.Dispatch<React.SetStateAction<string | undefined>>
+    setDate: React.Dispatch<React.SetStateAction<Date | null | undefined>>
+    setEditable: React.Dispatch<React.SetStateAction<boolean | undefined>>
+    setMultipleResponses: React.Dispatch<
+        React.SetStateAction<boolean | undefined>
+    >
+    setAnonymity: React.Dispatch<React.SetStateAction<boolean | undefined>>
+    setFormDetails: (id: string, formData: any) => void
+    setActive: React.Dispatch<React.SetStateAction<boolean | undefined>>
+    setEditors: React.Dispatch<React.SetStateAction<string[] | undefined>>
+    setPages: React.Dispatch<React.SetStateAction<number | undefined>>
 }
 
 const CurrentFormContext = React.createContext<Form | null>(null)
@@ -53,75 +55,34 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
     const [editors, setEditors] = useState<string[]>()
     const [isActive, setActive] = useState<boolean>()
     const [isTemplate, setIsTemplate] = useState<boolean>()
+    const [pages, setPages] = useState<number>()
 
-    const setFormDetails = async (
-        id: string,
-        admin: boolean,
-        formData?: any
-    ) => {
+    const { mutateAsync: updateFormMutation } = useMutation((data: any) =>
+        updateFormAction(data)
+    )
+
+    const queryClient = useQueryClient()
+
+    const setFormDetails = async (id: string, formData?: any) => {
         if (formData === null) {
             // Small hack to prevent a form from getting updated with details from previous context
             setId("")
             return
         }
         // if data has already been fetched
-        if (formData !== undefined) {
-            setTitle(formData.title)
-            setDescription(formData.description)
-            setEditable(formData.isEditable)
-            setActive(formData.isActive)
-            setEditors(formData.editors)
-            setAnonymity(formData.anonymous)
-            setIsTemplate(formData.isTemplate)
-            setMultipleResponses(formData.multipleResponses)
-            if (formData.closes) {
-                new Date(formData.closes)
-            } else setDate(null)
-
-            setId(id)
-            return { success: true, form: formData }
-        }
-        let fetchRoute = ``
-        if (admin) {
-            fetchRoute = `/api/getform/${id}`
-        } else {
-            fetchRoute = `/api/getformforresp/${id}`
-        }
-        try {
-            const res = await fetch(fetchRoute, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-            })
-
-            const data = await res.json()
-            if (!data.success) {
-                return {
-                    status: res.status,
-                    success: data.success,
-                    msg: data.msg,
-                }
-            }
-            setTitle(data.form.title)
-            setDescription(data.form.description)
-            setEditable(data.form.isEditable)
-            setActive(data.form.isActive)
-            setEditors(data.form.editors)
-            setMultipleResponses(data.form.multipleResponses)
-            setAnonymity(data.form.anonymous)
-            setIsTemplate(data.form.isTemplate)
-            if (data.form.closes) {
-                setDate(new Date(data.form.closes))
-            } else setDate(null)
-
-            setId(id)
-            return data.form
-        } catch (err) {
-            console.log(err)
-            return null
-        }
+        setTitle(formData.title)
+        setDescription(formData.description)
+        setEditable(formData.isEditable)
+        setActive(formData.isActive)
+        setEditors(formData.editors)
+        setAnonymity(formData.anonymous)
+        setIsTemplate(formData.isTemplate)
+        setMultipleResponses(formData.multipleResponses)
+        setPages(formData.pages)
+        if (formData.closes) {
+            new Date(formData.closes)
+        } else setDate(null)
+        setId(id)
     }
     const getAnonymity = async (formId: string) => {
         const res = await fetch(`/api/getanonymity/${formId}`, {
@@ -146,33 +107,25 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         if (id === undefined || id.length === 0) {
             return
         }
-        if (form?.currentForm?.id)
-            fetch("/api/updateform", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    _id: id,
-                    description: description,
-                    isEditable: editable,
-                    anonymous: anonymous,
-                    closes: date,
-                    title: title,
-                    isActive: isActive,
-                    editors: editors,
-                    multipleResponses: multipleResponses,
-                    isTemplate,
-                }),
+        if (form?.currentForm?.id) {
+            const data = {
+                _id: id,
+                description: description,
+                isEditable: editable,
+                anonymous: anonymous,
+                closes: date,
+                title: title,
+                isActive: isActive,
+                editors: editors,
+                multipleResponses: multipleResponses,
+                isTemplate,
+                pages,
+            }
+            updateFormMutation(data).catch((error) => {
+                console.log(error.message)
+                queryClient.invalidateQueries("currentForm")
             })
-                .then((response) => response.json())
-                .then((data) => {
-                    // Success
-                })
-                .catch((error) => {
-                    console.error("Error:", error)
-                })
+        }
     }
 
     const currentForm: CurrentForm = {
@@ -186,6 +139,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         multipleResponses,
         editors,
         isTemplate,
+        pages,
     }
 
     const form: Form = {
@@ -201,6 +155,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         setMultipleResponses,
         setActive,
         setEditors,
+        setPages,
     }
 
     return (

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { Redirect, useParams } from "react-router"
-import getQuestionsAndResponses from "../../context/form/FormActions"
+import getQuestionsAndResponses, {
+    getForm,
+} from "../../context/form/FormActions"
 import { useAuth } from "../../context/auth/AuthContext"
 import { useCurrentForm } from "../../context/form/CurrentFormContext"
 import {
@@ -22,6 +24,7 @@ const FormForUser = () => {
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<string | null>(null)
     const [sendMail, setSendMail] = useState<boolean>(false)
+    const [currentPageNo, setCurrentPageNo] = useState<number>(1)
 
     const { formId }: any = useParams()
 
@@ -47,37 +50,44 @@ const FormForUser = () => {
                 form?.currentForm?.anonymous === true ||
                 (auth?.currentUser && auth.currentUser.role !== "x")
             ) {
-                form?.setFormDetails(formId, false).then((data) => {
-                    if (!data.success) {
-                        setError(data.msg)
+                getForm(formId, false)
+                    .then((data) => {
+                        if (data.success) {
+                            form?.setFormDetails(formId, data.data)
+                        } else {
+                            setError(data.msg)
+                        }
+                    })
+                    .catch((err) => console.log(err))
+                getQuestionsAndResponses(formId, false, currentPageNo).then(
+                    (data) => {
+                        if (data.status >= 400) {
+                            return
+                        }
+                        questions?.questionActions?.getQuestions(
+                            formId,
+                            data.ques
+                        )
+                        if (data.prevResponse === null) {
+                            data.prevResponse = {
+                                responses: [],
+                                questions: data.ques,
+                                userid: auth?.currentUser?.userid,
+                                username: auth?.currentUser?.username,
+                            }
+                        }
+                        responseList?.responseActions?.getResponse(
+                            formId,
+                            data.prevResponse,
+                            data.ques.map((q: any) => q.required),
+                            false
+                        )
                         setLoading(false)
                     }
-                })
-
-                getQuestionsAndResponses(formId, false).then((data) => {
-                    if (data.status >= 400) {
-                        return
-                    }
-                    questions?.questionActions?.getQuestions(formId, data.ques)
-                    if (data.prevResponse === null) {
-                        data.prevResponse = {
-                            responses: [],
-                            questions: data.ques,
-                            userid: auth?.currentUser?.userid,
-                            username: auth?.currentUser?.username,
-                        }
-                    }
-                    responseList?.responseActions?.getResponse(
-                        formId,
-                        data.prevResponse,
-                        data.ques.map((q: any) => q.required),
-                        false
-                    )
-                    setLoading(false)
-                })
+                )
             }
         }
-    }, [formId, auth?.currentUser, form?.currentForm?.anonymous])
+    }, [formId, auth?.currentUser, form?.currentForm?.anonymous, currentPageNo])
 
     // If not an anonymous form and user hasn't logged in
     if (
@@ -142,52 +152,84 @@ const FormForUser = () => {
             <div className="display-form-container no-navbar">
                 <div className="display-form-component form-header">
                     <h2>{form?.currentForm?.title}</h2>
-
                     <p>{form?.currentForm?.description}</p>
                 </div>
-                {questions?.questions?.map((q: Question, idx: number) => {
-                    return (
-                        <QuestionResponse
-                            question={q}
-                            prevResponse={responseList?.responses?.[idx]}
-                            index={idx}
-                            key={q.qid}
-                        />
-                    )
-                })}
+                {questions?.questions
+                    ?.filter((question) => question.pageNo === currentPageNo)
+                    .map((q: Question, idx: number) => {
+                        return (
+                            <QuestionResponse
+                                question={q}
+                                prevResponse={responseList?.responses?.find(
+                                    (resp) => resp.questionId === q.qid
+                                )}
+                                index={idx}
+                                key={q.qid}
+                            />
+                        )
+                    })}
                 {responseList?.submitError && (
                     <b style={{ color: "red" }}>{responseList?.submitError}</b>
                 )}
-                <button
-                    className="form-submit-btn"
-                    onClick={() => {
-                        responseList?.responseActions
-                            ?.submit(sendMail)
-                            .then((data: any) => {
-                                if (data.success) {
-                                    setThankYou(true)
-                                }
-                            })
-                    }}
-                >
-                    Submit
-                </button>
-                {responseList?.readOnly === false ? (
+                {
+                    // Previous page button
+                }
+                {currentPageNo > 1 && (
+                    <button
+                        className="form-submit-btn"
+                        onClick={() => setCurrentPageNo((pg) => pg - 1)}
+                    >
+                        Previous Page
+                    </button>
+                )}
+                {
+                    //Save button
+                }
+
+                {!form?.currentForm?.anonymous && (
+                    <button
+                        className="form-submit-btn"
+                        onClick={() =>
+                            responseList?.responseActions?.submit(false, false)
+                        }
+                    >
+                        Save
+                    </button>
+                )}
+                {
+                    // Submit / next page button
+                }
+                {
                     <button
                         className="form-submit-btn"
                         onClick={() => {
-                            setLoading(true)
-                            responseList?.responseActions?.clearResponse(
-                                questions?.questions ? questions.questions : []
-                            )
-                            setTimeout(() => {
-                                setLoading(false)
-                            }, 10)
+                            if (
+                                form?.currentForm?.pages !== undefined &&
+                                currentPageNo < form?.currentForm?.pages
+                            ) {
+                                responseList?.responseActions?.submit(
+                                    false,
+                                    false
+                                )
+                                setCurrentPageNo((pg) => pg + 1)
+                            } else {
+                                responseList?.responseActions
+                                    ?.submit(sendMail, true)
+                                    .then((data) => {
+                                        if (data.success) {
+                                            setThankYou(true)
+                                        } else {
+                                            // HANDLE ERROR
+                                        }
+                                    })
+                            }
                         }}
                     >
-                        Click to clear responses
+                        {currentPageNo === form?.currentForm?.pages
+                            ? "Submit"
+                            : "Next"}
                     </button>
-                ) : null}
+                }
                 {!form?.currentForm?.anonymous && (
                     <div className="radio-checkbox">
                         <input
