@@ -61,6 +61,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                     formId,
                     responses,
                 })
+                formResponse.submitted = true
                 newresp = await formResponse.save()
                 console.log("Response added!")
                 if (sendMail) emailResponse(newresp, req.session)
@@ -109,6 +110,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                         formId,
                         responses,
                     })
+                    formResponse.submitted = true
                     newresp = await formResponse.save()
                     console.log("Response added!")
                     res.status(200).send({
@@ -131,7 +133,9 @@ export const submitResponse = async (req: Request, res: Response) => {
                             userid,
                             formId,
                             responses,
+                            submitted: true,
                         })
+                        formResponse.submitted = true
                         newresp = await formResponse.save()
                         console.log("Response added!")
                         console.log("Submitting another Response by the user")

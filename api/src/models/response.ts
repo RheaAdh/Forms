@@ -3,6 +3,7 @@ export interface ResponseDoc extends Document {
     username: string
     userid: any
     formId: any
+    submitted: Boolean
     responses: [
         {
             questionId: string
