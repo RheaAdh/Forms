@@ -80,8 +80,8 @@ export async function getFormForResponse(req: Request, res: Response) {
 
         if (form) {
             var presentDateTime: Date = new Date()
-            console.log("Present time " + presentDateTime)
-            console.log("closing time " + form.closes)
+            // console.log("Present time " + presentDateTime)
+            // console.log("closing time " + form.closes)
             //Checking for closing date time
             if (form.closes !== null && form.closes <= presentDateTime) {
                 console.log("Form closed")

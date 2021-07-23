@@ -44,22 +44,16 @@ app.use(
     })
 )
 
+//ADMIN
+app.use("/api", router)
+
 // FORGOT AND RESET PASSWORD
 app.post("/forgotpassword", adminForgotPassword)
-app.get("/resetpassword/:token", (req, res) => {
-    return res.send({
-        success: true,
-        data: "Password and Confirm Password needs to be filled here",
-    })
-})
 app.post("/resetpassword/:token", adminResetPassword)
 
 // PASSPORT CONFIG --> FOR USER LEVEL AUTH
 app.use(passport.initialize())
 app.use(passport.session())
-
-//ADMIN
-app.use("/api", router)
 
 //ADMIN LOGIN,REGISTER,LOGOUT ROUTES
 app.get("/admin", sessionDetails)
@@ -72,6 +66,12 @@ app.use("/user", Router)
 app.use("/user/logout", userLogout)
 app.use("/user/getuser", getUser)
 
+//Logged in user session details
+app.get("/sessiondetail", sessionDetails)
+app.get("/admin", sessionDetails)
+
+// BELOW ROUTES FOR TESTING
+
 //TEST WELCOME PAGE
 app.get("/", (req, res) => {
     res.send("Welcome to home page")
@@ -79,17 +79,13 @@ app.get("/", (req, res) => {
 
 //TEST USER LEVEL PROTECTION ROUTE
 app.get("/test", checkAuthentication, (req, res) => {
-    res.send("Inside Protected Route")
+    return res.send("Inside Protected Route")
 })
-
 app.get("/admin/dashboard", isValidAdmin, (req, res) => {
-    res.send("Inside Admin dashboard")
+    return res.send("Inside Admin dashboard")
 })
 app.get("/superadmin/dashboard", isValidSuperAdmin, (req, res) => {
-    res.send("Inside super-admin dashboard")
+    return res.send("Inside super-admin dashboard")
 })
-
-app.get("/sessiondetail", sessionDetails)
-app.get("/admin", sessionDetails)
 
 app.listen(port, () => console.log(`Listening on port ${port}`))

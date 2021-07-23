@@ -1,10 +1,10 @@
 import { Document, Schema } from "mongoose"
 import { Response, Request, NextFunction } from "express"
-import * as mongo from "../config/mongo"
 import { User } from "../models/user"
 import { v4 as uuidv4 } from "uuid"
 import { hash } from "bcryptjs"
 const nodemailer = require("nodemailer")
+const bcrypt = require("bcryptjs")
 uuidv4()
 
 declare module "express-session" {
@@ -16,12 +16,11 @@ declare module "express-session" {
         username: String
     }
 }
-const bcrypt = require("bcryptjs")
 
 //FOR ADMINS
+
 export async function adminRegister(req: Request, res: Response) {
-    console.log("Registration Status " + process.env.REGISTERATION_OPEN)
-    //ISSUES
+    // console.log("Registration Status " + process.env.REGISTERATION_OPEN)
     if (process.env.REGISTERATION_OPEN == "1") {
         const { username, password, confirmPassword, email } = req.body
 
@@ -42,6 +41,7 @@ export async function adminRegister(req: Request, res: Response) {
                     "User exists with same details,try again with a new password if not registered",
             })
         }
+
         let usernameExists = await User.findOne({ username })
         if (usernameExists) {
             return res.status(400).send({
@@ -49,6 +49,7 @@ export async function adminRegister(req: Request, res: Response) {
                 data: "Username already exists",
             })
         }
+
         //USER NOT CREATED
         if (password.length < 8) {
             return res.status(400).send({
@@ -65,7 +66,7 @@ export async function adminRegister(req: Request, res: Response) {
             })
         }
 
-        //STORING USER IN DB
+        //STORING ADMIN IN DB
         const hashpwd = await bcrypt.hash(req.body.password, 10)
         user = new User({
             username,
@@ -77,11 +78,11 @@ export async function adminRegister(req: Request, res: Response) {
 
         try {
             let newuser = await user.save()
-            console.log("New admin created!")
+            // console.log("New admin created!")
 
             //Verification of Email  purpose id -> 1
             emailToken(newuser.token, newuser, 1)
-            console.log("Email for verification")
+            // console.log("Email for verification")
 
             return res.send({
                 success: true,
@@ -94,30 +95,32 @@ export async function adminRegister(req: Request, res: Response) {
                 .send({ success: false, data: "Server Error" })
         }
     } else {
-        console.log("Registration closed")
+        // console.log("Registration closed")
         return res.status(400).send({
             success: false,
-            msg: "Everyone seems to have registered who are you??",
+            msg: "Registration closed",
         })
     }
 }
 
 export async function adminLogin(req: Request, res: Response) {
-    console.log(" adminLogin POST REQUEST WAS MADE")
+    // console.log(" adminLogin POST REQUEST WAS MADE")
     const { email, password } = req.body
     let user: any
     try {
         user = await User.findOne({ email })
     } catch (error) {
-        console.error("error")
-        res.status(500).send({ success: false, msg: "Server Error" })
+        // console.error("error")
+        return res.status(500).send({ success: false, msg: "Server Error" })
     }
+
     if (!user) {
         return res.status(400).send({
             success: false,
             data: "User doesnt exist, Please register to Login",
         })
     }
+
     if (!user.isVerified) {
         return res.status(400).send({
             success: false,
@@ -132,6 +135,7 @@ export async function adminLogin(req: Request, res: Response) {
             data: "Invalid Credentials, Please try again",
         })
     }
+
     req.session.isAuth = true
     req.session.userId = user._id
     req.session.role = user.role
@@ -187,7 +191,6 @@ export async function isValidSuperAdmin(
     res: Response,
     next: NextFunction
 ) {
-    //
     if (req.session.isAuth) {
         if (req.session.role == "superadmin") {
             next()
@@ -211,27 +214,32 @@ export async function adminLogout(
 ) {
     req.session.destroy(function (err) {
         if (err) {
-            console.log(err)
+            // console.log(err);
+
+            return res.send({ success: false, data: "Server Error" })
         } else {
-            //session deleted
             return res
                 .status(200)
-                .send({ success: true, data: "Successfully LoggedOut" })
+                .send({ success: true, data: "Successfully Logged out" })
         }
     })
 }
 
 async function emailToken(token: any, receiver: any, purpose: Number) {
     try {
+        console.log(receiver)
+
         console.log("inside forgot mailer")
         console.log(receiver.username)
-
-        const output1 = `<p>Hello ${receiver.username}</p>Please click on the link to verify: <a href ="http://localhost:3000/verifyemail/${token}">http://localhost:3000/verifyemail/${token}</a><p>Regards,<br>IECSE</p>`
-        const output2 = `<p>Hello ${receiver.username}</p>Link for reset password: <a href ="http://localhost:3000/resetpassword/${token}">http://localhost:3000/resetpassword/${token}</a><p>Regards,<br>IECSE</p>`
         const subject1 = "Verify Mail"
+        const output1 = `<p>Hello ${receiver.username}</p>Please click on the link to verify: <a href ="http://localhost:3000/verifyemail/${token}">http://localhost:3000/verifyemail/${token}</a><p>Regards,<br>IECSE</p>`
+
         const subject2 = "Reset Password"
+        const output2 = `<p>Hello ${receiver.username}</p>Link for reset password: <a href ="http://localhost:3000/resetpassword/${token}">http://localhost:3000/resetpassword/${token}</a><p>Regards,<br>IECSE</p>`
+
         let output: any
         let subject: any
+
         switch (purpose) {
             case 1:
                 output = output1
@@ -242,6 +250,7 @@ async function emailToken(token: any, receiver: any, purpose: Number) {
                 subject = subject2
                 break
         }
+
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
@@ -261,11 +270,11 @@ async function emailToken(token: any, receiver: any, purpose: Number) {
                 from: '"Admin" <iecseforms@gmail.com>', // sender address
                 to: `${receiver.email}`, // list of receivers
                 subject: subject, // Subject line
-                text: "Reset Password Link", // plain text body
+                text: subject, // plain text body
                 html: output, // html body
             })
-            console.log("info is " + info)
-            console.log("Message sent: %s", info.messageId)
+            // console.log("info is " + info)
+            // console.log("Message sent: %s", info.messageId)
         } catch (err) {
             console.log(err)
         }
@@ -278,7 +287,7 @@ export async function adminForgotPassword(
     res: Response,
     next: NextFunction
 ) {
-    console.log("adminForgotPassword POST REQUEST WAS MADE")
+    // console.log("adminForgotPassword POST REQUEST WAS MADE")
     let { email } = req.body
     let user: any
     try {
@@ -353,7 +362,11 @@ export async function adminResetPassword(req: Request, res: Response) {
 export async function verifyEmail(req: Request, res: Response) {
     try {
         let compareToken = req.params.token
+        console.log(compareToken)
+
         let user = await User.findOne({ token: compareToken })
+        console.log(user)
+
         if (user) {
             await User.updateOne(
                 { token: compareToken },
@@ -376,18 +389,44 @@ export async function verifyEmail(req: Request, res: Response) {
 }
 
 export function sessionDetails(req: Request, res: Response) {
-    res.status(200).send(req.session)
+    return res.status(200).send(req.session)
 }
 
 export async function getAllAdmins(req: Request, res: Response) {
     try {
         let admins = await User.find({ role: "admin" }).select("username email")
-        console.log(admins)
+        // console.log(admins)
         return res
             .status(200)
             .send({ success: true, msg: "All Admins", data: admins })
     } catch (err) {
-        console.log(err)
+        // console.log(err)
+        return res.status(400).send({ success: false, msg: "Server Error" })
+    }
+}
+
+// emailToken(newuser.token, newuser, 1)
+
+export async function resendEmailVerificationLink(req: Request, res: Response) {
+    let newuser: any
+    try {
+        let userEmail = req.body.userEmail
+        newuser = await User.findOne({ email: userEmail })
+        // console.log(newuser)
+        if (newuser) {
+            //Reset token and send new link with new token
+            let newtoken = uuidv4()
+            newuser.token = newtoken
+            newuser = await newuser.save()
+            emailToken(newuser.token, newuser, 1)
+            return res.send({
+                success: true,
+                msg: "resent email verification link",
+            })
+        } else {
+            return res.send({ success: false, msg: "token invalid" })
+        }
+    } catch (err) {
         return res.status(400).send({ success: false, msg: "Server Error" })
     }
 }

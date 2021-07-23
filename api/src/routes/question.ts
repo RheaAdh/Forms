@@ -1,5 +1,4 @@
 import { Response, Request } from "express"
-import * as mongo from "../config/mongo"
 import { Form } from "../models/form"
 import FormResponse from "../models/response"
 import { updateForm } from "./form"
@@ -150,19 +149,25 @@ export async function addQuestion(req: Request, res: Response) {
             }
             //Reordering Ques
             await newQuestion.save()
+
             form.questions.push(newQuestion)
+            
             await form.save()
+            
             let moveto = after + 1 //newques index
+            
             let ques_arr: any = await Question.updateMany(
                 { formid: formId, quesIndex: { $gt: after } },
                 { $inc: { quesIndex: 1 } }
             )
+            
             let updatedques: any = await Question.updateOne(
                 { _id: newQuestion._id },
                 { $set: { quesIndex: moveto } }
             )
+            
             console.log("Form updated!!  and new Ques Added!!")
-            console.log(newQuestion)
+            // console.log(newQuestion)
             return res.json({
                 success: true,
                 newQuestion,

@@ -4,6 +4,7 @@ import {
     isValidSuperAdmin,
     getAllAdmins,
     verifyEmail,
+    resendEmailVerificationLink
 } from "./adminuser"
 import {
     deleteForm,
@@ -139,9 +140,13 @@ router.post(
 router.post("/submitresponse", checkAuthentication, submitResponse)
 
 ////////////////////NO-AUTH///////////////////////////////////////////////////
-router.get("/emailverification/:token", verifyEmail)
-router.get("/response/:respid", getResponsebyRespid) //To view emailed responses
 
+// http://localhost:7000/api/emailverification/token
+router.get("/emailverification/:token", verifyEmail)
+//To view emailed responses
+router.get("/response/:respid", getResponsebyRespid) 
+// http://localhost:7000/api/emailreverify
+router.get("/emailreverify",resendEmailVerificationLink)
 
 router.get("/createnewsheet/:formId",writeToNewSheet)
 

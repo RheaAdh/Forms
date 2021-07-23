@@ -1,21 +1,20 @@
-import mongoose, { Schema, Document } from 'mongoose'
+import mongoose, { Schema, Document } from "mongoose"
 
 export interface UserDoc extends Document {
     username: string
-    password:string
-    email:string
-    role:string
-    token:string
-    isVerified:boolean
-
+    password: string
+    email: string
+    role: string
+    token: string
+    isVerified: boolean
 }
 
 //USER SCHEMA
 const userSchema: Schema = new Schema(
     {
-        username:{
-            type:String,
-            default:null,
+        username: {
+            type: String,
+            default: null,
         },
         password: {
             type: String,
@@ -28,22 +27,22 @@ const userSchema: Schema = new Schema(
         },
         role: {
             type: String,
-            enum: ['user', 'admin', 'superadmin'],   
-            default: 'user',
+            enum: ["user", "admin", "superadmin"],
+            default: "user",
         },
-        token:{
-            type:String,
-            default:null,
+        token: {
+            type: String,
+            default: null,
         },
-        isVerified:{
-            type:Boolean,
-            default:false
-        }
+        isVerified: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,
     }
-);
+)
 
 //COMPILE USER MODEL
 
