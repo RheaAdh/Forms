@@ -3,16 +3,18 @@ import Question from "./Question"
 import "../../styles/QuestionList.css"
 import { useCurrentForm } from "../../context/form/CurrentFormContext"
 import { useQuestionsList } from "../../context/questions/QuestionListContext"
-import getQuestionsAndResponses from "../../context/form/FormActions"
+import { getQuestionsAndResponses } from "../../context/form/FormActions"
 import { useQuery } from "react-query"
+import useScrollDown from "../../hooks/useScrollDown"
 
 const QuestionList: React.FC = () => {
     const form = useCurrentForm()
     const questions = useQuestionsList()
+    const setNewQuestionIndex = useScrollDown()
 
     const {} = useQuery(
         "questionsAndResponses",
-        () => getQuestionsAndResponses(form?.currentForm?.id, true, -1),
+        () => getQuestionsAndResponses(form?.currentForm?.id, true),
         {
             onSuccess: (data) =>
                 questions?.questionActions?.getQuestions(
@@ -26,9 +28,10 @@ const QuestionList: React.FC = () => {
         <div>
             <div>
                 <button
-                    onClick={() =>
+                    onClick={() => {
                         questions?.questionActions?.addQuestion(-1, 1, false)
-                    }
+                        setNewQuestionIndex(0)
+                    }}
                 >
                     Add Question
                 </button>

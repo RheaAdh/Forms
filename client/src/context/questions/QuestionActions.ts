@@ -1,38 +1,27 @@
-import { Question, questionTypes } from "./QuestionListContext"
+import { deleteRequest, post, put } from "../../utils/requests"
+import { IQuestion, questionTypes } from "./QuestionListContext"
 
-export const addQuestionAction = async (newQuestion: Question) => {
-    const resp = await fetch("/api/addquestion", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(newQuestion),
-    })
+export const addQuestionAction = async (newQuestion: IQuestion) => {
+    const resp = await post("/api/addquestion", newQuestion)
     const data = await resp.json()
-
     if (resp.status >= 400) {
         throw new Error(data.msg)
     }
     return data
 }
 
-export interface DeleteQuestion {
+export interface IDeleteQuestion {
     qid: string
     formId: string
 }
 
-export const deleteQuestionAction = async ({ qid, formId }: DeleteQuestion) => {
-    const resp = await fetch("/api/deletequestion", {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-            id: qid,
-            formId: formId,
-        }),
+export const deleteQuestionAction = async ({
+    qid,
+    formId,
+}: IDeleteQuestion) => {
+    const resp = await deleteRequest("/api/deletequestion", {
+        id: qid,
+        formId: formId,
     })
     const data = await resp.json()
     if (!data.success || resp.status >= 400) {
@@ -41,21 +30,21 @@ export const deleteQuestionAction = async ({ qid, formId }: DeleteQuestion) => {
     return data
 }
 
-export interface UpdateQuestion {
+export interface IUpdateQuestion {
     qid: string
-    question: Question
+    question: IQuestion
 }
 
 export const updateQuestionAction = async ({
     qid,
     question,
-}: UpdateQuestion) => {
+}: IUpdateQuestion) => {
     if (qid === undefined || qid.length === 0) return
     const q = question
     if (q === undefined) return
     let body = null
     if (q.options?.length && q.options.length >= 2) {
-        body = JSON.stringify({
+        body = {
             ...q,
             _id: q.qid,
             questionText: q.questionText,
@@ -68,9 +57,9 @@ export const updateQuestionAction = async ({
             description: q.description,
             pageNo: q.pageNo,
             questionType: questionTypes[questionTypes.indexOf(q.questionType)],
-        })
+        }
     } else {
-        body = JSON.stringify({
+        body = {
             ...q,
             options: [],
             _id: q.qid,
@@ -83,10 +72,10 @@ export const updateQuestionAction = async ({
             description: q.description,
             pageNo: q.pageNo,
             questionType: questionTypes[questionTypes.indexOf(q.questionType)],
-        })
+        }
     }
     if (q?.rows && q?.cols && q.rows.length >= 2 && q.cols.length >= 2) {
-        body = JSON.stringify({
+        body = {
             ...q,
             _id: q.qid,
             questionText: q.questionText,
@@ -101,16 +90,9 @@ export const updateQuestionAction = async ({
             description: q.description,
             pageNo: q.pageNo,
             questionType: questionTypes[questionTypes.indexOf(q.questionType)],
-        })
+        }
     }
-    const resp = await fetch("/api/updatequestion", {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: body,
-    })
+    const resp = await put("/api/updatequestion", body)
     const data = await resp.json()
     if (!data.success || resp.status >= 400) {
         throw new Error(data.msg)

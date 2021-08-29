@@ -3,6 +3,7 @@ export interface ResponseDoc extends Document {
     username: string
     userid: any
     formId: any
+    submitted: boolean
     responses: [
         {
             questionId: string
@@ -24,8 +25,8 @@ export interface ResponseDoc extends Document {
 const response: Schema = new Schema(
     {
         username: { type: String },
-        userid: { type: Schema.Types.ObjectId, ref: "user" },
-        formId: { type: Schema.Types.ObjectId, ref: "Form" },
+        userid: { type: Schema.Types.ObjectId, ref: "user", required: true },
+        formId: { type: Schema.Types.ObjectId, ref: "Form", required: true },
         submitted: { type: Boolean, default: false },
         responses: [
             {

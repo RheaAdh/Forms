@@ -4,10 +4,10 @@ import { useAuth } from "../../context/auth/AuthContext"
 import { useHistory } from "react-router"
 import Loading from "../../components/shared/Loading"
 import DashboardNavbar from "../../components/dashboard/DashboardNavbar"
-import { CurrentForm } from "../../context/form/CurrentFormContext"
+import { ICurrentForm } from "../../context/form/CurrentFormContext"
 import FormCard from "../../components/dashboard/FormCard"
 import {
-    Question,
+    IQuestion,
     useQuestionsList,
 } from "../../context/questions/QuestionListContext"
 import { ReactComponent as AddQuestionIcon } from "../../images/AddQuestionIcon.svg"
@@ -26,9 +26,9 @@ const DashboardPage: React.FC = () => {
     const questions = useQuestionsList()
 
     const [loading, setLoading] = useState<boolean>(true)
-    const [allForms, setAllForms] = useState<CurrentForm[]>()
-    const [templates, setTemplates] = useState<CurrentForm[]>()
-    const [searchListForms, setSearchList] = useState<CurrentForm[]>()
+    const [allForms, setAllForms] = useState<ICurrentForm[]>()
+    const [templates, setTemplates] = useState<ICurrentForm[]>()
+    const [searchListForms, setSearchList] = useState<ICurrentForm[]>()
 
     const queryClient = useQueryClient()
 
@@ -37,7 +37,11 @@ const DashboardPage: React.FC = () => {
     )
 
     useEffect(() => {
-        if (auth?.currentUser === null) auth?.getCurrentUser()
+        if (auth?.currentUser === null) {
+            auth?.getCurrentUser().catch((err) => {
+                console.log(err.message)
+            })
+        }
     }, [])
 
     const keyGen = () => {
@@ -50,7 +54,7 @@ const DashboardPage: React.FC = () => {
                 setAllForms(
                     data.forms.map((form: any) => {
                         const question:
-                            | Question
+                            | IQuestion
                             | undefined = returnQuestionFromData(form)
                         return {
                             id: form._id,
@@ -66,7 +70,7 @@ const DashboardPage: React.FC = () => {
                 setSearchList(
                     data.forms.map((form: any) => {
                         const question:
-                            | Question
+                            | IQuestion
                             | undefined = returnQuestionFromData(form)
 
                         return {
@@ -176,18 +180,18 @@ const DashboardPage: React.FC = () => {
     const handleDelete = (id: string, isTemplate: boolean | undefined) => {
         if (isTemplate) {
             setTemplates((prevForms) =>
-                prevForms?.filter((form: CurrentForm) => {
+                prevForms?.filter((form: ICurrentForm) => {
                     return form.id !== id
                 })
             )
         } else {
             setAllForms((prevForms) =>
-                prevForms?.filter((form: CurrentForm) => {
+                prevForms?.filter((form: ICurrentForm) => {
                     return form.id !== id
                 })
             )
             setSearchList((prevForms) =>
-                prevForms?.filter((form: CurrentForm) => {
+                prevForms?.filter((form: ICurrentForm) => {
                     return form.id !== id
                 })
             )
@@ -209,7 +213,6 @@ const DashboardPage: React.FC = () => {
     return (
         <div className="dashboard-page">
             <ErrorPopup />
-
             <DashboardNavbar
                 allForms={allForms}
                 setSearchList={setSearchList}
@@ -233,7 +236,7 @@ const DashboardPage: React.FC = () => {
                     )}
                 </h3>
                 <div className="templates-container">
-                    {templates?.map((form: CurrentForm) => (
+                    {templates?.map((form: ICurrentForm) => (
                         <FormCard
                             key={form.id}
                             form={form}
@@ -256,7 +259,7 @@ const DashboardPage: React.FC = () => {
                 </h3>
 
                 <div className="forms-container">
-                    {searchListForms?.map((form: CurrentForm) => (
+                    {searchListForms?.map((form: ICurrentForm) => (
                         <FormCard
                             key={form.id}
                             form={form}

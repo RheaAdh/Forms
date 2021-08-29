@@ -62,15 +62,15 @@ app.use(passport.session())
 app.use("/api", router)
 
 //ADMIN LOGIN,REGISTER,LOGOUT ROUTES
-app.get("/admin", sessionDetails)
-app.post("/admin/register", adminRegister)
-app.post("/admin/login", adminLogin)
-app.get("/admin/logout", adminLogout)
+app.get("/api/admin", sessionDetails)
+app.post("/api/admin/register", adminRegister)
+app.post("/api/admin/login", adminLogin)
+app.get("/api/admin/logout", adminLogout)
 
 //USER ROUTES
-app.use("/user", Router)
-app.use("/user/logout", userLogout)
-app.use("/user/getuser", getUser)
+app.use("/api/user", Router)
+app.use("/api/user/logout", userLogout)
+app.use("/api/user/getuser", getUser)
 
 //TEST WELCOME PAGE
 app.get("/", (req, res) => {
@@ -82,14 +82,13 @@ app.get("/test", checkAuthentication, (req, res) => {
     res.send("Inside Protected Route")
 })
 
-app.get("/admin/dashboard", isValidAdmin, (req, res) => {
+app.get("/api/admin/dashboard", isValidAdmin, (req, res) => {
     res.send("Inside Admin dashboard")
 })
-app.get("/superadmin/dashboard", isValidSuperAdmin, (req, res) => {
+app.get("/api/superadmin/dashboard", isValidSuperAdmin, (req, res) => {
     res.send("Inside super-admin dashboard")
 })
 
-app.get("/sessiondetail", sessionDetails)
-app.get("/admin", sessionDetails)
+app.get("/api/sessiondetail", sessionDetails)
 
 app.listen(port, () => console.log(`Listening on port ${port}`))

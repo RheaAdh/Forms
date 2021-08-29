@@ -17,11 +17,14 @@ const LoggedIn: React.FC<props> = ({ ...rest }) => {
 export const Protected: React.FC<props> = ({ ...rest }: any) => {
     const auth = useAuth()?.currentUser
     if (
+        auth === null ||
         auth?.role === "admin" ||
-        auth?.role === "superadmin" ||
-        auth === null
+        auth?.role === "superadmin"
     ) {
         return <Route {...rest} />
+    }
+    if (auth?.userid === "x") {
+        return <Error />
     }
     // return 404 in case not logged in or normal user
     // cannot send to admin login page

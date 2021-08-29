@@ -1,4 +1,5 @@
 import React, { useState, useContext, ReactElement } from "react"
+import { get, post } from "../../utils/requests"
 export type Nullable<T> = T | null
 
 export interface IUser {
@@ -12,7 +13,7 @@ interface Props {
     children: ReactElement
 }
 
-export interface Value {
+export interface IAuth {
     currentUser: Nullable<IUser>
     setCurrentUser: any
     register: (
@@ -24,10 +25,10 @@ export interface Value {
     login: (email: string, password: string) => Promise<any>
     logout: () => Promise<any>
     forgotPassword: (email: string) => Promise<any>
-    getCurrentUser: any
+    getCurrentUser: () => Promise<any>
 }
 
-const AuthContext = React.createContext<Nullable<Value>>(null)
+const AuthContext = React.createContext<Nullable<IAuth>>(null)
 
 export const useAuth = () => {
     return useContext(AuthContext)
@@ -42,34 +43,21 @@ export default function AuthProvider({ children }: Props): ReactElement {
         password: string,
         confirmPassword: string
     ) => {
-        const response = await fetch("/admin/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+        const data = await (
+            await post("/api/admin/register", {
                 username: username,
                 email: email,
                 password: password,
                 confirmPassword: confirmPassword,
-            }),
-            credentials: "include",
-        })
-        const data = await response.json()
+            })
+        ).json()
         return data
     }
 
     const login = async (email: string, password: string) => {
-        const response = await fetch("/admin/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email: email, password: password }),
-            credentials: "include",
-        })
-
-        const data = await response.json()
+        const data = await (
+            await post("/api/admin/login", { email: email, password: password })
+        ).json()
         if (data.success === true) {
             setCurrentUser(data.user)
             return data
@@ -78,39 +66,18 @@ export default function AuthProvider({ children }: Props): ReactElement {
     }
 
     const logout = async () => {
-        let response
+        let data
         if (currentUser?.role === "user") {
-            response = await fetch("/user/logout", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-            })
+            data = await (await get("/api/user/logout")).json()
         } else {
-            response = await fetch("/admin/logout", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-            })
+            data = await (await get("/api/admin/logout")).json()
         }
-        const data = await response.json()
-
         setCurrentUser(null)
         return data
     }
 
     const getCurrentUser = async () => {
-        const res = await fetch("/sessiondetail", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-        })
-        const data = await res.json()
+        const data = await (await get("/api/sessiondetail")).json()
         const user = {
             username: data.username,
             email: data.email,
@@ -118,31 +85,23 @@ export default function AuthProvider({ children }: Props): ReactElement {
             userid: data.userId,
         }
         if (user.email) setCurrentUser(user)
-        else
+        else {
             setCurrentUser({
-                email: "x",
-                userid: "x",
                 username: "x",
+                userid: "x",
                 role: "x",
+                email: "x",
             })
+        }
         return data
     }
 
     const forgotPassword = async (email: string) => {
-        const res = await fetch("/forgotpassword", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                email: email,
-            }),
-        })
-        const data = await res.json()
+        const data = await (await post("/api/forgotpassword", { email })).json()
         return data
     }
 
-    const value: Value = {
+    const value: IAuth = {
         currentUser,
         setCurrentUser,
         register,

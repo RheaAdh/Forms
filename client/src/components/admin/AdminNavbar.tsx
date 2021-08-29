@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Redirect, useHistory, useParams } from "react-router"
+import { useHistory, useParams } from "react-router"
 import { useAuth } from "../../context/auth/AuthContext"
 import { useCurrentForm } from "../../context/form/CurrentFormContext"
 import "../../styles/AdminNavbar.css"
@@ -103,11 +103,17 @@ const AdminNavbar = ({ questionsPage }: props) => {
                         columns={columnsForDownload}
                     >
                         <DownloadIcon style={{ width: "1.5rem" }} />
-                        <span className="icon-info">Dashboard</span>
+                        <span className="icon-info">Download Responses</span>
                         <span className="text-info-arrow" />
                     </CsvDownload>
                 )}
-                <h2>{form?.currentForm?.title}</h2>
+                <input
+                    type="text"
+                    onChange={(e) => {
+                        form?.setTitle(e.target.value)
+                    }}
+                    value={form?.currentForm?.title}
+                />
             </div>
             <div className="navbar-row2">
                 <Link

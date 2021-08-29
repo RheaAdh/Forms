@@ -1,13 +1,13 @@
 import React from "react"
 import { Link, useHistory } from "react-router-dom"
-import { CurrentForm } from "../../context/form/CurrentFormContext"
+import { ICurrentForm } from "../../context/form/CurrentFormContext"
 import "../../styles/FormCard.css"
 import QuestionResponse from "../shared/QuestionResponse"
 import { ReactComponent as DeleteIcon } from "../../images/DeleteIcon.svg"
 import { useAuth } from "../../context/auth/AuthContext"
 
 interface props {
-    form: CurrentForm
+    form: ICurrentForm
     handleDelete: (id: string, isTemplate: boolean | undefined) => void
 }
 
@@ -70,7 +70,7 @@ const FormCard: React.FC<props> = ({ form, handleDelete }) => {
                     </div>
 
                     {form.question && (
-                        <QuestionResponse question={form.question} index={0} />
+                        <QuestionResponse question={form.question} />
                     )}
                 </div>
             </Link>

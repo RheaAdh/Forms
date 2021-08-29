@@ -12,7 +12,7 @@ const questionSchema: Schema = new Schema(
     {
         formid: { type: Schema.Types.ObjectId, ref: "Form" },
         quesIndex: { type: Number, default: 0 },
-        questionText: { type: String, required: true },
+        questionText: { type: String },
         required: { type: Boolean, default: false },
         //questionType: String This is  made by default by the discriminator key
         userId: { type: Schema.Types.ObjectId, ref: "user" },

@@ -93,7 +93,7 @@ export async function getFormForResponse(req: Request, res: Response) {
                     userid: req.session.userId,
                     formId: req.params.formId,
                 })
-                if (response) {
+                if (response?.submitted) {
                     console.log(response)
                     console.log(req.session.username)
                     console.log("Trying to answer again to a non-editable form")

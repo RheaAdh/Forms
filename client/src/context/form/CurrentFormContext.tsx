@@ -1,9 +1,9 @@
 import React, { ReactElement, useContext, useState } from "react"
 import { useMutation, useQueryClient } from "react-query"
-import { Question } from "../questions/QuestionListContext"
+import { IQuestion } from "../questions/QuestionListContext"
 import { updateFormAction } from "./FormActions"
 
-export interface CurrentForm {
+export interface ICurrentForm {
     id: string
     isTemplate?: boolean
     anonymous?: boolean
@@ -15,13 +15,13 @@ export interface CurrentForm {
     isActive?: boolean
     editors?: string[]
     pages?: number
-    question?: Question // For form card in dashboard only
+    question?: IQuestion // For form card in dashboard only
 }
 interface Props {
     children: ReactElement
 }
-export interface Form {
-    currentForm: CurrentForm | null
+export interface IForm {
+    currentForm: ICurrentForm | null
     updateForm: () => void
     getAnonymity: (formId: string) => Promise<any>
     setTitle: React.Dispatch<React.SetStateAction<string | undefined>>
@@ -38,7 +38,7 @@ export interface Form {
     setPages: React.Dispatch<React.SetStateAction<number | undefined>>
 }
 
-const CurrentFormContext = React.createContext<Form | null>(null)
+const CurrentFormContext = React.createContext<IForm | null>(null)
 
 export const useCurrentForm = () => {
     return useContext(CurrentFormContext)
@@ -57,11 +57,11 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
     const [isTemplate, setIsTemplate] = useState<boolean>()
     const [pages, setPages] = useState<number>()
 
+    const queryClient = useQueryClient()
+
     const { mutateAsync: updateFormMutation } = useMutation((data: any) =>
         updateFormAction(data)
     )
-
-    const queryClient = useQueryClient()
 
     const setFormDetails = async (id: string, formData?: any) => {
         if (formData === null) {
@@ -128,7 +128,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         }
     }
 
-    const currentForm: CurrentForm = {
+    const currentForm: ICurrentForm = {
         id,
         anonymous,
         date,
@@ -142,7 +142,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         pages,
     }
 
-    const form: Form = {
+    const form: IForm = {
         currentForm,
         setFormDetails,
         getAnonymity,

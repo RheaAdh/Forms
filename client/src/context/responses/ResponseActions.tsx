@@ -1,12 +1,7 @@
+import { get, post } from "../../utils/requests"
+
 export const downloadResponse = async (formId: string) => {
-    const res = await fetch(`/api/download/${formId}`, {
-        headers: {
-            "Content-type": "application/json",
-        },
-        method: "GET",
-        credentials: "include",
-    })
-    const data = await res.json()
+    const data = await (await get(`/api/download/${formId}`)).json()
     if (data.data.length === 0) {
         return null
     }
@@ -23,4 +18,16 @@ export const downloadResponse = async (formId: string) => {
         dataForDownload.push(newObj)
     }
     return { columns, dataForDownload }
+}
+
+export const getUsersAction = async (formId: string) => {
+    const data = await (
+        await get(`/api/responsesidbyformfilled/${formId}`)
+    ).json()
+    return data.data
+}
+
+export const submitAction = async (body: any) => {
+    const data = await (await post("/api/submitresponse", body)).json()
+    return data
 }

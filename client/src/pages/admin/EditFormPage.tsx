@@ -6,8 +6,8 @@ import { useAuth } from "../../context/auth/AuthContext"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import "../../styles/EditFormPage.css"
-import { useCurrentForm } from "../../context/form/CurrentFormContext"
-import autoAdjustHeight from "../../util"
+import { IForm, useCurrentForm } from "../../context/form/CurrentFormContext"
+import autoAdjustHeight from "../../utils/util"
 import AdminNavbar from "../../components/admin/AdminNavbar"
 import Loading from "../../components/shared/Loading"
 import ErrorPopup from "../../components/shared/ErrorPopup"
@@ -15,6 +15,62 @@ import SwitchButton from "../../components/shared/SwitchButton"
 import { useQuery } from "react-query"
 import { getForm } from "../../context/form/FormActions"
 import { useQuestionsList } from "../../context/questions/QuestionListContext"
+import useDocumentTitle from "../../hooks/useDocumentTitle"
+import useUpdateForm from "../../hooks/useUpdateForm"
+
+interface headerProps {
+    form: IForm | null
+}
+
+const FormAttributes = ({ form }: headerProps) => (
+    <div className="edit-form-component">
+        {!form?.currentForm?.isTemplate && (
+            <div className="row1">
+                <SwitchButton
+                    isActive={form?.currentForm?.isActive}
+                    setIsActive={() => {
+                        form?.setActive(true)
+                        form?.setDate(null)
+                    }}
+                    setNotActive={() => {
+                        form?.setActive(false)
+                        form?.setDate(new Date())
+                    }}
+                    activeColor={"green"}
+                    inactiveColor={"red"}
+                    activeText={"Active"}
+                    inactiveText={"Closed"}
+                />
+            </div>
+        )}
+        <div className="row2">
+            {!form?.currentForm?.isTemplate && (
+                <>
+                    <h3>Closing date :</h3>
+                    <DatePicker
+                        selected={form?.currentForm?.date}
+                        showTimeSelect
+                        dateFormat="dd/MM/yyyy hh:mm"
+                        onChange={(date: Date) => {
+                            form?.setDate(date)
+                        }}
+                        placeholderText="dd/mm/yyyy"
+                    />
+                </>
+            )}
+        </div>
+        <div className="row3">
+            <h3>Description:</h3>
+            <textarea
+                value={form?.currentForm?.description}
+                onChange={(e) => {
+                    autoAdjustHeight(e)
+                    form?.setDescription(e.target.value)
+                }}
+            ></textarea>
+        </div>
+    </div>
+)
 
 const EditFormPage: React.FC = () => {
     const { formId }: any = useParams()
@@ -26,40 +82,26 @@ const EditFormPage: React.FC = () => {
 
     const {} = useQuery("currentForm", () => getForm(formId, true), {
         onSuccess: (data) => {
-            console.log(data.data)
             if (data.success) form?.setFormDetails(formId, data.data)
             setLoading(false)
         },
     })
 
     useEffect(() => {
-        if (!auth?.currentUser) auth?.getCurrentUser().then((res: any) => {})
+        if (!auth?.currentUser) auth?.getCurrentUser()
         return () => {
             form?.setFormDetails("", null)
             questions?.questionActions?.getQuestions("", [])
         }
     }, [formId])
 
-    useEffect(
-        () => {
-            form?.updateForm()
-        },
-        // es-lint disable next line
-        [
-            form?.currentForm?.description,
-            form?.currentForm?.editable,
-            form?.currentForm?.anonymous,
-            form?.currentForm?.date,
-            form?.currentForm?.title,
-            form?.currentForm?.editors,
-            form?.currentForm?.multipleResponses,
-            form?.currentForm?.pages,
-        ]
-    )
+    useUpdateForm()
+    useDocumentTitle(form?.currentForm?.title || "Forms by IECSE")
 
     if (loading) {
         return <Loading />
     }
+
     return (
         <div className="edit-form-page">
             <ErrorPopup />
@@ -68,53 +110,7 @@ const EditFormPage: React.FC = () => {
                 <Loading />
             ) : (
                 <div className="edit-form-container">
-                    <div className="edit-form-component">
-                        {!form?.currentForm?.isTemplate && (
-                            <SwitchButton
-                                isActive={form?.currentForm?.isActive}
-                                setIsActive={() => {
-                                    form?.setActive(true)
-                                    form?.setDate(null)
-                                }}
-                                setNotActive={() => {
-                                    form?.setActive(false)
-                                    form?.setDate(new Date())
-                                }}
-                                activeColor={"green"}
-                                inactiveColor={"red"}
-                                activeText={"Active"}
-                                inactiveText={"Closed"}
-                            />
-                        )}
-                        <input
-                            type="text"
-                            className="form-title-editable"
-                            defaultValue={form?.currentForm?.title}
-                            onChange={(e) => form?.setTitle(e.target.value)}
-                        ></input>
-                        {!form?.currentForm?.isTemplate && (
-                            <div className="date-wrapper">
-                                <h3>Closing date :</h3>
-                                <DatePicker
-                                    selected={form?.currentForm?.date}
-                                    showTimeSelect
-                                    dateFormat="MMMM d, yyyy h:mm aa"
-                                    onChange={(date: Date) => {
-                                        form?.setDate(date)
-                                    }}
-                                    placeholderText="dd/mm/yyyy"
-                                />
-                            </div>
-                        )}
-                        <h3>Description:</h3>
-                        <textarea
-                            value={form?.currentForm?.description}
-                            onChange={(e) => {
-                                autoAdjustHeight(e)
-                                form?.setDescription(e.target.value)
-                            }}
-                        ></textarea>
-                    </div>
+                    <FormAttributes form={form} />
                     {!form?.currentForm?.isTemplate && (
                         <div className="radio-checkbox">
                             <input

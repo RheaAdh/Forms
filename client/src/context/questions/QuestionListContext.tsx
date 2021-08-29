@@ -1,9 +1,9 @@
-import React, { ReactElement, useCallback, useContext, useState } from "react"
+import React, { ReactElement, useContext, useState } from "react"
 import {
     addQuestionAction,
-    DeleteQuestion,
+    IDeleteQuestion,
     deleteQuestionAction,
-    UpdateQuestion,
+    IUpdateQuestion,
     updateQuestionAction,
 } from "./QuestionActions"
 import { useMutation, useQueryClient } from "react-query"
@@ -28,7 +28,7 @@ export interface Option {
     key: string
 }
 
-export interface Question {
+export interface IQuestion {
     formId: string
     qid?: string
     pageNo: number
@@ -71,7 +71,7 @@ export interface QuestionActions {
 }
 
 export interface QuestionsList {
-    questions: Question[]
+    questions: IQuestion[]
     questionActions: QuestionActions
     questionError: string | null
 }
@@ -91,9 +91,10 @@ export const useQuestionsList = () => {
 export default function QuestionsListProvider({
     children,
 }: Props): ReactElement {
-    const [questions, setQuestions] = useState<Question[]>([])
+    const [questions, setQuestions] = useState<IQuestion[]>([])
     const [formId, setFormid] = useState<string>()
     const [questionError, setQuestionError] = useState<string | null>(null)
+    let preventUpdate: boolean = false
 
     const queryClient = useQueryClient()
 
@@ -101,19 +102,24 @@ export default function QuestionsListProvider({
         return uuidv4()
     }
 
-    const { mutateAsync: addQuestionMutation } = useMutation((data: Question) =>
-        addQuestionAction({ ...data })
-    )
+    const {
+        mutateAsync: addQuestionMutation,
+    } = useMutation((data: IQuestion) => addQuestionAction({ ...data }))
 
     const {
         mutateAsync: deleteQuestionMutation,
-    } = useMutation((data: DeleteQuestion) => deleteQuestionAction({ ...data }))
+    } = useMutation((data: IDeleteQuestion) =>
+        deleteQuestionAction({ ...data })
+    )
 
     const {
         mutateAsync: updateQuestionMutation,
-    } = useMutation((data: UpdateQuestion) => updateQuestionAction({ ...data }))
+    } = useMutation((data: IUpdateQuestion) =>
+        updateQuestionAction({ ...data })
+    )
 
     const getQuestions = async (formId: string, quesData: any) => {
+        preventUpdate = true
         setFormid(formId)
         setQuestions(
             quesData.map((q: any) => {
@@ -154,6 +160,7 @@ export default function QuestionsListProvider({
                 }
             })
         )
+        preventUpdate = false
     }
     const addQuestion = (
         after: number,
@@ -162,7 +169,7 @@ export default function QuestionsListProvider({
     ) => {
         if (!formId) return
         const newQuestion = {
-            questionText: isPageHeader ? " " : "Question",
+            questionText: isPageHeader ? "" : "Question",
             questionType: isPageHeader ? "page-header" : "short-answer",
             required: false,
             formId,
@@ -263,7 +270,7 @@ export default function QuestionsListProvider({
         if (q?.cols) {
             q.cols = q.cols.filter((r, ix: number) => ix !== i)
             const newQuestions = questions.slice()
-            newQuestions[idx] = {} as Question
+            newQuestions[idx] = {} as IQuestion
             setQuestions(newQuestions)
             newQuestions[idx] = q
             setQuestions(newQuestions)
@@ -389,7 +396,7 @@ export default function QuestionsListProvider({
         // during this  breif period where id is set to uuid, if any
         // changes are made to question id, they won't be saved
         // but error is not displayed
-        if (qid?.length !== 24) {
+        if (qid?.length !== 24 || preventUpdate) {
             return
         }
         const question = questions.find((question) => question.qid === qid)

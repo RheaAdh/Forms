@@ -24,7 +24,9 @@ declare module "express-session" {
 }
 export const submitResponse = async (req: Request, res: Response) => {
     console.log("POST REQUEST WAS MADE for submit response")
-    let { username, userid, formId, responses, sendMail } = req.body
+    let { formId, responses, sendMail, submitted, mailHTML } = req.body
+    const username = req.session.username as string
+    const userid = req.session.userId
     let form: any = await Form.findOne({ _id: formId })
     console.log(form)
     console.log("Send Mail boolean is " + sendMail)
@@ -60,16 +62,18 @@ export const submitResponse = async (req: Request, res: Response) => {
                     userid,
                     formId,
                     responses,
+                    submitted,
                 })
+                console.log(responses)
                 newresp = await formResponse.save()
                 console.log("Response added!")
-                if (sendMail) emailResponse(newresp, req.session)
+                if (sendMail && submitted) emailResponse(mailHTML, req.session)
                 res.send({ success: true, data: "Response submitted" })
             } catch (error) {
                 console.log(error)
                 res.status(500).send({ success: false, data: "Server Error" })
             }
-        } else if (form.isEditable) {
+        } else if (form.isEditable || response.submitted === false) {
             //When form has a submission and editing is allowed
             try {
                 let newresp = await FormResponse.findOneAndUpdate(
@@ -83,13 +87,14 @@ export const submitResponse = async (req: Request, res: Response) => {
                             userid,
                             formId,
                             responses,
+                            submitted,
                         },
                     }
                 )
                 console.log("RESP is ")
                 console.log(newresp)
                 console.log("Response Updated when editing was allowed")
-                if (sendMail) emailResponse(newresp, req.session)
+                if (sendMail && submitted) emailResponse(mailHTML, req.session)
                 res.send({ success: true, data: "Response Updated" })
             } catch (err) {
                 console.log(err)
@@ -108,6 +113,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                         userid,
                         formId,
                         responses,
+                        submitted,
                     })
                     newresp = await formResponse.save()
                     console.log("Response added!")
@@ -115,7 +121,8 @@ export const submitResponse = async (req: Request, res: Response) => {
                         success: true,
                         data: "Response submitted ",
                     })
-                    if (sendMail) emailResponse(newresp, req.session)
+                    if (sendMail && submitted)
+                        emailResponse(mailHTML, req.session)
                 } else {
                     //Multiple Response in non-anonymous forms with a limit in form submission per user
                     let responseCount = await FormResponse.find({
@@ -140,7 +147,8 @@ export const submitResponse = async (req: Request, res: Response) => {
                             data: "Response submitted ",
                         })
 
-                        if (sendMail) emailResponse(newresp, req.session)
+                        if (sendMail && submitted)
+                            emailResponse(mailHTML, req.session)
                     } else {
                         console.log("Response Limit Reached")
                         return res.status(400).send({
@@ -154,7 +162,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                 res.status(500).send({ success: false, data: "Server Error" })
             }
         } //when form has submission but neither edit is allowed nor multiple responses
-        else {
+        else if (response?.submitted) {
             console.log(
                 "Form is noneditable and multiple responses are also not allowed"
             )
@@ -397,6 +405,7 @@ export const getResponseIdByFormFilled = async (
         let responses: any
         responses = await FormResponse.find({
             formId: formId,
+            submitted: true,
         })
             .populate("userid", { password: 0 })
             .populate("formId ")
@@ -576,7 +585,6 @@ export const getResponseByBothFormidAndResponseid = async (
 async function emailResponse(resp: any, receiver: any) {
     try {
         console.log("inside mailer")
-        const output = `<p>Hello ${receiver.username}</p>Link to your recently submitted form response:<a href="http://localhost:3000/response/${resp.id}">http://localhost:3000/response/${resp.id}</a><p>Regards,<br>IECSE</p>`
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
@@ -597,7 +605,7 @@ async function emailResponse(resp: any, receiver: any) {
                 to: `${receiver.email}`, // list of receivers
                 subject: "Form Response", // Subject line
                 text: "Your Response to recently filled form", // plain text body
-                html: output, // html body
+                html: resp, // html body
             })
             console.log("info is " + info)
             console.log("Message sent: %s", info.messageId)

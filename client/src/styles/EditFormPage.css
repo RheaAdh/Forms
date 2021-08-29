@@ -17,6 +17,7 @@
     position: relative;
     left: 15vw;
     z-index: 3;
+    scroll-behavior: smooth;
 }
 
 .edit-form-component {
@@ -24,37 +25,45 @@
     background: rgba(190, 190, 190, 0.1);
     backdrop-filter: saturate(180%) blur(25px);
     border-radius: 1em;
-    width: 65vw;
+    width: 80%;
     padding: 1em 2em;
     margin: 2em 0;
     z-index: 4;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-.edit-form-component textarea,
-.edit-form-component h3,
-.edit-form-component .form-title-editable {
-    margin: 0;
-    margin-bottom: var(--marginTop);
+.edit-form-component > .row1 {
     position: relative;
+    height: 1.5rem;
+}
+
+.edit-form-component > .row1 .switch-slider {
+    position: absolute;
+    right: 10%;
+}
+
+.edit-form-component > .row1 .switch-btn {
+    position: absolute;
+}
+
+.edit-form-component > .row2 {
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-form-component > .row2 input[type="text"] {
+    margin: 0;
+}
+
+.edit-form-component > .row3 > textarea {
+    margin: 0;
 }
 
 .form-title-editable {
     font-size: 1.5rem;
     font-weight: 500;
-}
-
-.date-wrapper {
-    position: absolute;
-    right: 0;
-    top: 4rem;
-}
-.date-wrapper h3 {
-    margin: 0;
-    position: relative;
-    left: 0.5em;
-}
-.date-wrapper input[type="text"] {
-    margin: 0.5em 1em 0.5em 0.5em;
 }
 
 .switch-btn .icon-info {

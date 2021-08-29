@@ -3,6 +3,7 @@ import "../../styles/Login.css"
 import useFormState from "../../hooks/useFormState"
 import { Redirect } from "react-router"
 import { useParams } from "react-router-dom"
+import { post } from "../../utils/requests"
 
 const ResetPassword: React.FC = () => {
     const [password, handlePassword] = useFormState(null)
@@ -12,17 +13,16 @@ const ResetPassword: React.FC = () => {
 
     const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        const resp = await fetch(`/resetpassword/${token}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                newPassword: password,
-                newConfirmPassword: confirmPassword,
-            }),
-        })
-        const data = await resp.json()
+        const data = await (
+            await post(
+                `/resetpassword/${token}`,
+                {
+                    newPassword: password,
+                    newConfirmPassword: confirmPassword,
+                },
+                false
+            )
+        ).json()
         if (data.success) {
             setSuccessfulReset(true)
         } else {

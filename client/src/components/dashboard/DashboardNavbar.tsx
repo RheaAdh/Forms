@@ -1,15 +1,15 @@
 import React, { useState } from "react"
 import { useHistory } from "react-router"
 import { useAuth } from "../../context/auth/AuthContext"
-import { CurrentForm } from "../../context/form/CurrentFormContext"
+import { ICurrentForm } from "../../context/form/CurrentFormContext"
 import { ReactComponent as ProfileIcon } from "../../images/ProfileIcon.svg"
 import "../../styles/AdminNavbar.css"
 import "../../styles/DashboardNavbar.css"
 
 interface props {
-    allForms: CurrentForm[] | undefined
+    allForms: ICurrentForm[] | undefined
     setSearchList: React.Dispatch<
-        React.SetStateAction<CurrentForm[] | undefined>
+        React.SetStateAction<ICurrentForm[] | undefined>
     >
 }
 
@@ -20,7 +20,7 @@ const DashboardNavbar: React.FC<props> = ({ allForms, setSearchList }) => {
     const produceResults = (searchString: string) => {
         setSearchList(
             allForms?.filter(
-                (form: CurrentForm) =>
+                (form: ICurrentForm) =>
                     form.title?.toLowerCase().search(searchString) !== -1
             )
         )

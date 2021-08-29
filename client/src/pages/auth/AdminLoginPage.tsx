@@ -16,7 +16,12 @@ const AdminLoginPage: React.FC = () => {
 
     useEffect(() => {
         if (auth?.currentUser === null) {
-            auth.getCurrentUser().then(setLoading(false))
+            auth.getCurrentUser()
+                .then((data) => setLoading(false))
+                .catch((error) => {
+                    setLoading(false)
+                    console.log(error.message)
+                })
         }
     }, [])
 

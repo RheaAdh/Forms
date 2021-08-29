@@ -1,12 +1,12 @@
 .question-container {
-    width: 80vw;
+    width: 100%;
     display: flex;
     left: 0;
 }
 
 .question-component-primary {
     padding: 1em;
-    width: 65vw;
+    width: 80%;
     margin: 2em 1.5em 2em 0;
     display: flex;
     flex-direction: column;

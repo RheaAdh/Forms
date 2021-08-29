@@ -2,28 +2,152 @@ import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import QuestionResponse from "../../components/shared/QuestionResponse"
 import { useAuth } from "../../context/auth/AuthContext"
-import { useCurrentForm } from "../../context/form/CurrentFormContext"
-import getQuestionsAndResponses, {
+import { IForm, useCurrentForm } from "../../context/form/CurrentFormContext"
+import {
+    getQuestionsAndResponses,
     getByResponseId,
     getForm,
 } from "../../context/form/FormActions"
-import { useResponses, user } from "../../context/responses/ResponseListContext"
 import {
-    Question,
+    useResponses,
+    IUser,
+    IResponseList,
+} from "../../context/responses/ResponseListContext"
+import {
+    IQuestion,
     useQuestionsList,
 } from "../../context/questions/QuestionListContext"
 import "../../styles/DisplayForm.css"
 import AdminNavbar from "../../components/admin/AdminNavbar"
 import { ReactComponent as DropdownArrow } from "../../images/DropdownArrow.svg"
 import Loading from "../../components/shared/Loading"
+import SwitchButton from "../../components/shared/SwitchButton"
+import useDocumentTitle from "../../hooks/useDocumentTitle"
 
-const FormForAllResponses = () => {
+interface ResponsesComponentProps {
+    currentUser: IUser | null
+    setCurrentUser: (newUser: IUser) => void
+    responseList: IResponseList
+}
+// Users list component (for non anonymous responses)
+const UserResponsesDropdown = ({
+    currentUser,
+    setCurrentUser,
+    responseList,
+}: ResponsesComponentProps) => {
+    return (
+        <div className="select">
+            <select
+                value={`${currentUser?.email}`}
+                onChange={(e) => {
+                    const newUser = responseList?.users?.find(
+                        (user) => user.email === e.target?.value
+                    )
+                    if (newUser !== undefined) setCurrentUser(newUser)
+                }}
+            >
+                {responseList?.users?.map((usr: IUser, i: number) => {
+                    return (
+                        <option key={i} value={usr.email}>
+                            {`${usr.username} ${usr.email}`}
+                        </option>
+                    )
+                })}
+            </select>
+            <span className="select-arrow">
+                {" "}
+                <DropdownArrow />{" "}
+            </span>
+        </div>
+    )
+}
+// Responses list component for anonymous responses
+const AnonymousResponses = ({
+    currentUser,
+    setCurrentUser,
+    responseList,
+}: ResponsesComponentProps) => {
+    return (
+        <div className="anonymous-responses-box">
+            <button
+                onClick={() =>
+                    currentUser &&
+                    setCurrentUser(
+                        responseList.responseActions.findPreviousUser(
+                            currentUser
+                        )
+                    )
+                }
+            >
+                {`<--`}
+            </button>
+            {`Response ${
+                (responseList?.users?.findIndex(
+                    (usr) => usr.responseid === currentUser?.responseid
+                )
+                    ? responseList?.users?.findIndex(
+                          (usr) => usr.responseid === currentUser?.responseid
+                      )
+                    : 0) + 1
+            } of ${responseList?.users?.length}`}
+            <button
+                onClick={() =>
+                    currentUser &&
+                    setCurrentUser(
+                        responseList.responseActions.findNextUser(currentUser)
+                    )
+                }
+            >
+                {`-->`}
+            </button>
+        </div>
+    )
+}
+
+interface ResponseDetailsProps {
+    form: IForm | null
+    responseList: IResponseList | null
+}
+
+const ResponseDetails = ({ form, responseList }: ResponseDetailsProps) => {
+    return (
+        <div className="edit-form-component">
+            {!form?.currentForm?.isTemplate && (
+                <div className="row1">
+                    <SwitchButton
+                        isActive={form?.currentForm?.isActive}
+                        setIsActive={() => {
+                            form?.setActive(true)
+                            form?.setDate(null)
+                        }}
+                        setNotActive={() => {
+                            form?.setActive(false)
+                            form?.setDate(new Date())
+                        }}
+                        activeColor={"green"}
+                        inactiveColor={"red"}
+                        activeText={"Active"}
+                        inactiveText={"Closed"}
+                    />
+                </div>
+            )}
+            <div className="row2">
+                <h2>{`${responseList?.users?.length} responses`}</h2>
+            </div>
+            <div className="row3">
+                <p>{form?.currentForm?.description}</p>
+            </div>
+        </div>
+    )
+}
+// Main Component
+export default () => {
     const auth = useAuth()
     const form = useCurrentForm()
     const responseList = useResponses()
     const questions = useQuestionsList()
 
-    const [currentUser, setCurrentUser] = useState<user | null>(null)
+    const [currentUser, setCurrentUser] = useState<IUser | null>(null)
     const [loading, setLoading] = useState<boolean>(true)
     const [responseLoading, setResponseLoading] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
@@ -43,10 +167,9 @@ const FormForAllResponses = () => {
                         form?.setFormDetails(formId, data.data)
                     }
                 })
-
                 .catch((err) => console.log(err))
             // fetch all pages in case of admin access, so current page is -1
-            getQuestionsAndResponses(formId, true, -1).then((data) => {
+            getQuestionsAndResponses(formId, true).then((data) => {
                 if (data.status >= 400) {
                     return
                 }
@@ -66,7 +189,7 @@ const FormForAllResponses = () => {
     }, [formId, auth?.currentUser])
 
     useEffect(() => {
-        // Get list of all users and corresponding response IDs for current form
+        // Get list of all users and corresponding response IDs who filled current form
         // This is for /responses/:formId page
         if (responseList?.formId?.length) {
             responseList?.responseActions?.getUsers().then((data) => {
@@ -100,6 +223,8 @@ const FormForAllResponses = () => {
         }
     }, [currentUser])
 
+    useDocumentTitle(form?.currentForm?.title || "Forms By IECSE")
+
     if (loading) {
         return <Loading />
     }
@@ -115,120 +240,31 @@ const FormForAllResponses = () => {
                 <div>
                     {!form?.currentForm?.anonymous &&
                     responseList?.users?.length ? (
-                        <div className="select">
-                            <select
-                                value={`${currentUser?.email}`}
-                                onChange={(e) => {
-                                    e.persist()
-                                    setCurrentUser((prevUser) => {
-                                        const newUser = responseList?.users?.find(
-                                            (user) =>
-                                                user.email === e.target?.value
-                                        )
-                                        return newUser === undefined
-                                            ? prevUser
-                                            : newUser
-                                    })
-                                }}
-                            >
-                                {responseList?.users.map(
-                                    (usr: user, i: number) => {
-                                        return (
-                                            <option key={i} value={usr.email}>
-                                                {`${usr.username} ${usr.email}`}
-                                            </option>
-                                        )
-                                    }
-                                )}
-                            </select>
-                            <span className="select-arrow">
-                                {" "}
-                                <DropdownArrow />{" "}
-                            </span>
-                        </div>
+                        <UserResponsesDropdown
+                            currentUser={currentUser}
+                            setCurrentUser={(newUser: IUser) =>
+                                setCurrentUser(newUser)
+                            }
+                            responseList={responseList}
+                        />
                     ) : form?.currentForm?.anonymous &&
                       responseList?.users?.length &&
                       currentUser !== null ? (
-                        <div className="anonymous-responses-box">
-                            <button
-                                onClick={() =>
-                                    setCurrentUser(
-                                        responseList.responseActions.findPreviousUser(
-                                            currentUser
-                                        )
-                                    )
-                                }
-                            >
-                                {`<--`}
-                            </button>
-                            {`Response ${
-                                responseList?.users?.findIndex(
-                                    (usr) =>
-                                        usr.responseid ===
-                                        currentUser?.responseid
-                                ) + 1
-                            } of ${responseList?.users?.length}`}
-                            <button
-                                onClick={() =>
-                                    setCurrentUser(
-                                        responseList.responseActions.findNextUser(
-                                            currentUser
-                                        )
-                                    )
-                                }
-                            >
-                                {`-->`}
-                            </button>
-                        </div>
+                        <AnonymousResponses
+                            currentUser={currentUser}
+                            setCurrentUser={() => setCurrentUser}
+                            responseList={responseList}
+                        />
                     ) : null}
                 </div>
-                <div className="display-form-component form-header">
-                    {!form?.currentForm?.isTemplate && (
-                        <div
-                            className="switch-slider"
-                            style={
-                                form?.currentForm?.isActive
-                                    ? { backgroundColor: "green" }
-                                    : { backgroundColor: "red" }
-                            }
-                        >
-                            <button
-                                className="switch-btn"
-                                style={
-                                    form?.currentForm?.isActive
-                                        ? { right: "0" }
-                                        : { left: "0" }
-                                }
-                                onClick={() => {
-                                    if (form?.currentForm?.isActive) {
-                                        form?.setDate(new Date())
-                                    } else {
-                                        form?.setDate(null)
-                                    }
-                                    form?.setActive(
-                                        !form?.currentForm?.isActive
-                                    )
-                                }}
-                            >
-                                <span className="icon-info">
-                                    {form?.currentForm?.isActive
-                                        ? "Active"
-                                        : "Closed"}
-                                </span>
-                                <span className="text-info-arrow" />
-                            </button>
-                        </div>
-                    )}
-                    <h2>{`${responseList?.users?.length} responses`}</h2>
-                    <p>{form?.currentForm?.description}</p>
-                </div>
+                <ResponseDetails form={form} responseList={responseList} />
                 {!responseLoading &&
-                    questions?.questions?.map((q: Question, idx: number) => {
+                    responseList?.users?.length !== 0 &&
+                    questions?.questions?.map((q: IQuestion, idx: number) => {
                         return (
                             <QuestionResponse
                                 question={q}
                                 prevResponse={responseList?.responses?.[idx]}
-                                index={idx}
                                 key={q.qid}
                             />
                         )
@@ -237,5 +273,3 @@ const FormForAllResponses = () => {
         </div>
     )
 }
-
-export default FormForAllResponses

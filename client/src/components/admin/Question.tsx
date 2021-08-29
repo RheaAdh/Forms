@@ -9,8 +9,9 @@ import { ReactComponent as DeleteIcon } from "../../images/DeleteIcon.svg"
 import { ReactComponent as DropdownArrow } from "../../images/DropdownArrow.svg"
 import { ReactComponent as AddQuestionIcon } from "../../images/AddQuestionIcon.svg"
 import { ReactComponent as NewPageIcon } from "../../images/NewPageIcon.svg"
-import autoAdjustHeight from "../../util"
+import autoAdjustHeight from "../../utils/util"
 import { useCurrentForm } from "../../context/form/CurrentFormContext"
+import useScrollDown from "../../hooks/useScrollDown"
 
 interface props {
     question: any
@@ -23,7 +24,7 @@ const Question: React.FC<props> = ({ question, index }) => {
         question ? questionTypes.indexOf(question["questionType"]) : 0
     )
     const form = useCurrentForm()
-    //CALL UPDATE QUESTION EVERY TIME QUESTIONS TITLE CHANGES
+    const setNewQuestionIndex = useScrollDown()
 
     useEffect(() => {
         questions?.questionActions?.updateQuestion(question.qid)
@@ -518,6 +519,7 @@ const Question: React.FC<props> = ({ question, index }) => {
                                 question.pageNo,
                                 false
                             )
+                            setNewQuestionIndex(-1)
                         }}
                     >
                         <AddQuestionIcon />

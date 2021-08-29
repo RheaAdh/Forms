@@ -21,11 +21,13 @@
     width: 100%;
 }
 
-.navbar-row1 h2 {
-    height: 4rem;
+.navbar-row1 > input[type="text"] {
+    height: 1.5rem;
+    font-size: 1.5rem;
     position: absolute;
     left: 0;
     margin: 0rem 0.5em;
+    width: 35%;
 }
 
 .navbar-btn {

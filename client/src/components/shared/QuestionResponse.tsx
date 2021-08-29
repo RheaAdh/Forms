@@ -1,23 +1,18 @@
 import React, { useEffect, useState } from "react"
-import autoAdjustHeight from "../../util"
-import { Option, Question } from "../../context/questions/QuestionListContext"
+import autoAdjustHeight from "../../utils/util"
+import { Option, IQuestion } from "../../context/questions/QuestionListContext"
 import {
-    Response,
+    IResponse,
     useResponses,
 } from "../../context/responses/ResponseListContext"
 import { ReactComponent as DropdownArrow } from "../../images/DropdownArrow.svg"
 
 interface props {
-    question: Question
-    index: number
-    prevResponse?: Response
+    question: IQuestion
+    prevResponse?: IResponse
 }
 
-const QuestionResponse: React.FC<props> = ({
-    question,
-    prevResponse,
-    index,
-}) => {
+const QuestionResponse: React.FC<props> = ({ question, prevResponse }) => {
     const typeToIdx = [
         "short-answer",
         "paragraph-answer",
@@ -68,8 +63,9 @@ const QuestionResponse: React.FC<props> = ({
                 shortText: e?.target.value,
                 canSubmit: submit,
                 formId: question.formId,
+                canSave: true,
             }
-            responseList?.responseActions?.updateResponse(index, answer)
+            responseList?.responseActions?.updateResponse(question.qid, answer)
         }
     }
     const handleParagraphAnswer = (e: any) => {
@@ -85,8 +81,12 @@ const QuestionResponse: React.FC<props> = ({
             formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
+            canSave: true,
         }
-        responseList?.responseActions?.updateResponse(index, answer)
+        responseList?.responseActions?.updateResponse(
+            question?.qid || "",
+            answer
+        )
     }
     const handleMcq = (e: any, option: Option) => {
         var submit: boolean = !question.required
@@ -97,8 +97,12 @@ const QuestionResponse: React.FC<props> = ({
             formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
+            canSave: true,
         }
-        responseList?.responseActions?.updateResponse(index, answer)
+        responseList?.responseActions?.updateResponse(
+            question?.qid || "",
+            answer
+        )
     }
 
     const handleCheckbox = (e: any, option: Option) => {
@@ -121,8 +125,12 @@ const QuestionResponse: React.FC<props> = ({
             formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
+            canSave: true,
         }
-        responseList?.responseActions?.updateResponse(index, answer)
+        responseList?.responseActions?.updateResponse(
+            question?.qid || "",
+            answer
+        )
     }
 
     const handleDropdown = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -133,11 +141,15 @@ const QuestionResponse: React.FC<props> = ({
             formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
+            canSave: true,
         }
         if (question["required"]) {
             submit = true
         }
-        responseList?.responseActions?.updateResponse(index, answer)
+        responseList?.responseActions?.updateResponse(
+            question?.qid || "",
+            answer
+        )
     }
 
     const handleEmail = (e: any) => {
@@ -159,8 +171,12 @@ const QuestionResponse: React.FC<props> = ({
             formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
+            canSave: submit,
         }
-        responseList?.responseActions?.updateResponse(index, answer)
+        responseList?.responseActions?.updateResponse(
+            question?.qid || "",
+            answer
+        )
     }
 
     const handleMcqGrid = (row: string, col: string) => {
@@ -186,8 +202,12 @@ const QuestionResponse: React.FC<props> = ({
             formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
+            canSave: true,
         }
-        responseList?.responseActions?.updateResponse(index, answer)
+        responseList?.responseActions?.updateResponse(
+            question?.qid || "",
+            answer
+        )
     }
     const handleCheckboxGrid = (e: any, row: string, col: string) => {
         if (prevResponse?.selectedOptionsGrid === undefined) return
@@ -218,8 +238,13 @@ const QuestionResponse: React.FC<props> = ({
             formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
+            canSave: true,
         }
-        responseList?.responseActions?.updateResponse(index, answer)
+        console.log()
+        responseList?.responseActions?.updateResponse(
+            question?.qid || "",
+            answer
+        )
     }
     const handleLinearScale = (num: string) => {
         var submit: boolean = !question.required
@@ -232,8 +257,12 @@ const QuestionResponse: React.FC<props> = ({
             formId: question.formId,
             canSubmit: submit,
             questionId: question.qid ? question.qid : "",
+            canSave: true,
         }
-        responseList?.responseActions?.updateResponse(index, answer)
+        responseList?.responseActions?.updateResponse(
+            question?.qid || "",
+            answer
+        )
     }
 
     const types = [
@@ -315,7 +344,6 @@ const QuestionResponse: React.FC<props> = ({
                                 </>
                             )}
                             <span className="styled-radio"></span>
-
                             <label htmlFor={option.text + question.qid}>
                                 {option.text}
                             </label>
@@ -660,17 +688,28 @@ const QuestionResponse: React.FC<props> = ({
         </div>,
     ]
     return (
-        <div className="display-form-component">
-            {question.questionType === "page-header" ? (
-                <h2>{question.questionText}</h2>
-            ) : (
-                <b style={{ display: "inline" }}>{question.questionText}</b>
-            )}
-            {question["required"] ? (
-                <span style={{ color: "red", fontSize: "1.5em" }}>*</span>
+        <>
+            {(question?.questionType === "page-header" &&
+                (question?.questionText?.length ||
+                    question?.description?.length)) ||
+            question?.questionType !== "page-header" ? (
+                <div className="display-form-component">
+                    {question.questionType === "page-header" ? (
+                        <h2>{question.questionText}</h2>
+                    ) : (
+                        <b style={{ display: "inline" }}>
+                            {question.questionText}
+                        </b>
+                    )}
+                    {question["required"] ? (
+                        <span style={{ color: "red", fontSize: "1.5em" }}>
+                            *
+                        </span>
+                    ) : null}
+                    {types[typeToIdx.indexOf(question["questionType"])]}
+                </div>
             ) : null}
-            {types[typeToIdx.indexOf(question["questionType"])]}
-        </div>
+        </>
     )
 }
 

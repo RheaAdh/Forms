@@ -1,20 +1,60 @@
 import React, { useEffect, useState } from "react"
+import { renderToString } from "react-dom/server"
 import { Redirect, useParams } from "react-router"
-import getQuestionsAndResponses, {
+import {
+    getQuestionsAndResponses,
     getForm,
 } from "../../context/form/FormActions"
-import { useAuth } from "../../context/auth/AuthContext"
-import { useCurrentForm } from "../../context/form/CurrentFormContext"
+import { IAuth, useAuth } from "../../context/auth/AuthContext"
+import { IForm, useCurrentForm } from "../../context/form/CurrentFormContext"
 import {
-    Question,
+    IQuestion,
     useQuestionsList,
 } from "../../context/questions/QuestionListContext"
 import { useResponses } from "../../context/responses/ResponseListContext"
 import QuestionResponse from "../../components/shared/QuestionResponse"
 import "../../styles/DisplayForm.css"
 import Loading from "../../components/shared/Loading"
+import FormForUserResponseOnly from "./FormForUserResponseOnly"
+import useDocumentTitle from "../../hooks/useDocumentTitle"
 
-const FormForUser = () => {
+interface ThankYouPageProps {
+    form: IForm | null
+    auth: IAuth | null
+}
+
+const ThankYouPage = ({ auth, form }: ThankYouPageProps) => {
+    const formId = form?.currentForm?.id
+
+    return (
+        <div className="display-form-page">
+            <b>Your response has been submitted!</b>
+            {/* if form is accepting multiple */}
+            {form?.currentForm?.anonymous ? (
+                <a href={`/form/${formId}`}>Submit another response?</a>
+            ) : (
+                <div>We accept only 1 response per user</div>
+            )}
+            {form?.currentForm?.editable ? (
+                <a href={`/form/${formId}`}>Edit form?</a>
+            ) : (
+                <div>You cannot edit this form</div>
+            )}
+            {!form?.currentForm?.anonymous && (
+                <button
+                    onClick={() => {
+                        auth?.logout()
+                        window.location.reload()
+                    }}
+                >
+                    Logout
+                </button>
+            )}
+        </div>
+    )
+}
+
+export default () => {
     const auth = useAuth()
     const form = useCurrentForm()
     const responseList = useResponses()
@@ -43,51 +83,68 @@ const FormForUser = () => {
     }, [formId])
 
     useEffect(() => {
-        if (formId && form?.currentForm?.anonymous !== undefined) {
+        if (formId) {
             // Either this is an anonymous form or user is logged in
-
-            if (
-                form?.currentForm?.anonymous === true ||
-                (auth?.currentUser && auth.currentUser.role !== "x")
-            ) {
-                getForm(formId, false)
-                    .then((data) => {
-                        if (data.success) {
-                            form?.setFormDetails(formId, data.data)
-                        } else {
-                            setError(data.msg)
-                        }
-                    })
-                    .catch((err) => console.log(err))
-                getQuestionsAndResponses(formId, false, currentPageNo).then(
-                    (data) => {
-                        if (data.status >= 400) {
-                            return
-                        }
-                        questions?.questionActions?.getQuestions(
-                            formId,
-                            data.ques
-                        )
-                        if (data.prevResponse === null) {
-                            data.prevResponse = {
-                                responses: [],
-                                questions: data.ques,
-                                userid: auth?.currentUser?.userid,
-                                username: auth?.currentUser?.username,
-                            }
-                        }
-                        responseList?.responseActions?.getResponse(
-                            formId,
-                            data.prevResponse,
-                            data.ques.map((q: any) => q.required),
-                            false
-                        )
-                        setLoading(false)
+            getForm(formId, false)
+                .then((data) => {
+                    if (data.success) {
+                        form?.setFormDetails(formId, data.data)
+                    } else {
+                        setError(data.msg)
                     }
+                })
+                .catch((err) => console.log(err))
+            getQuestionsAndResponses(formId, false).then((data) => {
+                if (data.status >= 400) {
+                    return
+                }
+                questions?.questionActions?.getQuestions(formId, data.ques)
+                if (data.prevResponse === null) {
+                    data.prevResponse = {
+                        responses: [],
+                        questions: data.ques,
+                        userid: auth?.currentUser?.userid,
+                        username: auth?.currentUser?.username,
+                    }
+                }
+                responseList?.responseActions?.getResponse(
+                    formId,
+                    data.prevResponse,
+                    data.ques.map((q: any) => q.required),
+                    false
                 )
-            }
+                setLoading(false)
+            })
         }
-    }, [formId, auth?.currentUser, form?.currentForm?.anonymous, currentPageNo])
+    }, [formId])
+
+    useDocumentTitle(form?.currentForm?.title || "Forms By IECSE")
+
+    const handleSubmit = () => {
+        if (
+            form?.currentForm?.pages !== undefined &&
+            currentPageNo < form?.currentForm?.pages
+        ) {
+            setCurrentPageNo((pg) => pg + 1)
+        } else {
+            let element = (
+                <FormForUserResponseOnly
+                    questions={questions?.questions || null}
+                    prevResponses={responseList?.responses || null}
+                    form={form?.currentForm || null}
+                />
+            )
+            responseList?.responseActions
+                ?.submit(sendMail, true, renderToString(element))
+                .then((data) => {
+                    if (data.success) {
+                        setThankYou(true)
+                    } else {
+                        // HANDLE ERROR
+                    }
+                })
+        }
+    }
 
     // If not an anonymous form and user hasn't logged in
     if (
@@ -106,45 +163,7 @@ const FormForUser = () => {
     }
 
     if (thankYou) {
-        return (
-            <div className="display-form-page">
-                <b>Your response has been submitted!</b>
-                {/* if form is accepting multiple */}
-                {form?.currentForm?.anonymous ? (
-                    <button
-                        onClick={() => {
-                            setLoading(true)
-                            responseList?.responseActions?.clearResponse(
-                                questions?.questions ? questions.questions : []
-                            )
-                            setTimeout(() => {
-                                setLoading(false)
-                                setThankYou(false)
-                            }, 10)
-                        }}
-                    >
-                        Submit another response?
-                    </button>
-                ) : (
-                    <div>We accept only 1 response per user</div>
-                )}
-                {form?.currentForm?.editable ? (
-                    <a href={`/form/${formId}`}>Edit form?</a>
-                ) : (
-                    <div>You cannot edit this form</div>
-                )}
-                {!form?.currentForm?.anonymous && (
-                    <button
-                        onClick={() => {
-                            auth?.logout()
-                            window.location.reload()
-                        }}
-                    >
-                        Logout
-                    </button>
-                )}
-            </div>
-        )
+        return <ThankYouPage form={form} auth={auth} />
     }
 
     return (
@@ -156,20 +175,19 @@ const FormForUser = () => {
                 </div>
                 {questions?.questions
                     ?.filter((question) => question.pageNo === currentPageNo)
-                    .map((q: Question, idx: number) => {
+                    .map((q: IQuestion, idx: number) => {
                         return (
                             <QuestionResponse
                                 question={q}
                                 prevResponse={responseList?.responses?.find(
                                     (resp) => resp.questionId === q.qid
                                 )}
-                                index={idx}
                                 key={q.qid}
                             />
                         )
                     })}
                 {responseList?.submitError && (
-                    <b style={{ color: "red" }}>{responseList?.submitError}</b>
+                    <b style={{ color: "red" }}>{responseList.submitError}</b>
                 )}
                 {
                     // Previous page button
@@ -179,18 +197,22 @@ const FormForUser = () => {
                         className="form-submit-btn"
                         onClick={() => setCurrentPageNo((pg) => pg - 1)}
                     >
-                        Previous Page
+                        Back
                     </button>
                 )}
                 {
                     //Save button
                 }
 
-                {!form?.currentForm?.anonymous && (
+                {!form?.currentForm?.anonymous && !responseList?.submitted && (
                     <button
                         className="form-submit-btn"
                         onClick={() =>
-                            responseList?.responseActions?.submit(false, false)
+                            responseList?.responseActions?.submit(
+                                false,
+                                false,
+                                null
+                            )
                         }
                     >
                         Save
@@ -200,31 +222,7 @@ const FormForUser = () => {
                     // Submit / next page button
                 }
                 {
-                    <button
-                        className="form-submit-btn"
-                        onClick={() => {
-                            if (
-                                form?.currentForm?.pages !== undefined &&
-                                currentPageNo < form?.currentForm?.pages
-                            ) {
-                                responseList?.responseActions?.submit(
-                                    false,
-                                    false
-                                )
-                                setCurrentPageNo((pg) => pg + 1)
-                            } else {
-                                responseList?.responseActions
-                                    ?.submit(sendMail, true)
-                                    .then((data) => {
-                                        if (data.success) {
-                                            setThankYou(true)
-                                        } else {
-                                            // HANDLE ERROR
-                                        }
-                                    })
-                            }
-                        }}
-                    >
+                    <button className="form-submit-btn" onClick={handleSubmit}>
                         {currentPageNo === form?.currentForm?.pages
                             ? "Submit"
                             : "Next"}
@@ -238,15 +236,14 @@ const FormForUser = () => {
                             onChange={() => setSendMail(!sendMail)}
                             id="email-response-btn"
                         ></input>
-                        <span className="styled-radio"> </span>
+                        <span className="styled-checkbox"> </span>
                         <label htmlFor="email-response-btn">
-                            Send me a mail of my response
+                            Mail me my response
                         </label>
+                        <span className="checkbox-tick"></span>
                     </div>
                 )}
             </div>
         </div>
     )
 }
-
-export default FormForUser

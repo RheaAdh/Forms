@@ -162,20 +162,20 @@ textarea:active {
     width: 1em;
     height: 1em;
     border-radius: 50%;
-    border: 1px solid var(--borderBottom);
+    border: 2px solid var(--borderBottom);
 }
 
 .radio-checkbox .styled-checkbox {
     display: block;
     width: 1em;
     height: 1em;
-    border: 1px solid var(--borderBottom);
+    border: 2px solid var(--borderBottom);
 }
 
 .radio-checkbox .checkbox-tick {
     position: absolute;
     height: 0.5em;
-    width: 0.9em;
+    width: 0.85em;
     transform: rotate(-45deg) translateX(0.1em);
     border-bottom: 2px solid var(--fontColor);
     border-left: 2px solid var(--fontColor);
@@ -313,19 +313,15 @@ option:hover {
 }
 
 .switch-slider {
-    height: 2em;
-    width: 4em;
-    border-radius: 1em;
-    position: relative;
-    left: 90%;
+    height: 1.5em;
+    width: 2.5em;
+    border-radius: 0.75em;
 }
 
 .switch-btn {
-    position: absolute;
-    right: 0;
     background-color: #fff;
-    width: 2em;
-    height: 2em;
+    width: 1.5em;
+    height: 1.5em;
     border-radius: 50%;
     transition: 500ms;
     cursor: pointer;

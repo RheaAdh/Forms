@@ -1,87 +1,60 @@
-import React, { useEffect, useState } from "react"
-import { useParams } from "react-router"
-import { getByResponseIdPublic } from "../../context/form/FormActions"
-import { useAuth } from "../../context/auth/AuthContext"
-import { useCurrentForm } from "../../context/form/CurrentFormContext"
-import {
-    Question,
-    useQuestionsList,
-} from "../../context/questions/QuestionListContext"
-import { useResponses } from "../../context/responses/ResponseListContext"
-import QuestionResponse from "../../components/shared/QuestionResponse"
+import React from "react"
+import QuestionResponseForMail from "../../components/allUsers/QuestionResponseForMail"
+import { ICurrentForm } from "../../context/form/CurrentFormContext"
+import { IQuestion } from "../../context/questions/QuestionListContext"
+import { IResponse } from "../../context/responses/ResponseListContext"
 import "../../styles/DisplayForm.css"
-import Loading from "../../components/shared/Loading"
 
-const FormForUserResponseOnly = () => {
-    const auth = useAuth()
-    const form = useCurrentForm()
-    const responseList = useResponses()
-    const questions = useQuestionsList()
-
-    const [loading, setLoading] = useState<boolean>(true)
-    const [error, setError] = useState<string | null>(null)
-
-    const { responseId }: any = useParams()
-
-    useEffect(() => {
-        //Get current logged in user
-        if (auth?.currentUser) auth?.getCurrentUser()
-        // Get response for response ID if this is a response only type page (/response/:responseId)
-        if (responseId) {
-            getByResponseIdPublic(responseId).then((data) => {
-                if (!data.success) {
-                    if (data.status === 404) {
-                        setError(data.msg)
-                        return setLoading(false)
-                    }
-                    return
-                }
-                const formId = data.data.formId._id
-                const formData = data.data.formId
-                const questionsData = data.data.responses.map(
-                    (q: any) => q.questionId
-                )
-                const responses = data.data
-                form?.setFormDetails(formId, formData)
-                questions?.questionActions?.getQuestions(formId, questionsData)
-                responseList?.responseActions?.getResponse(
-                    formId,
-                    responses,
-                    questionsData.map((q: any) => q.required),
-                    true
-                )
-            })
-        }
-    }, [responseId])
-
-    if (loading) {
-        return <Loading />
-    }
-
-    if (error) {
-        return <div>{error}</div>
-    }
-
+interface props {
+    questions: IQuestion[] | null
+    prevResponses: IResponse[] | null
+    form: ICurrentForm | null
+}
+// This component is to be mailed. Hence all css must be written inside the component
+export default ({ questions, prevResponses, form }: props) => {
     return (
-        <div className="display-form-page">
-            <div className="display-form-container">
-                <div className="display-form-component form-header">
-                    <h2>{form?.currentForm?.title}</h2>
-                    <p>{form?.currentForm?.description}</p>
+        <>
+            <div
+                style={{
+                    height: "100vh",
+                    width: "100vw",
+                    backgroundColor: "var(--backgroundColor)",
+                }}
+            >
+                <div
+                    style={{
+                        height: "calc(100vh - var(--adminNavbarHeight))",
+                        width: "85vw",
+                        overflowY: "auto",
+                        position: "absolute",
+                        left: "15vw",
+                    }}
+                >
+                    <div
+                        style={{
+                            position: "relative",
+                            backgroundColor: "rgba(190, 190, 190, 0.1)",
+                            backdropFilter: "saturate(180%) blur(25px)",
+                            borderRadius: "1em",
+                            width: "80%",
+                            padding: "1em 1em 2em 1.5em",
+                            margin: "2em 0",
+                        }}
+                    >
+                        <h2>{form?.title}</h2>
+                        <p>{form?.description}</p>
+                    </div>
+                    {questions?.map((q: IQuestion, idx: number) => {
+                        return (
+                            <QuestionResponseForMail
+                                question={q}
+                                prevResponse={prevResponses?.[idx]}
+                                key={q.qid}
+                            />
+                        )
+                    })}
                 </div>
-                {questions?.questions?.map((q: Question, idx: number) => {
-                    return (
-                        <QuestionResponse
-                            question={q}
-                            prevResponse={responseList?.responses?.[idx]}
-                            index={idx}
-                            key={q.qid}
-                        />
-                    )
-                })}
             </div>
-        </div>
+        </>
     )
 }
-
-export default FormForUserResponseOnly

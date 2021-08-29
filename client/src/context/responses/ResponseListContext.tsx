@@ -1,18 +1,18 @@
 import React, { createContext, ReactElement, useContext, useState } from "react"
-import { questionTypes } from "../questions/QuestionListContext"
+import { getUsersAction, submitAction } from "./ResponseActions"
 
 export interface gridOptions {
     row: string
     col: string
 }
 
-export interface user {
+export interface IUser {
     username?: string
     responseid: string
     email?: string
 }
 
-export interface Response {
+export interface IResponse {
     answerType: string
     questionId: string
     formId: string
@@ -22,7 +22,8 @@ export interface Response {
     multipleSelected?: string[]
     selectedOptionsGrid?: gridOptions[]
     emailAnswer?: string
-    canSubmit: boolean
+    canSubmit: boolean // Everything must be valid
+    canSave: boolean // Required fields may be left off, but mail id must be valid / word length check for text
 }
 
 export interface ResponseActions {
@@ -32,31 +33,36 @@ export interface ResponseActions {
         requiredData: boolean[],
         readOnly: boolean
     ) => void
-    getUsers: () => Promise<user[]>
-    findPreviousUser: (currentUser: user) => user
-    findNextUser: (currentUser: user) => user
-    updateResponse: (index: number, response: Response) => void
+    getUsers: () => Promise<IUser[]>
+    findPreviousUser: (currentUser: IUser) => IUser
+    findNextUser: (currentUser: IUser) => IUser
+    updateResponse: (qid: string, response: IResponse) => void
     setFormId: React.Dispatch<React.SetStateAction<string>>
     clearResponse: (questions: any[]) => void
-    submit: (sendMail: boolean, submitted: boolean) => Promise<any>
+    submit: (
+        sendMail: boolean,
+        submitted: boolean,
+        mailHTML: string | null
+    ) => Promise<any>
 }
 
 interface Props {
     children: ReactElement
 }
 
-export interface ResponseList {
+export interface IResponseList {
     readOnly: boolean
     formId: string
     userid: string
     username: string
-    responses: Response[]
+    submitted: boolean
+    responses: IResponse[]
     submitError: string | null
     responseActions: ResponseActions
-    users?: user[]
+    users?: IUser[]
 }
 
-const ResponseListContext = createContext<ResponseList | null>(null)
+const ResponseListContext = createContext<IResponseList | null>(null)
 
 export const useResponses = () => useContext(ResponseListContext)
 
@@ -67,9 +73,10 @@ export default function ResponseListProvider({
     const [userid, setUserid] = useState<string>("")
     const [username, setUsername] = useState<string>("")
     const [submitError, setSubmitError] = useState<string | null>(null)
-    const [responses, setResponses] = useState<Response[]>([])
+    const [responses, setResponses] = useState<IResponse[]>([])
     const [readOnly, setReadOnly] = useState<boolean>(true)
-    const [users, setUsers] = useState<user[]>()
+    const [users, setUsers] = useState<IUser[]>()
+    const [submitted, setSubmitted] = useState<boolean>(false)
 
     const getResponse = (
         formId: string,
@@ -78,9 +85,10 @@ export default function ResponseListProvider({
         readOnly: boolean
     ) => {
         setFormId(formId)
-        setUserid(prevResponses.userid)
-        setUsername(prevResponses.username)
+        setUserid(prevResponses.userid) // Could be undefined, but not an issue
+        setUsername(prevResponses.username) // Could be undefined, but not an issue
         setReadOnly(readOnly)
+        setSubmitted(prevResponses.submitted || false)
         let responses = prevResponses.responses.length
             ? prevResponses.responses
             : prevResponses.questions
@@ -92,6 +100,7 @@ export default function ResponseListProvider({
                 canSubmit: prevResponses?.responses?.length
                     ? true
                     : !requiredData[i],
+                canSave: true,
                 shortText: resp.shortText !== undefined ? resp.shortText : "",
                 paragraphText:
                     resp.paragraphText !== undefined ? resp.paragraphText : "",
@@ -115,29 +124,22 @@ export default function ResponseListProvider({
 
     const getUsers = async () => {
         try {
-            const res = await fetch(`/api/responsesidbyformfilled/${formId}`, {
-                method: "GET",
-                headers: {
-                    "Content-type": "application/json",
-                },
-                credentials: "include",
-            })
-            const data = await res.json()
+            const data = await getUsersAction(formId)
             setUsers(
-                data.data.map((user: any) => ({
+                data.map((user: any) => ({
                     responseid: user.responseid,
                     username: user.username,
                     email: user.email,
                 }))
             )
-            return data.data
+            return data
         } catch (err) {
             console.log(console.error())
         }
         return []
     }
 
-    const findNextUser = (currentUser: user) => {
+    const findNextUser = (currentUser: IUser) => {
         const index: number | undefined = users?.findIndex(
             (usr) => usr.responseid === currentUser.responseid
         )
@@ -150,7 +152,7 @@ export default function ResponseListProvider({
         return currentUser
     }
 
-    const findPreviousUser = (currentUser: user) => {
+    const findPreviousUser = (currentUser: IUser) => {
         const index: number | undefined = users?.findIndex(
             (usr) => usr.responseid === currentUser.responseid
         )
@@ -163,14 +165,30 @@ export default function ResponseListProvider({
         return currentUser
     }
 
-    const updateResponse = (index: number, response: Response) => {
+    const updateResponse = (qid: string, response: IResponse) => {
         const newResponseList = responses.slice()
+        var index = responses.findIndex(
+            (response) => response.questionId === qid
+        )
+        if (index === -1) return
         newResponseList[index] = response
         setResponses(newResponseList)
     }
 
-    const submit = async (sendMail: boolean, submitted: boolean) => {
-        if (responses.some((res) => res.canSubmit === false)) {
+    const submit = async (
+        sendMail: boolean,
+        submitted: boolean,
+        mailHTML: string | null = null
+    ) => {
+        if (!submitted && responses.some((res) => res.canSave === false)) {
+            setSubmitError(
+                "Unable to save, please make sure responses are valid"
+            )
+            return { success: false }
+        } else if (
+            submitted &&
+            responses.some((res) => res.canSubmit === false)
+        ) {
             setSubmitError("Please fill all required details")
             return { success: false }
         } else setSubmitError(null)
@@ -181,16 +199,9 @@ export default function ResponseListProvider({
             responses: responses.filter((resp: any) => JSON.stringify(resp)),
             sendMail,
             submitted,
+            mailHTML,
         }
-        const res = await fetch("/api/submitresponse", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify(body),
-        })
-        const data = await res.json()
+        const data = await submitAction(body)
         return data
     }
 
@@ -222,7 +233,7 @@ export default function ResponseListProvider({
         clearResponse,
     }
 
-    const responseList: ResponseList = {
+    const responseList: IResponseList = {
         readOnly,
         formId,
         userid,
@@ -231,6 +242,7 @@ export default function ResponseListProvider({
         submitError,
         responseActions,
         users,
+        submitted,
     }
 
     return (
