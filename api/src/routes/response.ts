@@ -31,6 +31,7 @@ export const submitResponse = async (req: Request, res: Response) => {
     const userid = req.session.userId
     let form: any = await Form.findOne({ _id: formId })
     var presentDateTime: Date = new Date()
+    let presentIST = new Date().toLocaleString(undefined, {timeZone: 'Asia/Kolkata'});
     //Checking for closing date time
     if (form.closes !== null && form.closes <= presentDateTime) {
         console.log("Form closed")
@@ -62,7 +63,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                     formId,
                     responses,
                     submitted,
-                    submitTime:presentDateTime
+                    submitTime:presentIST
                 })
                 console.log(responses)
                 newresp = await formResponse.save()
@@ -91,7 +92,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                             formId,
                             responses,
                             submitted,
-                            submitTime:presentDateTime
+                            submitTime:presentIST
                         },
                     }
                 )
@@ -121,10 +122,9 @@ export const submitResponse = async (req: Request, res: Response) => {
                         formId,
                         responses,
                         submitted,
-                        submitTime:presentDateTime
+                        submitTime:presentIST
                     })
                     formResponse.submitted = true
-                    formResponse.submitTime = presentDateTime
                     newresp = await formResponse.save()
                     console.log("Response added!")
                     res.status(200).send({
@@ -150,10 +150,10 @@ export const submitResponse = async (req: Request, res: Response) => {
                             formId,
                             responses,
                             submitted: true,
-                            submitTime:presentDateTime
+                            submitTime:presentIST
                         })
                         formResponse.submitted = true
-                        formResponse.submitTime = presentDateTime
+                        // formResponse.submitTime = presentDateTime
                         newresp = await formResponse.save()
                         console.log("Response added!")
                         console.log("Submitting another Response by the user")
