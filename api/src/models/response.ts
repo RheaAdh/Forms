@@ -20,6 +20,7 @@ export interface ResponseDoc extends Document {
             emailAnswer: string
         }
     ]
+    submitTime: Date
 }
 
 const response: Schema = new Schema(
@@ -45,6 +46,7 @@ const response: Schema = new Schema(
                 emailAnswer: { type: String },
             },
         ],
+        submitTime: { type: Date },
     },
     {
         timestamps: true,

@@ -4,6 +4,7 @@ import FormResponse from "../models/response"
 import { Form } from "../models/form"
 import { resolve } from "path"
 import { read } from "fs"
+import { updateSheet } from "./googlesheet"
 
 // import nodemailer from "nodemailer"
 const nodemailer = require("nodemailer")
@@ -25,15 +26,8 @@ declare module "express-session" {
 
 export const submitResponse = async (req: Request, res: Response) => {
     let { username, userid, formId, responses, sendMail } = req.body
-
     let form: any = await Form.findOne({ _id: formId })
-
-    // console.log("Send Mail boolean is " + sendMail)
     var presentDateTime: Date = new Date()
-
-    // console.log("Present time " + presentDateTime)
-    // console.log("closing time " + form.closes)
-
     //Checking for closing date time
     if (form.closes !== null && form.closes <= presentDateTime) {
         console.log("Form closed")
@@ -68,11 +62,17 @@ export const submitResponse = async (req: Request, res: Response) => {
                 formResponse.submitted = true
                 newresp = await formResponse.save()
                 console.log("Response added!")
+
+                formResponse.submitTime = presentDateTime
+
                 if (sendMail) emailResponse(newresp, req.session)
+                if (form.sheetId) updateSheet(form._id)
                 res.send({ success: true, data: "Response submitted" })
             } catch (error) {
                 console.log(error)
-                return res.status(500).send({ success: false, data: "Server Error" })
+                return res
+                    .status(500)
+                    .send({ success: false, data: "Server Error" })
             }
         } else if (form.isEditable) {
             //When form has a submission and editing is allowed
@@ -88,17 +88,18 @@ export const submitResponse = async (req: Request, res: Response) => {
                             userid,
                             formId,
                             responses,
+                            submitTime: presentDateTime,
                         },
                     }
                 )
-                // console.log("RESP is ")
-                // console.log(newresp)
-                // console.log("Response Updated when editing was allowed")
                 if (sendMail) emailResponse(newresp, req.session)
+                if (form.sheetId) updateSheet(form._id)
                 return res.send({ success: true, data: "Response Updated" })
             } catch (err) {
                 console.log(err)
-                return res.status(200).send({ success: false, data: "Server Error" })
+                return res
+                    .status(200)
+                    .send({ success: false, data: "Server Error" })
             }
         } //when form has submission but editing is not allowed but multiple response by single user is allowed
         else if (form.multipleResponses) {
@@ -115,6 +116,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                         responses,
                     })
                     formResponse.submitted = true
+                    formResponse.submitTime = presentDateTime
                     newresp = await formResponse.save()
                     console.log("Response added!")
                     res.status(200).send({
@@ -122,6 +124,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                         data: "Response submitted ",
                     })
                     if (sendMail) emailResponse(newresp, req.session)
+                    if (form.sheetId) updateSheet(form._id)
                 } else {
                     //Multiple Response in non-anonymous forms with a limit in form submission per user
                     let responseCount = await FormResponse.find({
@@ -140,6 +143,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                             submitted: true,
                         })
                         formResponse.submitted = true
+                        formResponse.submitTime = presentDateTime
                         newresp = await formResponse.save()
                         console.log("Response added!")
                         console.log("Submitting another Response by the user")
@@ -149,6 +153,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                         })
 
                         if (sendMail) emailResponse(newresp, req.session)
+                        if (form.sheetId) updateSheet(form._id)
                     } else {
                         console.log("Response Limit Reached")
                         return res.status(400).send({
@@ -189,8 +194,8 @@ export const getResponsesByForm = async (req: Request, res: Response) => {
         }).populate("userid", { password: 0 })
 
         console.log("inside get resp by forms")
-        console.log("allllllllllllllllllllll");
-        
+        console.log("allllllllllllllllllllll")
+
         res.status(200).send(formResponses)
     } catch (error) {
         console.log(error)
@@ -626,8 +631,8 @@ async function emailResponse(resp: any, receiver: any) {
 export const getResponsebyRespid = async (req: Request, res: Response) => {
     try {
         let respid = req.params.respid
-        console.log("resp id");
-        
+        console.log("resp id")
+
         console.log(respid)
         let resp = await FormResponse.findById({ _id: respid })
             .populate("responses.questionId formId")
