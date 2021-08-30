@@ -3,11 +3,7 @@ export interface ResponseDoc extends Document {
     username: string
     userid: any
     formId: any
-<<<<<<< HEAD
     submitted: boolean
-=======
-    submitted: Boolean
->>>>>>> 48396fbf8b59228f8f34749face169a3144b6591
     responses: [
         {
             questionId: string
