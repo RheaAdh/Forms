@@ -21,15 +21,11 @@ const readline = require("readline")
 const { google } = require("googleapis")
 
 export async function updateSheet(formId: any) {
-    // let formId: any = form._id
-    console.log("we got formId" + formId)
     let form: any = await Form.findOne({
         _id: mongoose.Types.ObjectId(formId),
     }).populate("questions")
     let questions: any
-    console.log(form)
     questions = form.questions
-    console.log("Questions is " + questions)
     //Sorting Question based on initial index --- order of fields displayed in forms
     questions.sort(function compare(a: any, b: any) {
         if (a.quesIndex < b.quesIndex) return -1
@@ -233,6 +229,7 @@ export async function updateSheet(formId: any) {
         },
     })
 
+    //Foramatting Sheet header -- bold,freeze header,color
     await sheets.spreadsheets.batchUpdate({
         spreadsheetId: newsheetId,
         auth: client,

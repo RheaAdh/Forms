@@ -15,7 +15,7 @@ passport.use(
         {
             clientID: `${process.env.GOOGLE_CLIENT_ID}`,
             clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`,
-            callbackURL: "http://localhost:7000/user/auth/google/callback",
+            callbackURL: "http://localhost:7000/api/user/auth/google/callback",
         },
         function (accessToken: any, refreshToken: any, profile: any, cb: any) {
             //Called on Succcessful Auth!
@@ -80,6 +80,8 @@ Router.get(
         req.session.email = (user as any).email
         req.session.username = (user as any).username
         req.session.userId = (user as any)._id
+        req.session.isAuth = true
+        console.log("calling finally")
         if (fid !== undefined) res.redirect(`http://localhost:3000/form/${fid}`)
         else res.redirect("http://localhost:3000/login")
     }
@@ -131,6 +133,9 @@ export async function checkAuthentication(req: any, res: any, next: any) {
                 next()
             } else {
                 //isAuth for admins
+                console.log("Auth : "+req.isAuthenticated())
+                console.log(req.session)
+                // console.log(req)
                 if (req.isAuthenticated() || req.session.isAuth) {
                     // console.log("Allowed to access")
                     next()

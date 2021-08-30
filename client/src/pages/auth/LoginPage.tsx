@@ -41,7 +41,7 @@ const LoginPage: React.FC = () => {
                         }}
                     >
                         <a
-                            href="http://localhost:7000/user/auth/google"
+                            href="http://localhost:7000/api/user/auth/google"
                             style={{
                                 textDecoration: "none",
                                 color: "white",
