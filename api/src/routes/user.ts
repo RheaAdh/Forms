@@ -7,13 +7,6 @@ import { Form } from "../models/form"
 const GoogleStrategy = require("passport-google-oauth20").Strategy
 
 Router.use(express.json())
-// app.use(cors({ origin: "https://localhost:3000", credentials: true }))
-// app.set("trust proxy", 1);
-
-//Using GoogleStrategy for Authentication
-
-// let formid
-// Router.get('')
 
 import { fid } from "./form"
 
@@ -24,10 +17,8 @@ passport.use(
             clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`,
             callbackURL: "http://localhost:7000/user/auth/google/callback",
         },
-
         function (accessToken: any, refreshToken: any, profile: any, cb: any) {
             //Called on Succcessful Auth!
-            console.log("Inside function")
 
             User.findOne(
                 { email: profile.emails[0].value },
@@ -38,7 +29,6 @@ passport.use(
                     }
                     if (!doc) {
                         //Inserting New User to DB
-                        console.log("Inserting new user")
                         const newUser = new User({
                             username: profile.displayName,
                             email: profile.emails[0].value,
@@ -46,7 +36,6 @@ passport.use(
                             isVerified: true,
                         })
                         await newUser.save()
-                        console.log("New User saved in database")
                         cb(null, newUser)
                     } else {
                         //User Already exists
@@ -61,13 +50,13 @@ passport.use(
 )
 
 passport.serializeUser((user: any, done: any) => {
-    console.log("serialize")
+    // console.log("serialize")
     return done(null, user._id)
 })
 
 passport.deserializeUser((id: string, done: any) => {
     User.findById(id, (err: Error, doc: any) => {
-        console.log("de-serialize")
+        // console.log("de-serialize")
         return done(null, doc)
     })
 })
@@ -98,7 +87,7 @@ Router.get(
 
 //USER LOGOUT
 export async function userLogout(req: any, res: any) {
-    console.log("Inside logout")
+    // console.log("Inside logout")
     if (req.user) {
         req.logOut()
         req.session.destroy(function (err: Error) {
@@ -108,7 +97,7 @@ export async function userLogout(req: any, res: any) {
                 //session deleted
                 return res.status(200).send({
                     success: true,
-                    data: "Successfully LoggedOut",
+                    data: "Successfully Logged out",
                 })
             }
         })
@@ -119,7 +108,7 @@ export async function userLogout(req: any, res: any) {
 
 //TO VIEW LOGGED-IN USER
 export async function getUser(req: any, res: any) {
-    console.log(req.user)
+    // console.log(req.user)
     return res.send(req.user)
 }
 
@@ -136,14 +125,17 @@ export async function checkAuthentication(req: any, res: any, next: any) {
     try {
         let form = await Form.findById(fid)
         if (form) {
+            
             if (form.anonymous) {
+                //no need authentication
                 next()
             } else {
+                //isAuth for admins
                 if (req.isAuthenticated() || req.session.isAuth) {
-                    console.log("Allowed to access")
+                    // console.log("Allowed to access")
                     next()
                 } else {
-                    console.log("Login to access")
+                    // console.log("Login to access")
                     res.status(401).send({
                         success: false,
                         data: "Please Login to view",

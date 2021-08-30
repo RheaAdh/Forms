@@ -23,6 +23,7 @@ export interface FormDoc extends Document {
     anonymous: boolean
     theme: any
     sheetId: string
+    customLink: String
 }
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
 const form: Schema = new Schema(
@@ -44,6 +45,7 @@ const form: Schema = new Schema(
         theme: { type: Schema.Types.ObjectId, ref: "theme" },
         sheetId: { type: String },
         pages: { type: Number, default: 1 },
+        customLink: { type: String },
     },
     {
         timestamps: true,

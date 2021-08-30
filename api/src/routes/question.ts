@@ -1,5 +1,4 @@
 import { Response, Request } from "express"
-import * as mongo from "../config/mongo"
 import { Form } from "../models/form"
 import FormResponse from "../models/response"
 import {
@@ -149,8 +148,11 @@ export async function addQuestion(req: Request, res: Response) {
             }
             //Reordering Ques
             await newQuestion.save()
+
             form.questions.push(newQuestion)
+
             await form.save()
+
             let moveto = after + 1 //newques index
             if (questionType !== "page-header") {
                 await Question.updateMany(
@@ -168,8 +170,9 @@ export async function addQuestion(req: Request, res: Response) {
                 { _id: newQuestion._id },
                 { $set: { quesIndex: moveto, pageNo: pageNo } }
             )
+
             console.log("Form updated!!  and new Ques Added!!")
-            console.log(newQuestion)
+            // console.log(newQuestion)
             return res.json({
                 success: true,
                 newQuestion,

@@ -4,6 +4,7 @@ import FormResponse from "../models/response"
 import { Form } from "../models/form"
 import { resolve } from "path"
 import { read } from "fs"
+import { updateSheet } from "./googlesheet"
 
 // import nodemailer from "nodemailer"
 const nodemailer = require("nodemailer")
@@ -22,22 +23,20 @@ declare module "express-session" {
         username: String
     }
 }
+
 export const submitResponse = async (req: Request, res: Response) => {
     console.log("POST REQUEST WAS MADE for submit response")
     let { formId, responses, sendMail, submitted, mailHTML } = req.body
     const username = req.session.username as string
     const userid = req.session.userId
     let form: any = await Form.findOne({ _id: formId })
-    console.log(form)
-    console.log("Send Mail boolean is " + sendMail)
     var presentDateTime: Date = new Date()
-    console.log("Present time " + presentDateTime)
-    console.log("closing time " + form.closes)
     //Checking for closing date time
     if (form.closes !== null && form.closes <= presentDateTime) {
         console.log("Form closed")
         form.isActive = false
     }
+
     if (form.isTemplate) {
         return res.status(400).send({
             success: false,
@@ -71,7 +70,9 @@ export const submitResponse = async (req: Request, res: Response) => {
                 res.send({ success: true, data: "Response submitted" })
             } catch (error) {
                 console.log(error)
-                res.status(500).send({ success: false, data: "Server Error" })
+                return res
+                    .status(500)
+                    .send({ success: false, data: "Server Error" })
             }
         } else if (form.isEditable || response.submitted === false) {
             //When form has a submission and editing is allowed
@@ -98,9 +99,11 @@ export const submitResponse = async (req: Request, res: Response) => {
                 res.send({ success: true, data: "Response Updated" })
             } catch (err) {
                 console.log(err)
-                res.status(200).send({ success: false, data: "Server Error" })
+                return res
+                    .status(200)
+                    .send({ success: false, data: "Server Error" })
             }
-        } //when for has submission but editing is not allowed but multiple response by single user is allowed
+        } //when form has submission but editing is not allowed but multiple response by single user is allowed
         else if (form.multipleResponses) {
             try {
                 //Multiple Response in anonymous forms
@@ -115,6 +118,8 @@ export const submitResponse = async (req: Request, res: Response) => {
                         responses,
                         submitted,
                     })
+                    formResponse.submitted = true
+                    formResponse.submitTime = presentDateTime
                     newresp = await formResponse.save()
                     console.log("Response added!")
                     res.status(200).send({
@@ -138,7 +143,10 @@ export const submitResponse = async (req: Request, res: Response) => {
                             userid,
                             formId,
                             responses,
+                            submitted: true,
                         })
+                        formResponse.submitted = true
+                        formResponse.submitTime = presentDateTime
                         newresp = await formResponse.save()
                         console.log("Response added!")
                         console.log("Submitting another Response by the user")
@@ -187,13 +195,17 @@ export const getResponsesByForm = async (req: Request, res: Response) => {
         let formResponses = await FormResponse.findOne({
             formId: formId,
         }).populate("userid", { password: 0 })
+
         console.log("inside get resp by forms")
+        console.log("allllllllllllllllllllll")
+
         res.status(200).send(formResponses)
     } catch (error) {
         console.log(error)
         res.status(500).send("Server Error")
     }
 }
+
 export const getFormsByCreator = async (req: Request, res: Response) => {
     try {
         let creatorId = req.params.creatorId
@@ -228,8 +240,8 @@ export const downloadResponse = async (req: Request, res: Response) => {
             "questionText"
         )
         if (form) {
-            console.log("$$Form is " + form)
-            console.log("$$Response is " + resp)
+            // console.log("$$Form is " + form)
+            // console.log("$$Response is " + resp)
             let questions = form.questions
             for (let i in questions) {
                 quesidtotext[String(questions[i]._id)] =
@@ -244,7 +256,7 @@ export const downloadResponse = async (req: Request, res: Response) => {
         let data = []
         //here we are extracting answer from array of responses->resp and storing in data which will be used in converting to .csv
         //For now just shortText and paragraphText type is implemented
-        console.log("Resp is " + resp)
+        // console.log("Resp is " + resp)
         for (let i = 0; i < resp.length; i++) {
             temp = resp[i].responses
             let datarow
@@ -299,7 +311,7 @@ export const downloadResponse = async (req: Request, res: Response) => {
                 }
 
                 if (temp[j].multipleSelected) {
-                    console.log(temp[j].multipleSelected)
+                    // console.log(temp[j].multipleSelected)
                     let s: any = ""
                     for (let k = 0; k < temp[j].multipleSelected.length; k++) {
                         if (s == "") {
@@ -307,7 +319,7 @@ export const downloadResponse = async (req: Request, res: Response) => {
                         } else {
                             s = s + ", " + temp[j].multipleSelected[k]
                         }
-                        console.log(s)
+                        // console.log(s)
                     }
                     let test: any = {}
                     test[str] = s
@@ -317,7 +329,7 @@ export const downloadResponse = async (req: Request, res: Response) => {
             data.push(datarow)
         }
         console.log("Download ready data")
-        console.log(data)
+        // console.log(data)
 
         //Converting data to .csv and writting to a file  --- this part is now in frontend
         if (data) {
@@ -355,7 +367,7 @@ export const getResponsesByResIdByFormId = async (
             .populate("userid", { password: 0 })
             .sort({ timestamps: -1 })
         console.log("Responses")
-        console.log(formIndividualResponses)
+        // console.log(formIndividualResponses)
         if (formIndividualResponses) {
             let form = await Form.findById(formIndividualResponses.formId)
             if (form) {
@@ -409,7 +421,7 @@ export const getResponseIdByFormFilled = async (
         })
             .populate("userid", { password: 0 })
             .populate("formId ")
-        console.log(responses)
+        // console.log(responses)
         let ans: any = []
         for (let i = 0; i < responses.length; i++) {
             if (responses[i].formId.anonymous) {
@@ -439,7 +451,7 @@ export const getResponsesByQuestionsByForm = async (
         formResponses = await FormResponse.find({
             responses: { $elemMatch: { questionId: quesId } },
         }).select("responses")
-        console.log(formResponses[0])
+        // console.log(formResponses[0])
 
         let ans: any = []
 
@@ -607,8 +619,8 @@ async function emailResponse(resp: any, receiver: any) {
                 text: "Your Response to recently filled form", // plain text body
                 html: resp, // html body
             })
-            console.log("info is " + info)
-            console.log("Message sent: %s", info.messageId)
+            // console.log("info is " + info)
+            // console.log("Message sent: %s", info.messageId)
         } catch (err) {
             console.log(err)
         }
@@ -620,6 +632,8 @@ async function emailResponse(resp: any, receiver: any) {
 export const getResponsebyRespid = async (req: Request, res: Response) => {
     try {
         let respid = req.params.respid
+        console.log("resp id")
+
         console.log(respid)
         let resp = await FormResponse.findById({ _id: respid })
             .populate("responses.questionId formId")

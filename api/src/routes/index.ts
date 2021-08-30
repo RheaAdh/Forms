@@ -4,6 +4,7 @@ import {
     isValidSuperAdmin,
     getAllAdmins,
     verifyEmail,
+    resendEmailVerificationLink
 } from "./adminuser"
 import {
     deleteForm,
@@ -50,7 +51,7 @@ import {
     updateTheme,
 } from "./theme"
 import { checkAuthentication, isAnonymous } from "./user"
-import {writeToNewSheet } from "./googlesheet"
+import {writeToNewSheet} from "./googlesheet"
 
 const router = express.Router()
 
@@ -139,10 +140,19 @@ router.post(
 router.post("/submitresponse", checkAuthentication, submitResponse)
 
 ////////////////////NO-AUTH///////////////////////////////////////////////////
+
+// http://localhost:7000/api/emailverification/token
 router.get("/emailverification/:token", verifyEmail)
-router.get("/response/:respid", getResponsebyRespid) //To view emailed responses
+//To view emailed responses
+router.get("/response/:respid", getResponsebyRespid) 
+// http://localhost:7000/api/emailreverify
+router.get("/emailreverify",resendEmailVerificationLink)
 
 
+
+//Writing to sheet
 router.get("/createnewsheet/:formId",writeToNewSheet)
+
+
 
 export default router
