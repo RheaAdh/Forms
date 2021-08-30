@@ -69,7 +69,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                 newresp = await formResponse.save()
                 console.log("Response added!")
                 if (sendMail && submitted) emailResponse(mailHTML, req.session)
-                if (form.sheetId) updateSheet(form._id)
+                if (form.sheetId && submitted) updateSheet(form._id)
                 res.send({ success: true, data: "Response submitted" })
             } catch (error) {
                 console.log(error)
@@ -100,7 +100,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                 console.log(newresp)
                 console.log("Response Updated when editing was allowed")
                 if (sendMail && submitted) emailResponse(mailHTML, req.session)
-                if (form.sheetId) updateSheet(form._id)
+                if (form.sheetId && submitted) updateSheet(form._id)
                 res.send({ success: true, data: "Response Updated" })
             } catch (err) {
                 console.log(err)
@@ -133,7 +133,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                     })
                     if (sendMail && submitted)
                         emailResponse(mailHTML, req.session)
-                    if (form.sheetId) updateSheet(form._id)
+                    if (form.sheetId && submitted) updateSheet(form._id)
                 } else {
                     //Multiple Response in non-anonymous forms with a limit in form submission per user
                     let responseCount = await FormResponse.find({
@@ -164,7 +164,7 @@ export const submitResponse = async (req: Request, res: Response) => {
 
                         if (sendMail && submitted)
                             emailResponse(mailHTML, req.session)
-                        if (form.sheetId) updateSheet(form._id)
+                        if (form.sheetId && submitted) updateSheet(form._id)
                     } else {
                         console.log("Response Limit Reached")
                         return res.status(400).send({
