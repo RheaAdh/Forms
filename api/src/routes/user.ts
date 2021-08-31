@@ -5,6 +5,7 @@ import { User } from "../models/user"
 import { Form } from "../models/form"
 import { OAuth2Client, TokenPayload } from "google-auth-library"
 import { fid } from "./form"
+import {store} from "../config/mongo"
 
 const client = new OAuth2Client(process.env.CLIENT_ID)
 
@@ -32,6 +33,7 @@ Router.post("/auth/google", async (req: Request, res: Response) => {
     req.session.username = user.username
     req.session.userId = user._id
     req.session.isAuth = true
+    console.log(req.session)
     res.send({ name, email })
 })
 
@@ -69,10 +71,10 @@ export async function checkAuthentication(req: any, res: any, next: any) {
                 next()
             } else {
                 //isAuth for admins
-                console.log("Auth : " + req.isAuthenticated())
-                console.log(req.session)
-                // console.log(req)
-                if (req.isAuthenticated() || req.session.isAuth) {
+
+                let userSession  = await store.find({"session.userId": req.body.userId}) 
+                let isAuthenticated = userSession.session.isAuth
+                if (isAuthenticated || req.session.isAuth) {
                     // console.log("Allowed to access")
                     next()
                 } else {

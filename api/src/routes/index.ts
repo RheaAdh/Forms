@@ -4,7 +4,7 @@ import {
     isValidSuperAdmin,
     getAllAdmins,
     verifyEmail,
-    resendEmailVerificationLink
+    resendEmailVerificationLink,
 } from "./adminuser"
 import {
     deleteForm,
@@ -51,7 +51,8 @@ import {
     updateTheme,
 } from "./theme"
 import { checkAuthentication, isAnonymous } from "./user"
-import {writeToNewSheet} from "./googlesheet"
+import { writeToNewSheet } from "./googlesheet"
+import { getCssDisplayForm, getCssMain } from "./css/css"
 
 const router = express.Router()
 
@@ -144,15 +145,15 @@ router.post("/submitresponse", checkAuthentication, submitResponse)
 // http://localhost:7000/api/emailverification/token
 router.get("/emailverification/:token", verifyEmail)
 //To view emailed responses
-router.get("/response/:respid", getResponsebyRespid) 
+router.get("/response/:respid", getResponsebyRespid)
 // http://localhost:7000/api/emailreverify
-router.get("/emailreverify",resendEmailVerificationLink)
-
-
+router.get("/emailreverify", resendEmailVerificationLink)
 
 //Writing to sheet
-router.get("/createnewsheet/:formId",writeToNewSheet)
+router.get("/createnewsheet/:formId", writeToNewSheet)
 
-
+//Sending CSS File for Email
+router.get("/css/main", getCssMain)
+router.get("/css/displayform", getCssDisplayForm)
 
 export default router

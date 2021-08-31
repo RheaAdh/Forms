@@ -1,0 +1,107 @@
+.display-form-page {
+    background: var(--backgroundImage) no-repeat;
+    background-position: right top;
+    background-size: 40rem 44rem;
+    background-color: var(--backgroundColor);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+.display-form-container {
+    height: calc(100vh - var(--adminNavbarHeight));
+    width: 85vw;
+    overflow-y: auto;
+    position: absolute;
+    left: 15vw;
+}
+
+.display-form-component {
+    position: relative;
+    background: rgba(190, 190, 190, 0.1);
+    backdrop-filter: saturate(180%) blur(25px);
+    -webkit-backdrop-filter: saturate(180%) blur(25px);
+    border-radius: 1em;
+    width: 80%;
+    padding: 1em 1em 2em 1.5em;
+    margin: 2em 0;
+}
+
+.form-header p {
+    margin-top: 1.5em;
+}
+
+.no-navbar {
+    height: 100vh !important;
+}
+
+@supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+    /* .display-form-component {
+        box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
+        border-radius: 1em;
+        z-index: 1;
+        background: inherit;
+    }
+
+    .display-form-component:before {
+        content: "";
+        position: absolute;
+        background: inherit;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        filter: blur(2px);
+        margin: -1rem;
+    } */
+}
+
+.form-submit-btn {
+    display: inline-block;
+    height: 2.5rem;
+    text-align: center;
+    background-color: #947fce;
+    padding: 0 2em;
+    color: #000;
+    font-size: 1.4rem;
+    position: relative;
+    margin-left: 1.5em;
+}
+
+.switch-btn .icon-info {
+    z-index: 5;
+    position: absolute;
+    width: max-content;
+    display: block;
+    font-size: 0.9rem;
+    height: 0;
+    background-color: rebeccapurple;
+    overflow: hidden;
+    transition: 250ms;
+    -webkit-transition: 250ms;
+    -moz-transition: 250ms;
+    transform: translateX(-0.4em) translateY(1.5em);
+}
+
+.switch-btn:hover .icon-info {
+    padding: 0.5em 1em;
+    overflow: visible;
+    height: auto;
+}
+
+.switch-btn .text-info-arrow {
+    z-index: 1;
+    position: absolute;
+    display: block;
+    width: 1.5rem;
+    height: 0rem;
+    overflow: hidden;
+    transform: translateY(0.9rem) translateX(-0.1em) rotate(-45deg);
+    -webkit-transform: translateY(0.9rem) translateX(-0.1em) rotate(-45deg);
+    background-color: rebeccapurple;
+}
+.switch-btn:hover .text-info-arrow {
+    overflow: visible;
+    height: 1.5rem;
+}
