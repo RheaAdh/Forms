@@ -167,6 +167,8 @@ const DashboardPage: React.FC = () => {
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
+                    console.log("add form");
+                    
                     history.push(`/form-admin/${data.data._id}`)
                 } else {
                     //HANDLE ERROR

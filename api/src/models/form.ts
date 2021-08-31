@@ -28,6 +28,7 @@ export interface FormDoc extends Document {
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
 const form: Schema = new Schema(
     {
+        shortId: { type: String, unique: true },//optional
         title: { type: String, required: true },
         color_theme: String,
         questions: [{ type: Schema.Types.ObjectId, ref: "question" }],
@@ -45,7 +46,6 @@ const form: Schema = new Schema(
         theme: { type: Schema.Types.ObjectId, ref: "theme" },
         sheetId: { type: String },
         pages: { type: Number, default: 1 },
-        customLink: { type: String },
     },
     {
         timestamps: true,

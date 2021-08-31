@@ -17,19 +17,14 @@ declare module "express-session" {
 export async function getForms(req: Request, res: Response) {
     try {
         if (req.session.role === "admin") {
-            //admin
-            console.log("getForms")
             const myForms = await Form.find({
                 isTemplate: false,
                 editors: req.session.userId,
             })
                 .populate({ path: "questions", match: { quesIndex: 0 } })
                 .sort({ createdAt: -1 })
-            console.log("My form is ")
-            console.log(myForms)
             res.send({ success: true, forms: myForms })
         } else if (req.session.role === "superadmin") {
-            //superadmin
             const forms = await Form.find({ isTemplate: false })
                 .populate({ path: "questions", match: { quesIndex: 0 } })
                 .sort({
@@ -44,10 +39,12 @@ export async function getForms(req: Request, res: Response) {
 
 export async function getForm(req: Request, res: Response) {
     try {
-        console.log("inside getForm")
-        const form = await Form.findById(req.params.formId)
-        console.log(req.session.userId)
-        console.log(form?.owner)
+        var form: any
+        form = await Form.findOne({ shortId: req.params.formId })
+        if (!form) {
+            console.log("shortid doesnt exist")
+            form = await Form.findOne({ _id: req.params.formId })
+        }
         if (form) {
             if (
                 req.session.role == "superadmin" ||
@@ -76,8 +73,12 @@ export async function getForm(req: Request, res: Response) {
 export async function getFormForResponse(req: Request, res: Response) {
     try {
         console.log("Inside getformresp")
-        const form = await Form.findById(req.params.formId)
-
+        var form: any
+        form = await Form.findOne({ shortId: req.params.formId })
+        if (!form) {
+            console.log("shortid doesnt exist")
+            form = await Form.findOne({ _id: req.params.formId })
+        }
         if (form) {
             var presentDateTime: Date = new Date()
             // console.log("Present time " + presentDateTime)
@@ -167,8 +168,20 @@ export async function getSuperAdminForms(req: Request, res: Response) {
 
 export async function addForm(req: any, res: Response) {
     try {
+        console.log("adddddddd")
         let newForm: any
+        let shortId = req.body.shortId
+        var chkform: any
+        //checking if shortid already taken
+        if (shortId) chkform = await Form.findOne({ shortId: shortId })
+        if (chkform) {
+            return res.send({
+                success: true,
+                msg: "Short ID already exists Try another Short ID",
+            })
+        }
         newForm = new Form({
+            shortId: req.body.shortId, //TODO:add in frontend
             title: req.body.title,
             owner: req.session.userId,
             color_theme: req.body.color_theme,
@@ -196,7 +209,16 @@ export async function updateForm(req: Request, res: Response) {
         console.log(req.body)
         console.log(req.body.isTemplate)
         console.log(req.session.role)
-
+        let shortId = req.body.shortId
+        var chkform: any
+        //checking if shortid already taken
+        if (shortId) chkform = await Form.findOne({ shortId: shortId })
+        if (chkform) {
+            return res.send({
+                success: true,
+                msg: "Short ID already exists Try another Short ID",
+            })
+        }
         if (req.body.isTemplate && req.session.role != "superadmin") {
             console.log("You cant edit Template, try contacting SuperAdmin")
             return res.status(400).send({
@@ -326,7 +348,9 @@ export async function extractFormid(
     res: Response,
     next: NextFunction
 ) {
-    let form = await Form.findById(req.params.formId)
+    let form: any
+    form = await Form.findOne({ shortId: req.params.formId })
+    if (!form) form = await Form.findById(req.params.formId)
 
     if (form) {
         console.log("Voila!! we found formid")
@@ -343,7 +367,12 @@ export async function extractFormid(
 export async function makeTemplate(req: Request, res: Response) {
     try {
         let formId = req.params.formId
-        let form = await Form.findById(formId)
+        var form: any
+        form = await Form.findOne({ shortId: req.params.formId })
+        if (!form) {
+            console.log("shortid doesnt exist")
+            form = await Form.findOne({ _id: req.params.formId })
+        }
         if (form) {
             if (form.isTemplate) {
                 return res.send({
@@ -396,7 +425,13 @@ export async function makeTemplate(req: Request, res: Response) {
 export async function useTemplate(req: Request, res: Response) {
     try {
         let formId = req.params.formId
-        let form: any = await Form.findById(formId)
+        var form: any
+        form = await Form.findOne({ shortId: req.params.formId })
+        if (!form) {
+            console.log("shortid doesnt exist")
+            form = await Form.findOne({ _id: req.params.formId })
+        }
+
         if (form) {
             if (!form.isTemplate) {
                 return res.send({
@@ -466,9 +501,19 @@ export async function updateeditor(req: Request, res: Response) {
     console.log(neweditors)
     try {
         console.log("updating editor")
-        let form: any = await Form.findById(formid).populate("editors", {
-            password: 0,
-        })
+        var form: any
+        form = await Form.findOne({ shortId: req.params.formId }).populate(
+            "editors",
+            {
+                password: 0,
+            }
+        )
+        if (!form) {
+            console.log("shortid doesnt exist")
+            form = await Form.findById(formid).populate("editors", {
+                password: 0,
+            })
+        }
 
         if (form) {
             console.log(form)

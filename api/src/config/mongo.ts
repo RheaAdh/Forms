@@ -21,8 +21,6 @@ export const connectMongo = async () => {
 }
 
 export const store = new MongoDBSession({
-    //uri: `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.1zzhu.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
-    // uri: `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@localhost:27017/forms`,
     uri: `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.1zzhu.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
     collection: "AllSessions",
 })
