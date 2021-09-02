@@ -2,15 +2,19 @@ import mongoose, { Schema, Document, Mongoose } from "mongoose"
 const options = { discriminatorKey: "questionType" }
 
 export interface QuesDoc extends Document {
-    formid: { type: Schema.Types.ObjectId; ref: "Form" }
+    formid: string
     quesIndex: number
+    questionText: string
+    required: boolean
+    userId: Schema.Types.ObjectId
+    pageNo: number
 }
 
 //!BASE QUESTION SCHEMA
 
 const questionSchema: Schema = new Schema(
     {
-        formid: { type: Schema.Types.ObjectId, ref: "Form" },
+        formid: { type: String, ref: "Form" },
         quesIndex: { type: Number, default: 0 },
         questionText: { type: String },
         required: { type: Boolean, default: false },

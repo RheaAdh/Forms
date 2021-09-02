@@ -62,7 +62,7 @@ const FormCard: React.FC<props> = ({ form, handleDelete }) => {
 
     return (
         <div className="form-card">
-            <Link to={`/form-admin/${form.id}`}>
+            <Link to={`/form-admin/${form.linkId ? form.linkId : form.id}`}>
                 <div className="card-display-form">
                     <div className="card-form-component">
                         <h2>{form.title}</h2>

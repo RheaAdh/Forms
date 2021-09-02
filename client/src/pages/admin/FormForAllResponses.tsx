@@ -164,7 +164,7 @@ export default () => {
             getForm(formId, true)
                 .then((data) => {
                     if (data.success) {
-                        form?.setFormDetails(formId, data.data)
+                        form?.setFormDetails(data.data)
                     }
                 })
                 .catch((err) => console.log(err))

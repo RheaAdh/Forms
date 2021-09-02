@@ -285,16 +285,6 @@ const QuestionResponseForMail: React.FC<props> = ({
     ]
     return (
         <>
-        <link
-        rel="stylesheet"
-        type="text/css"
-        href="http://localhost:3000/api/css/displayForm"
-        />
-        <link
-        rel="stylesheet"
-        type="text/css"
-        href="http://localhost:3000/api/css/main"
-        />
             {(question?.questionType === "page-header" &&
                 (question?.questionText?.length ||
                     question?.description?.length)) ||

@@ -6,12 +6,12 @@ export default () => {
     const questions = useQuestionsList()?.questions
 
     useEffect(() => {
-        if (newQuestionIndex === -1 && questions) {
-            // Scroll to last question
+        if (newQuestionIndex === questions?.length) {
+            // last question id
             document
                 .getElementById(questions[questions.length - 1].qid || "")
                 ?.scrollIntoView()
-        } else if (newQuestionIndex !== -2 && questions) {
+        } else if (questions && newQuestionIndex != -2) {
             document
                 .getElementById(questions[newQuestionIndex].qid || "")
                 ?.scrollIntoView()

@@ -22,7 +22,7 @@ const { google } = require("googleapis")
 
 export async function updateSheet(formId: any) {
     let form: any = await Form.findOne({
-        _id: mongoose.Types.ObjectId(formId),
+        _id: formId,
     }).populate("questions")
     let questions: any
     questions = form.questions
@@ -233,51 +233,51 @@ export async function updateSheet(formId: any) {
     await sheets.spreadsheets.batchUpdate({
         spreadsheetId: newsheetId,
         auth: client,
-        resource: { 
-                "requests": [
-                    {
-                        "repeatCell": {
-                          "range": {
-                            "sheetId": 0,
-                            "startRowIndex": 0,
-                            "endRowIndex": 1
-                          },
-                          "cell": {
-                            "userEnteredFormat": {
-                              "backgroundColor": {
-                                "red": 0.0,
-                                "green": 0.0,
-                                "blue": 0.0
-                              },
-                              "horizontalAlignment" : "CENTER",
-                              "textFormat": {
-                                "foregroundColor": {
-                                  "red": 1.0,
-                                  "green": 1.0,
-                                  "blue": 1.0
+        resource: {
+            requests: [
+                {
+                    repeatCell: {
+                        range: {
+                            sheetId: 0,
+                            startRowIndex: 0,
+                            endRowIndex: 1,
+                        },
+                        cell: {
+                            userEnteredFormat: {
+                                backgroundColor: {
+                                    red: 0.0,
+                                    green: 0.0,
+                                    blue: 0.0,
                                 },
-                                "fontSize": 12,
-                                "bold": true
-                              }
-                            }
-                          },
-                          "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-                        }
-                      },
-                      {
-                        "updateSheetProperties": {
-                          "properties": {
-                            "sheetId": 0,
-                            "gridProperties": {
-                              "frozenRowCount": 1
-                            }
-                          },
-                          "fields": "gridProperties.frozenRowCount"
-                        }
-                      }
-                  
-                  ]
-        }
+                                horizontalAlignment: "CENTER",
+                                textFormat: {
+                                    foregroundColor: {
+                                        red: 1.0,
+                                        green: 1.0,
+                                        blue: 1.0,
+                                    },
+                                    fontSize: 12,
+                                    bold: true,
+                                },
+                            },
+                        },
+                        fields:
+                            "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)",
+                    },
+                },
+                {
+                    updateSheetProperties: {
+                        properties: {
+                            sheetId: 0,
+                            gridProperties: {
+                                frozenRowCount: 1,
+                            },
+                        },
+                        fields: "gridProperties.frozenRowCount",
+                    },
+                },
+            ],
+        },
     })
 
     console.log("Something has been written,check sheet link")

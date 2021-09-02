@@ -31,7 +31,9 @@ export const submitResponse = async (req: Request, res: Response) => {
     const userid = req.session.userId
     let form: any = await Form.findOne({ _id: formId })
     var presentDateTime: Date = new Date()
-    let presentIST = new Date().toLocaleString(undefined, {timeZone: 'Asia/Kolkata'});
+    let presentIST = new Date().toLocaleString(undefined, {
+        timeZone: "Asia/Kolkata",
+    })
     //Checking for closing date time
     if (form.closes !== null && form.closes <= presentDateTime) {
         console.log("Form closed")
@@ -63,7 +65,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                     formId,
                     responses,
                     submitted,
-                    submitTime:presentIST
+                    submitTime: presentIST,
                 })
                 console.log(responses)
                 newresp = await formResponse.save()
@@ -92,7 +94,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                             formId,
                             responses,
                             submitted,
-                            submitTime:presentIST
+                            submitTime: presentIST,
                         },
                     }
                 )
@@ -122,7 +124,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                         formId,
                         responses,
                         submitted,
-                        submitTime:presentIST
+                        submitTime: presentIST,
                     })
                     formResponse.submitted = true
                     newresp = await formResponse.save()
@@ -150,7 +152,7 @@ export const submitResponse = async (req: Request, res: Response) => {
                             formId,
                             responses,
                             submitted: true,
-                            submitTime:presentIST
+                            submitTime: presentIST,
                         })
                         formResponse.submitted = true
                         // formResponse.submitTime = presentDateTime
@@ -232,134 +234,123 @@ export const getFormsByCreator = async (req: Request, res: Response) => {
 
 export const downloadResponse = async (req: Request, res: Response) => {
     let formId = req.params.formId
-    console.log(req.params.formid)
-
-    //resp will store array of responses
-    let resp = await FormResponse.find({
-        formId: formId,
-    }).populate("userid", { password: 0 })
-
-    //Using map to avoid frequent query and to store map of question id and question text which will be shown in .csv
-    let quesidtotext: any = new Map()
     let form
-    if (formId.match(/^[0-9a-fA-F]{24}$/)) {
+    form = await Form.findOne({ linkId: formId }).populate(
+        "questions",
+        "questionText"
+    )
+    if (!form) {
         form = await Form.findOne({ _id: formId }).populate(
             "questions",
             "questionText"
         )
-        if (form) {
-            // console.log("$$Form is " + form)
-            // console.log("$$Response is " + resp)
-            let questions = form.questions
-            for (let i in questions) {
-                quesidtotext[String(questions[i]._id)] =
-                    questions[i].questionText
-                console.log(quesidtotext[questions[i]._id])
+    }
+    if (!form) {
+        return res.status(404).send({ success: false, msg: "No form found" })
+    }
+    //resp will store array of responses
+    let resp = await FormResponse.find({
+        formId: form._id,
+    }).populate("userid", { password: 0 })
+
+    //Using map to avoid frequent query and to store map of question id and question text which will be shown in .csv
+    let quesidtotext: any = new Map()
+    // console.log("$$Form is " + form)
+    // console.log("$$Response is " + resp)
+    let questions = form.questions
+    for (let i in questions) {
+        quesidtotext[String(questions[i]._id)] = questions[i].questionText
+        console.log(quesidtotext[questions[i]._id])
+    }
+    let temp
+    let data = []
+    //here we are extracting answer from array of responses->resp and storing in data which will be used in converting to .csv
+    //For now just shortText and paragraphText type is implemented
+    // console.log("Resp is " + resp)
+    for (let i = 0; i < resp.length; i++) {
+        temp = resp[i].responses
+        let datarow
+        if (!form.anonymous)
+            datarow = {
+                Name: resp[i].username,
+                Email: resp[i].userid.email,
             }
-        } else {
-            res.status(400).send({ success: false, data: "No Form found" })
-        }
-
-        let temp
-        let data = []
-        //here we are extracting answer from array of responses->resp and storing in data which will be used in converting to .csv
-        //For now just shortText and paragraphText type is implemented
-        // console.log("Resp is " + resp)
-        for (let i = 0; i < resp.length; i++) {
-            temp = resp[i].responses
-            let datarow
-            if (!form?.anonymous)
-                datarow = {
-                    Name: resp[i].username,
-                    Email: resp[i].userid.email,
-                }
-            for (let j = 0; j < temp.length; j++) {
-                let str = quesidtotext[temp[j].questionId]
-                if (temp[j].shortText) {
+        for (let j = 0; j < temp.length; j++) {
+            let str = quesidtotext[temp[j].questionId]
+            if (temp[j].shortText) {
+                let test: any = {}
+                test[str] = temp[j].shortText
+                datarow = { ...datarow, ...test }
+            }
+            if (temp[j].paragraphText) {
+                let test: any = {}
+                test[str] = temp[j].paragraphText
+                datarow = { ...datarow, ...test }
+            }
+            if (temp[j].selectedOption) {
+                let test: any = {}
+                test[str] = temp[j].selectedOption
+                datarow = { ...datarow, ...test }
+            }
+            if (temp[j].emailAnswer) {
+                let test: any = {}
+                test[str] = temp[j].emailAnswer
+                datarow = { ...datarow, ...test }
+            }
+            if (temp[j].selectedOptionsGrid) {
+                for (let k = 0; k < temp[j].selectedOptionsGrid.length; k++) {
+                    console.log("k is " + k)
                     let test: any = {}
-                    test[str] = temp[j].shortText
-                    datarow = { ...datarow, ...test }
-                }
-                if (temp[j].paragraphText) {
-                    let test: any = {}
-                    test[str] = temp[j].paragraphText
-                    datarow = { ...datarow, ...test }
-                }
-                if (temp[j].selectedOption) {
-                    let test: any = {}
-                    test[str] = temp[j].selectedOption
-                    datarow = { ...datarow, ...test }
-                }
-                if (temp[j].emailAnswer) {
-                    let test: any = {}
-                    test[str] = temp[j].emailAnswer
-                    datarow = { ...datarow, ...test }
-                }
-                if (temp[j].selectedOptionsGrid) {
-                    for (
-                        let k = 0;
-                        k < temp[j].selectedOptionsGrid.length;
-                        k++
-                    ) {
-                        console.log("k is " + k)
-                        let test: any = {}
-                        let s1: any = str
-                        s1 =
-                            s1 + " [" + temp[j].selectedOptionsGrid[k].row + "]"
-                        if (datarow[s1]) {
-                            test[s1] =
-                                datarow[s1] +
-                                ", " +
-                                temp[j].selectedOptionsGrid[k].col
-                        } else {
-                            test[s1] = temp[j].selectedOptionsGrid[k].col
-                        }
-                        datarow = { ...datarow, ...test }
+                    let s1: any = str
+                    s1 = s1 + " [" + temp[j].selectedOptionsGrid[k].row + "]"
+                    if (datarow[s1]) {
+                        test[s1] =
+                            datarow[s1] +
+                            ", " +
+                            temp[j].selectedOptionsGrid[k].col
+                    } else {
+                        test[s1] = temp[j].selectedOptionsGrid[k].col
                     }
-                }
-
-                if (temp[j].multipleSelected) {
-                    // console.log(temp[j].multipleSelected)
-                    let s: any = ""
-                    for (let k = 0; k < temp[j].multipleSelected.length; k++) {
-                        if (s == "") {
-                            s = temp[j].multipleSelected[k]
-                        } else {
-                            s = s + ", " + temp[j].multipleSelected[k]
-                        }
-                        // console.log(s)
-                    }
-                    let test: any = {}
-                    test[str] = s
                     datarow = { ...datarow, ...test }
                 }
             }
-            data.push(datarow)
-        }
-        console.log("Download ready data")
-        // console.log(data)
 
-        //Converting data to .csv and writting to a file  --- this part is now in frontend
-        if (data) {
-            var ws = fileSystem.createWriteStream(
-                "./src/responsedownload/data.csv"
-            )
-            fastcsv
-                .write(data, { headers: true })
-                .on("finish", function () {
-                    //!!!!!Download .csv file
-                    //Need help
-                    //!!!!!Below res.download()  is not working properly
-                    // res.download('./src/responsedownload/data.csv')
-                })
-                .pipe(ws)
-            return res.send({ success: true, data: data })
-        } else {
-            res.status(400).send({ success: false, data: "No Form found" })
+            if (temp[j].multipleSelected) {
+                // console.log(temp[j].multipleSelected)
+                let s: any = ""
+                for (let k = 0; k < temp[j].multipleSelected.length; k++) {
+                    if (s == "") {
+                        s = temp[j].multipleSelected[k]
+                    } else {
+                        s = s + ", " + temp[j].multipleSelected[k]
+                    }
+                    // console.log(s)
+                }
+                let test: any = {}
+                test[str] = s
+                datarow = { ...datarow, ...test }
+            }
         }
+        data.push(datarow)
+    }
+    console.log("Download ready data")
+    // console.log(data)
+
+    //Converting data to .csv and writting to a file  --- this part is now in frontend
+    if (data) {
+        var ws = fileSystem.createWriteStream("./src/responsedownload/data.csv")
+        fastcsv
+            .write(data, { headers: true })
+            .on("finish", function () {
+                //!!!!!Download .csv file
+                //Need help
+                //!!!!!Below res.download()  is not working properly
+                // res.download('./src/responsedownload/data.csv')
+            })
+            .pipe(ws)
+        return res.send({ success: true, data: data })
     } else {
-        console.log("Invalid form id")
-        return res.status(400).send({ success: false, data: "InValid Form Id" })
+        return res.status(400).send({ success: false, data: "No Form found" })
     }
 }
 

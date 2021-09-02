@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose"
 export interface ResponseDoc extends Document {
     username: string
     userid: any
-    formId: any
+    formId: String
     submitted: boolean
     responses: [
         {
@@ -27,7 +27,7 @@ const response: Schema = new Schema(
     {
         username: { type: String },
         userid: { type: Schema.Types.ObjectId, ref: "user", required: true },
-        formId: { type: Schema.Types.ObjectId, ref: "Form", required: true },
+        formId: { type: String, ref: "Form", required: true },
         submitted: { type: Boolean, default: false },
         responses: [
             {

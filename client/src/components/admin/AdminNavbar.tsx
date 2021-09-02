@@ -30,7 +30,7 @@ const AdminNavbar = ({ questionsPage }: props) => {
         //Get current logged in user
         if (auth?.currentUser === null) auth?.getCurrentUser()
         // Admin level access, fetch all responses for csv data
-        if (formId !== undefined) {
+        if (formId !== undefined && !questionsPage) {
             downloadResponse(formId).then((data) => {
                 if (data) {
                     setColumnsForDownload(data.columns)
@@ -74,7 +74,11 @@ const AdminNavbar = ({ questionsPage }: props) => {
                 ) : null}
 
                 <CopyToClipboard
-                    text={`http://localhost:3000/form/${form?.currentForm?.id}`}
+                    text={`http://localhost:3000/form/${
+                        form?.currentForm?.linkId !== undefined
+                            ? form?.currentForm?.linkId
+                            : form?.currentForm?.id
+                    }`}
                 >
                     <button className="navbar-icon-btn">
                         <CopyIcon style={{ width: "1.2rem" }} />

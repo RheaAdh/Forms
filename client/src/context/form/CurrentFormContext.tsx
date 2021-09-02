@@ -5,6 +5,7 @@ import { updateFormAction } from "./FormActions"
 
 export interface ICurrentForm {
     id: string
+    linkId?: string
     isTemplate?: boolean
     anonymous?: boolean
     date?: Date | null
@@ -32,10 +33,11 @@ export interface IForm {
         React.SetStateAction<boolean | undefined>
     >
     setAnonymity: React.Dispatch<React.SetStateAction<boolean | undefined>>
-    setFormDetails: (id: string, formData: any) => void
+    setFormDetails: (formData: any) => void
     setActive: React.Dispatch<React.SetStateAction<boolean | undefined>>
     setEditors: React.Dispatch<React.SetStateAction<string[] | undefined>>
     setPages: React.Dispatch<React.SetStateAction<number | undefined>>
+    setLinkId: React.Dispatch<React.SetStateAction<string | undefined>>
 }
 
 const CurrentFormContext = React.createContext<IForm | null>(null)
@@ -56,6 +58,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
     const [isActive, setActive] = useState<boolean>()
     const [isTemplate, setIsTemplate] = useState<boolean>()
     const [pages, setPages] = useState<number>()
+    const [linkId, setLinkId] = useState<string | undefined>()
 
     const queryClient = useQueryClient()
 
@@ -63,7 +66,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         updateFormAction(data)
     )
 
-    const setFormDetails = async (id: string, formData?: any) => {
+    const setFormDetails = async (formData?: any) => {
         if (formData === null) {
             // Small hack to prevent a form from getting updated with details from previous context
             setId("")
@@ -82,7 +85,8 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         if (formData.closes) {
             new Date(formData.closes)
         } else setDate(null)
-        setId(id)
+        setLinkId(formData.linkId)
+        setId(formData._id)
     }
     const getAnonymity = async (formId: string) => {
         const res = await fetch(`/api/getanonymity/${formId}`, {
@@ -104,9 +108,6 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         return data
     }
     const updateForm = async () => {
-        if (id === undefined || id.length === 0) {
-            return
-        }
         if (form?.currentForm?.id) {
             const data = {
                 _id: id,
@@ -120,6 +121,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
                 multipleResponses: multipleResponses,
                 isTemplate,
                 pages,
+                linkId,
             }
             updateFormMutation(data).catch((error) => {
                 console.log(error.message)
@@ -140,6 +142,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         editors,
         isTemplate,
         pages,
+        linkId,
     }
 
     const form: IForm = {
@@ -156,6 +159,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         setActive,
         setEditors,
         setPages,
+        setLinkId,
     }
 
     return (

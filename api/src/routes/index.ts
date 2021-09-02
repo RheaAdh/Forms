@@ -21,6 +21,7 @@ import {
     viewAllTempalates,
     getFormForResponse,
     updateeditor,
+    updateLinkId,
 } from "./form"
 import {
     addQuestion,
@@ -72,7 +73,7 @@ router.put("/updatetheme/:themeId", updateTheme)
 // router.put("/updatetheme/:themeId", isValidAdmin, updateTheme)
 
 router.get("/getforms", isValidAdmin, getForms)
-router.put("/updateform", isValidAdmin, updateForm)
+router.put("/updateform/:formId", isValidAdmin, updateForm)
 router.post("/addform", isValidAdmin, addForm)
 router.delete("/deleteform", isValidAdmin, deleteForm)
 router.put("/formclose/:formId", isValidAdmin, closeForm)
@@ -112,6 +113,7 @@ router.get(
 )
 router.get("/download/:formId", isValidAdmin, downloadResponse)
 router.post("/updateeditor", isValidAdmin, updateeditor)
+router.put("/updateLinkId", isValidAdmin, updateLinkId)
 
 router.get("/getadmins", isValidAdmin, getAllAdmins)
 router.get("/makeTemplate/:formId", isValidAdmin, makeTemplate)
@@ -122,14 +124,9 @@ router.get("/viewAllTemplates", isValidAdmin, viewAllTempalates)
 router.get("/getsuperadminforms", isValidSuperAdmin, getSuperAdminForms)
 
 ///////////////////////////USER,ADMIN AND SUPERADMIN///////////////////////
-router.get("/getform/:formId", extractFormid, checkAuthentication, getForm)
+router.get("/getform/:formId", checkAuthentication, getForm)
 router.get("/getanonymity/:formId", isAnonymous)
-router.get(
-    "/getformforresp/:formId",
-    extractFormid,
-    checkAuthentication,
-    getFormForResponse
-)
+router.get("/getformforresp/:formId", checkAuthentication, getFormForResponse)
 
 router.get("/getquestions", checkAuthentication, getQuestions)
 router.get("/getquestion/:qid", checkAuthentication, getQuestion)

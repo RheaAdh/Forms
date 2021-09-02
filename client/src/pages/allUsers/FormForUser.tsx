@@ -88,7 +88,7 @@ export default () => {
             getForm(formId, false)
                 .then((data) => {
                     if (data.success) {
-                        form?.setFormDetails(formId, data.data)
+                        form?.setFormDetails(data.data)
                     } else {
                         setError(data.msg)
                     }

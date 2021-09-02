@@ -1,11 +1,10 @@
 import express, { Request, Response } from "express"
 const Router = express.Router()
-import passport from "passport"
 import { User } from "../models/user"
 import { Form } from "../models/form"
 import { OAuth2Client, TokenPayload } from "google-auth-library"
 import { fid } from "./form"
-import {store} from "../config/mongo"
+import { store } from "../config/mongo"
 
 const client = new OAuth2Client(process.env.CLIENT_ID)
 
@@ -33,6 +32,7 @@ Router.post("/auth/google", async (req: Request, res: Response) => {
     req.session.username = user.username
     req.session.userId = user._id
     req.session.isAuth = true
+    req.session.role = "user"
     console.log(req.session)
     res.send({ name, email })
 })
@@ -64,16 +64,17 @@ export async function getUser(req: any, res: any) {
 
 export async function checkAuthentication(req: any, res: any, next: any) {
     try {
-        let form = await Form.findById(fid)
+        let form = await Form.findOne({ linkId: req.params.formId })
+        if (!form) {
+            form = await Form.findOne({ _id: req.params.formId })
+        }
         if (form) {
             if (form.anonymous) {
                 //no need authentication
                 next()
             } else {
                 //isAuth for admins
-
-                let userSession  = await store.find({"session.userId": req.body.userId}) 
-                let isAuthenticated = userSession.session.isAuth
+                let isAuthenticated = req.session.isAuthenticated
                 if (isAuthenticated || req.session.isAuth) {
                     // console.log("Allowed to access")
                     next()
@@ -86,14 +87,18 @@ export async function checkAuthentication(req: any, res: any, next: any) {
                 }
             }
         }
-    } catch {
+    } catch (e) {
+        console.log(e)
         console.log("Server Error")
         res.status(500).send({ success: false, msg: "Server Error" })
     }
 }
 
 export async function isAnonymous(req: any, res: any) {
-    const form = await Form.findById(req.params.formId)
+    let form = await Form.findOne({ linkId: req.params.formId })
+    if (!form) {
+        form = await Form.findOne({ _id: req.params.formId })
+    }
     if (!form) {
         return res.status(404).send({ success: false, msg: "Form not found" })
     }

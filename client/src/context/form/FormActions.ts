@@ -4,7 +4,8 @@ export const getQuestionsAndResponses = async (
     formId: string | undefined,
     admin: boolean
 ) => {
-    if (formId === undefined) return
+    if (formId === undefined || formId.length === 0)
+        throw new Error("Invalid Form ID")
     const res = await post(`/api/getquestionsbyformid/${formId}`, {
         admin,
     })
@@ -66,7 +67,7 @@ export const getForm = async (id: string, admin: boolean) => {
 }
 
 export const updateFormAction = async (updateData: any) => {
-    const resp = await put("/api/updateform", updateData)
+    const resp = await put(`/api/updateform/${updateData._id}`, updateData)
     const data = await resp.json()
     if (data.success === false || resp.status >= 400) {
         throw new Error(data.msg)

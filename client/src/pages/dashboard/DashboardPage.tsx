@@ -19,6 +19,7 @@ import {
     getTemplatesAction,
 } from "../../context/form/FormActions"
 import ErrorPopup from "../../components/shared/ErrorPopup"
+import { post } from "../../utils/requests"
 
 const DashboardPage: React.FC = () => {
     const auth = useAuth()
@@ -63,6 +64,7 @@ const DashboardPage: React.FC = () => {
                             description: form.description,
                             isActive: form.isActive,
                             isTemplate: form.isTemplate,
+                            linkId: form.linkId,
                             question,
                         }
                     })
@@ -80,6 +82,7 @@ const DashboardPage: React.FC = () => {
                             description: form.description,
                             isActive: form.isActive,
                             isTemplate: form.isTemplate,
+                            linkId: form.linkId,
                             question,
                         }
                     })
@@ -101,6 +104,7 @@ const DashboardPage: React.FC = () => {
                         title: form.title,
                         description: form.description,
                         isTemplate: form.isTemplate,
+                        linkId: form.linkId,
                         question: returnQuestionFromData(form),
                     }))
                 )
@@ -150,33 +154,22 @@ const DashboardPage: React.FC = () => {
         }
     }
 
-    const addForm = (isTemplate: boolean) => {
+    const addForm = async (isTemplate: boolean) => {
         const form = {
             title: "Untitled",
             isTemplate,
         }
         //UPDATE ON BACKEND
-        fetch("/api/addForm", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify(form),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.success) {
-                    console.log("add form");
-                    
-                    history.push(`/form-admin/${data.data._id}`)
-                } else {
-                    //HANDLE ERROR
-                }
-            })
-            .catch((error) => {
-                console.error("Error:", error)
-            })
+        try {
+            const data = await (await post("/api/addForm", form)).json()
+            if (data.success) {
+                history.push(`/form-admin/${data.data._id}`)
+            } else {
+                console.log(data)
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const handleDelete = (id: string, isTemplate: boolean | undefined) => {

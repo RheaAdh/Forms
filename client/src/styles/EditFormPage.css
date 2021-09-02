@@ -61,6 +61,10 @@
     margin: 0;
 }
 
+.edit-form-component > .row3 > input[type="text"] {
+    margin-top: 0;
+}
+
 .form-title-editable {
     font-size: 1.5rem;
     font-weight: 500;

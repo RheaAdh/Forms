@@ -21,11 +21,9 @@ const LoginPage: React.FC = () => {
     }, [])
 
     const handleLogin = async (googleData: any) => {
-        const res = await post(
-            "/api/user/auth/google",
-            { token: googleData.tokenId },
-            false
-        )
+        const res = await post("/api/user/auth/google", {
+            token: googleData.tokenId,
+        })
         const data = await res.json()
         setRedirect(true)
     }

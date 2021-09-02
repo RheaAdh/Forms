@@ -1,10 +1,15 @@
-import mongoose, { Document, Mongoose, Schema, Types } from "mongoose"
+import mongoose, { Schema } from "mongoose"
 import { Response, Request, NextFunction } from "express"
-import * as mongo from "../config/mongo"
 import { Form } from "../models/form"
 import { Question } from "../models/question"
 import FormResponse from "../models/response"
-import { User } from "../models/user"
+import { customAlphabet } from "nanoid"
+
+const alphabet =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+const nanoid = customAlphabet(alphabet, 6)
+
 declare module "express-session" {
     interface Session {
         isAuth: boolean
@@ -40,9 +45,8 @@ export async function getForms(req: Request, res: Response) {
 export async function getForm(req: Request, res: Response) {
     try {
         var form: any
-        form = await Form.findOne({ shortId: req.params.formId })
+        form = await Form.findOne({ linkId: req.params.formId })
         if (!form) {
-            console.log("shortid doesnt exist")
             form = await Form.findOne({ _id: req.params.formId })
         }
         if (form) {
@@ -74,9 +78,8 @@ export async function getFormForResponse(req: Request, res: Response) {
     try {
         console.log("Inside getformresp")
         var form: any
-        form = await Form.findOne({ shortId: req.params.formId })
+        form = await Form.findOne({ linkId: req.params.formId })
         if (!form) {
-            console.log("shortid doesnt exist")
             form = await Form.findOne({ _id: req.params.formId })
         }
         if (form) {
@@ -168,36 +171,26 @@ export async function getSuperAdminForms(req: Request, res: Response) {
 
 export async function addForm(req: any, res: Response) {
     try {
-        console.log("adddddddd")
         let newForm: any
-        let shortId = req.body.shortId
-        var chkform: any
-        //checking if shortid already taken
-        if (shortId) chkform = await Form.findOne({ shortId: shortId })
-        if (chkform) {
-            return res.send({
-                success: true,
-                msg: "Short ID already exists Try another Short ID",
-            })
-        }
         newForm = new Form({
-            shortId: req.body.shortId, //TODO:add in frontend
+            _id: nanoid(),
             title: req.body.title,
             owner: req.session.userId,
-            color_theme: req.body.color_theme,
             description: req.body.description,
             isActive: req.body.isActive,
             isEditable: req.body.isEditable,
-            multipleResponses: req.multipleResponses,
             role: req.session.role,
             isTemplate: req.body.isTemplate,
+            theme: req.body.theme,
+            linkId: null,
         })
         newForm.editors.push(req.session.userId)
         const form = await newForm.save()
         console.log("Form added!")
         return res.json({ success: true, data: form })
     } catch (error) {
-        return res.send(error)
+        console.log(error)
+        return res.send({ sucess: false, data: error })
     }
 }
 
@@ -209,16 +202,6 @@ export async function updateForm(req: Request, res: Response) {
         console.log(req.body)
         console.log(req.body.isTemplate)
         console.log(req.session.role)
-        let shortId = req.body.shortId
-        var chkform: any
-        //checking if shortid already taken
-        if (shortId) chkform = await Form.findOne({ shortId: shortId })
-        if (chkform) {
-            return res.send({
-                success: true,
-                msg: "Short ID already exists Try another Short ID",
-            })
-        }
         if (req.body.isTemplate && req.session.role != "superadmin") {
             console.log("You cant edit Template, try contacting SuperAdmin")
             return res.status(400).send({
@@ -232,7 +215,7 @@ export async function updateForm(req: Request, res: Response) {
         }
 
         updatedForm = await Form.findOneAndUpdate(
-            { _id: req.body._id },
+            { _id: req.params.formId },
             {
                 ...req.body,
                 isActive,
@@ -250,8 +233,8 @@ export async function deleteForm(req: Request, res: Response) {
     console.log("Inside Delete")
     try {
         console.log(req.body._id)
-        let form: any = await Form.find({
-            _id: mongoose.Types.ObjectId(req.body._id),
+        let form: any = await Form.findOne({
+            _id: req.body._id,
         }).populate("owner", {
             password: 0,
         })
@@ -368,11 +351,7 @@ export async function makeTemplate(req: Request, res: Response) {
     try {
         let formId = req.params.formId
         var form: any
-        form = await Form.findOne({ shortId: req.params.formId })
-        if (!form) {
-            console.log("shortid doesnt exist")
-            form = await Form.findOne({ _id: req.params.formId })
-        }
+        form = await Form.findOne({ _id: req.params.formId })
         if (form) {
             if (form.isTemplate) {
                 return res.send({
@@ -384,7 +363,7 @@ export async function makeTemplate(req: Request, res: Response) {
             console.log("Creating Template")
             Form.findById(formId).exec(async function (err, doc) {
                 if (doc) {
-                    doc._id = mongoose.Types.ObjectId()
+                    doc._id = nanoid()
                     doc.isNew = true
                     doc.isTemplate = true
                     doc.title = doc.title + "_template"
@@ -399,7 +378,7 @@ export async function makeTemplate(req: Request, res: Response) {
                             if (document) {
                                 document._id = mongoose.Types.ObjectId()
                                 document.isNew = true
-                                document.formid = doc._id
+                                document.formid = String(doc._id)
                                 newquesid = document._id
                                 doc.questions[i] = newquesid
                                 await document.save()
@@ -426,59 +405,52 @@ export async function useTemplate(req: Request, res: Response) {
     try {
         let formId = req.params.formId
         var form: any
-        form = await Form.findOne({ shortId: req.params.formId })
+        form = await Form.findOne({ _id: req.params.formId })
         if (!form) {
-            console.log("shortid doesnt exist")
             form = await Form.findOne({ _id: req.params.formId })
         }
 
-        if (form) {
-            if (!form.isTemplate) {
-                return res.send({
-                    success: false,
-                    msg:
-                        "Cannot use form as to create a copy, requires template",
-                })
-            }
-
-            Form.findById(formId).exec(async function (err, doc) {
-                if (doc) {
-                    doc._id = mongoose.Types.ObjectId()
-                    doc.isNew = true
-                    doc.isTemplate = false
-                    doc.title = doc.title + "_copy"
-                    doc.owner = req.session.userId
-                    for (let i = 0; i < doc.questions.length; i++) {
-                        let presentqueid = doc.questions[i]
-                        let newquesid: any
-                        Question.findById(presentqueid).exec(async function (
-                            err,
-                            document
-                        ) {
-                            if (document) {
-                                document._id = mongoose.Types.ObjectId()
-                                document.isNew = true
-                                document.formid = doc._id
-                                newquesid = document._id
-                                doc.questions[i] = newquesid
-                                await document.save()
-                            }
-                        })
-                    }
-                    await doc.save()
-                    console.log(doc.questions)
-                    console.log("Form made from template")
-                }
-            })
-
+        if (!form.isTemplate) {
             return res.send({
-                success: true,
-                msg: "Template ready to be used,Form made from template",
+                success: false,
+                msg: "Cannot use form as to create a copy, requires template",
             })
-        } else {
-            console.log("FormID is invalid")
-            return res.send({ success: false, msg: "Form doesn't exists" })
         }
+
+        Form.findById(formId).exec(async function (err, doc) {
+            if (doc) {
+                doc._id = nanoid()
+                doc.isNew = true
+                doc.isTemplate = false
+                doc.title = doc.title + "_copy"
+                doc.owner = req.session.userId
+                for (let i = 0; i < doc.questions.length; i++) {
+                    let presentqueid = doc.questions[i]
+                    let newquesid: any
+                    Question.findById(presentqueid).exec(async function (
+                        err,
+                        document
+                    ) {
+                        if (document) {
+                            document._id = mongoose.Types.ObjectId()
+                            document.isNew = true
+                            document.formid = doc._id
+                            newquesid = document._id
+                            doc.questions[i] = newquesid
+                            await document.save()
+                        }
+                    })
+                }
+                await doc.save()
+                console.log(doc.questions)
+                console.log("Form made from template")
+            }
+        })
+
+        return res.send({
+            success: true,
+            msg: "Template ready to be used,Form made from template",
+        })
     } catch (err) {
         console.log(err)
         return res.send({ success: false, msg: "Server Error" })
@@ -502,42 +474,52 @@ export async function updateeditor(req: Request, res: Response) {
     try {
         console.log("updating editor")
         var form: any
-        form = await Form.findOne({ shortId: req.params.formId }).populate(
+        form = await Form.findOne({ _id: req.params.formId }).populate(
             "editors",
             {
                 password: 0,
             }
         )
-        if (!form) {
-            console.log("shortid doesnt exist")
-            form = await Form.findById(formid).populate("editors", {
-                password: 0,
-            })
-        }
 
-        if (form) {
-            console.log(form)
-            form.editors.splice(0, form.editors.length)
-            form.editors.push(form.owner)
-            for (let i = 0; i < neweditors.length; i++) {
-                console.log("value is " + form.editors.indexOf(neweditors[i]))
-                if (form.editors.indexOf(neweditors[i]) == -1) {
-                    if (String(form.editors[i]) != String(form.owner)) {
-                        console.log(form.owner)
-                        console.log(form.editors[i])
-                        console.log("Pushing")
-                        form.editors.push(neweditors[i])
-                    }
+        console.log(form)
+        form.editors.splice(0, form.editors.length)
+        form.editors.push(form.owner)
+        for (let i = 0; i < neweditors.length; i++) {
+            console.log("value is " + form.editors.indexOf(neweditors[i]))
+            if (form.editors.indexOf(neweditors[i]) == -1) {
+                if (String(form.editors[i]) != String(form.owner)) {
+                    console.log(form.owner)
+                    console.log(form.editors[i])
+                    console.log("Pushing")
+                    form.editors.push(neweditors[i])
                 }
             }
-            await form.save()
-            return res.send({ success: true, msg: "Editor list updated" })
-        } else {
-            console.log("Form does not exists")
-            return res.send({ success: false, msg: "Server Error" })
         }
+        await form.save()
+        return res.send({ success: true, msg: "Editor list updated" })
     } catch (err) {
         console.log(err)
         return res.send({ success: false, msg: "Server Error" })
     }
+}
+
+export async function updateLinkId(req: Request, res: Response) {
+    try {
+        const form = await Form.find({ linkId: req.body.linkId })
+        if (form.length === 0) {
+            await Form.findOneAndUpdate(
+                { _id: req.body._id },
+                { $set: { linkId: req.body.linkId } }
+            )
+            return res.send({ success: true, msg: "Link ID updated" })
+        }
+        if (form[0]._id === req.body._id) {
+            return res.send({ success: true, msg: "No changes made" })
+        }
+        return res.send({ sucess: false, msg: "Link ID already exists" })
+    } catch (error) {
+        console.log(error)
+        res.send({ success: "false", msg: error })
+    }
+    return
 }

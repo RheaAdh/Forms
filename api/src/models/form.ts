@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose"
 
 export interface FormDoc extends Document {
+    _id: string
     title: string
-    color_theme: string
     //array of question ids
     questions: [
         {
@@ -21,20 +21,21 @@ export interface FormDoc extends Document {
     editors: [Schema.Types.ObjectId]
     dontdelete: boolean
     anonymous: boolean
-    theme: any
+    theme: [Schema.Types.ObjectId]
     sheetId: string
-    customLink: String
+    pages: number
 }
 //!FORM SCHEMA EMBEDS QUESTION SCHEMA REFERENCES
 const form: Schema = new Schema(
     {
-        shortId: { type: String, unique: true },//optional
+        _id: { type: String, required: true, length: 6 }, // nanoid of length 6
+        linkId: { type: String, unique: true, sparse: true, min: 5, max: 25 }, //optional, set by user
         title: { type: String, required: true },
-        color_theme: String,
+        theme: [{ type: Schema.Types.ObjectId, ref: "theme" }],
         questions: [{ type: Schema.Types.ObjectId, ref: "question" }],
         owner: { type: Schema.Types.ObjectId, ref: "user" },
         description: { type: String },
-        closes: Date,
+        closes: { type: Date },
         isEditable: { type: Boolean, default: true },
         isActive: { type: Boolean, default: true },
         multipleResponses: { type: Boolean, default: false },
@@ -43,7 +44,6 @@ const form: Schema = new Schema(
         editors: [{ type: Schema.Types.ObjectId, ref: "user" }],
         dontdelete: { type: Boolean, default: false }, //To be used only with default Templates
         anonymous: { type: Boolean, default: false },
-        theme: { type: Schema.Types.ObjectId, ref: "theme" },
         sheetId: { type: String },
         pages: { type: Number, default: 1 },
     },

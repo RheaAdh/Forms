@@ -94,7 +94,6 @@ export default function QuestionsListProvider({
     const [questions, setQuestions] = useState<IQuestion[]>([])
     const [formId, setFormid] = useState<string>()
     const [questionError, setQuestionError] = useState<string | null>(null)
-    let preventUpdate: boolean = false
 
     const queryClient = useQueryClient()
 
@@ -118,49 +117,42 @@ export default function QuestionsListProvider({
         updateQuestionAction({ ...data })
     )
 
+    const dataToQuestion = (q: any): IQuestion => ({
+        formId: q.formid,
+        qid: q._id,
+        questionText: q["questionText"],
+        questionType: q["questionType"],
+        required: q.required,
+        pageNo: q.pageNo,
+        options:
+            q.options !== undefined
+                ? q.options.map((opt: string) => {
+                      return { text: opt, key: keyGen() }
+                  })
+                : [{ text: "", key: keyGen() }],
+        rows:
+            q.rowLabel !== undefined
+                ? q.rowLabel.map((opt: string) => {
+                      return { text: opt, key: keyGen() }
+                  })
+                : [{ text: "", key: keyGen() }],
+        cols:
+            q.colLabel !== undefined
+                ? q.colLabel.map((opt: string) => {
+                      return { text: opt, key: keyGen() }
+                  })
+                : [{ text: "", key: keyGen() }],
+        lowRating: q.lowRating !== undefined ? q.lowRating : 0,
+        highRating: q.highRating !== undefined ? q.highRating : 2,
+        lowRatingLabel: q.lowRatingLabel !== undefined ? q.lowRatingLabel : "",
+        highRatingLabel:
+            q.highRatingLabel !== undefined ? q.highRatingLabel : "",
+        description: q.description,
+    })
+
     const getQuestions = async (formId: string, quesData: any) => {
-        preventUpdate = true
         setFormid(formId)
-        setQuestions(
-            quesData.map((q: any) => {
-                return {
-                    formId: formId,
-                    qid: q._id,
-                    questionText: q["questionText"],
-                    questionType: q["questionType"],
-                    required: q.required,
-                    pageNo: q.pageNo,
-                    options:
-                        q.options !== undefined
-                            ? q.options.map((opt: string) => {
-                                  return { text: opt, key: keyGen() }
-                              })
-                            : [{ text: "", key: keyGen() }],
-                    rows:
-                        q.rowLabel !== undefined
-                            ? q.rowLabel.map((opt: string) => {
-                                  return { text: opt, key: keyGen() }
-                              })
-                            : [{ text: "", key: keyGen() }],
-                    cols:
-                        q.colLabel !== undefined
-                            ? q.colLabel.map((opt: string) => {
-                                  return { text: opt, key: keyGen() }
-                              })
-                            : [{ text: "", key: keyGen() }],
-                    lowRating: q.lowRating !== undefined ? q.lowRating : 0,
-                    highRating: q.highRating !== undefined ? q.highRating : 2,
-                    lowRatingLabel:
-                        q.lowRatingLabel !== undefined ? q.lowRatingLabel : "",
-                    highRatingLabel:
-                        q.highRatingLabel !== undefined
-                            ? q.highRatingLabel
-                            : "",
-                    description: q.description,
-                }
-            })
-        )
-        preventUpdate = false
+        setQuestions(quesData.map((q: any) => dataToQuestion(q)))
     }
     const addQuestion = (
         after: number,
@@ -396,7 +388,7 @@ export default function QuestionsListProvider({
         // during this  breif period where id is set to uuid, if any
         // changes are made to question id, they won't be saved
         // but error is not displayed
-        if (qid?.length !== 24 || preventUpdate) {
+        if (qid?.length !== 24) {
             return
         }
         const question = questions.find((question) => question.qid === qid)

@@ -403,7 +403,7 @@ const Question: React.FC<props> = ({ question, index }) => {
     ]
 
     return (
-        <div className="question-container">
+        <div className="question-container" id={question.qid}>
             <div className="question-component-primary">
                 <div className="question-component-primary-row1">
                     <input
@@ -426,38 +426,47 @@ const Question: React.FC<props> = ({ question, index }) => {
                                 : question?.questionText
                         }
                     />
-                    <div className="select">
-                        <select
-                            onChange={(e) => {
-                                let selectedType: number = parseInt(
-                                    e.target.value
-                                )
-                                setType(selectedType)
-                                questions?.questionActions.updateType(
-                                    question.qid,
-                                    questionTypes[selectedType]
-                                )
-                            }}
-                            value={type}
-                        >
-                            <option value={0}>Short text</option>
-                            <option value={1}>Paragraph</option>
-                            <option value={2}>Multiple choice</option>
-                            <option value={3}>Checkbox</option>
-                            <option value={4}>Dropdown</option>
-                            <option value={5}>Linear scale</option>
-                            <option value={6}>Multiple choice grid</option>
-                            <option value={7}>Checkbox grid</option>
-                            <option value={8}>Email</option>
-                            <option value={9}>Title and Description</option>
-                        </select>
-                        <span className="select-arrow">
-                            <DropdownArrow />
-                        </span>
-                    </div>
+                    {question.questionType !== "page-header" && (
+                        <div className="select">
+                            <select
+                                onChange={(e) => {
+                                    let selectedType: number = parseInt(
+                                        e.target.value
+                                    )
+                                    setType(selectedType)
+                                    questions?.questionActions.updateType(
+                                        question.qid,
+                                        questionTypes[selectedType]
+                                    )
+                                }}
+                                value={type}
+                            >
+                                <option value={0}>Short text</option>
+                                <option value={1}>Paragraph</option>
+                                <option value={2}>Multiple choice</option>
+                                <option value={3}>Checkbox</option>
+                                <option value={4}>Dropdown</option>
+                                <option value={5}>Linear scale</option>
+                                <option value={6}>Multiple choice grid</option>
+                                <option value={7}>Checkbox grid</option>
+                                <option value={8}>Email</option>
+                            </select>
+                            <span className="select-arrow">
+                                <DropdownArrow />
+                            </span>
+                        </div>
+                    )}
                 </div>
-                <div className="question-component-primary-row2">
-                    {types[type]}
+                <div
+                    className={`${
+                        question.questionType === "page-header"
+                            ? ""
+                            : "question-component-primary-row2"
+                    }`}
+                >
+                    {question.questionType === "page-header"
+                        ? types[9]
+                        : types[type]}
                 </div>
                 <div className="question-component-primary-row3">
                     {
@@ -519,7 +528,7 @@ const Question: React.FC<props> = ({ question, index }) => {
                                 question.pageNo,
                                 false
                             )
-                            setNewQuestionIndex(-1)
+                            setNewQuestionIndex(index + 1)
                         }}
                     >
                         <AddQuestionIcon />
@@ -538,6 +547,7 @@ const Question: React.FC<props> = ({ question, index }) => {
                                     return pg + 1
                                 }
                             })
+                            setNewQuestionIndex(-1)
                         }}
                     >
                         <NewPageIcon />

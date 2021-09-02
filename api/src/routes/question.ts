@@ -210,7 +210,10 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
     try {
         let formid: any = req.params.formId
         let admin: boolean = req.body.admin
-        const form = await Form.findById(req.params.formId)
+        let form = await Form.findOne({ linkId: formid })
+        if (!form) {
+            form = await Form.findOne({ _id: formid })
+        }
         if (form === null) {
             return res
                 .status(404)
@@ -228,7 +231,7 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
                 .status(400)
                 .json({ success: false, msg: "Form has closed" })
         }
-        let questions = await Question.find({ formid: formid }).sort({
+        let questions = await Question.find({ formid: form._id }).sort({
             quesIndex: 1,
         })
         // if (admin) {
