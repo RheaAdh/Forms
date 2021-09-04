@@ -168,36 +168,38 @@ export default () => {
                     }
                 })
                 .catch((err) => console.log(err))
-            // fetch all pages in case of admin access, so current page is -1
-            getQuestionsAndResponses(formId, true).then((data) => {
-                if (data.status >= 400) {
-                    return
-                }
-                questions?.questionActions?.getQuestions(formId, data.ques)
-                if (data.prevResponse === null) {
-                    data.prevResponse = {
-                        responses: [],
-                        questions: data.ques,
-                        userid: auth?.currentUser?.userid,
-                        username: auth?.currentUser?.username,
-                    }
-                }
-                // No need to fetch responses in case of admin level access, just setting formId is enough
-                responseList?.responseActions?.setFormId(formId)
-            })
         }
     }, [formId, auth?.currentUser])
 
     useEffect(() => {
-        // Get list of all users and corresponding response IDs who filled current form
-        // This is for /responses/:formId page
-        if (responseList?.formId?.length) {
-            responseList?.responseActions?.getUsers().then((data) => {
-                setCurrentUser(data[0])
-                setLoading(false)
-            })
+        if (form?.currentForm?.id) {
+            getQuestionsAndResponses(form?.currentForm?.id, true).then(
+                (data) => {
+                    if (data.status >= 400) {
+                        return
+                    }
+                    questions?.questionActions?.getQuestions(formId, data.ques)
+                    if (data.prevResponse === null) {
+                        data.prevResponse = {
+                            responses: [],
+                            questions: data.ques,
+                            userid: auth?.currentUser?.userid,
+                            username: auth?.currentUser?.username,
+                        }
+                    }
+                    // No need to fetch responses in case of admin level access, just setting formId is enough
+                }
+            )
+            // Get list of all users and corresponding response IDs who filled current form
+            // This is for /responses/:formId page
+            responseList?.responseActions
+                ?.getUsers(form?.currentForm?.id)
+                .then((data) => {
+                    setCurrentUser(data[0])
+                    setLoading(false)
+                })
         }
-    }, [responseList?.formId])
+    }, [form?.currentForm?.id])
 
     useEffect(() => {
         if (currentUser) {
@@ -223,7 +225,7 @@ export default () => {
         }
     }, [currentUser])
 
-    useDocumentTitle(form?.currentForm?.title || "Forms By IECSE")
+    useDocumentTitle(form?.currentForm?.title || "Forms | IECSE")
 
     if (loading) {
         return <Loading />
@@ -252,7 +254,9 @@ export default () => {
                       currentUser !== null ? (
                         <AnonymousResponses
                             currentUser={currentUser}
-                            setCurrentUser={() => setCurrentUser}
+                            setCurrentUser={(newUser: IUser) =>
+                                setCurrentUser(newUser)
+                            }
                             responseList={responseList}
                         />
                     ) : null}
@@ -261,6 +265,9 @@ export default () => {
                 {!responseLoading &&
                     responseList?.users?.length !== 0 &&
                     questions?.questions?.map((q: IQuestion, idx: number) => {
+                        if (q.questionType === "page-header") {
+                            return
+                        }
                         return (
                             <QuestionResponse
                                 question={q}

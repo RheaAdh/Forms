@@ -290,8 +290,6 @@ export async function writeToNewSheet(req: Request, res: Response) {
     console.log("Initial " + req.params.formId)
     let form: any
     let questions: any
-    if (!formId.match(/^[0-9a-fA-F]{24}$/))
-        return res.status(400).send({ success: false, msg: "Invalid FormId" })
     //Calling updateSheet to update sheet with latest response
     let newSheet: any = await updateSheet(formId)
     console.log("we got newSheet")

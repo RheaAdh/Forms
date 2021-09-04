@@ -36,6 +36,12 @@
     margin: 2em auto;
 }
 
+@supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+    .card-form-component {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+}
+
 .card-form-component {
     font-size: 1.2em;
 }

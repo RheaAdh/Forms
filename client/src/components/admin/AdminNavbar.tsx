@@ -12,6 +12,7 @@ import { ReactComponent as HomeIcon } from "../../images/HomeIcon.svg"
 import { ReactComponent as DownloadIcon } from "../../images/DownloadIcon.svg"
 import { downloadResponse } from "../../context/responses/ResponseActions"
 import CsvDownload from "react-csv-downloader"
+import { get } from "../../utils/requests"
 
 interface props {
     questionsPage: boolean
@@ -31,7 +32,7 @@ const AdminNavbar = ({ questionsPage }: props) => {
         if (auth?.currentUser === null) auth?.getCurrentUser()
         // Admin level access, fetch all responses for csv data
         if (formId !== undefined && !questionsPage) {
-            downloadResponse(formId).then((data) => {
+            downloadResponse(form?.currentForm?.id || "").then((data) => {
                 if (data) {
                     setColumnsForDownload(data.columns)
                     setDataForDownload(data.dataForDownload)
@@ -73,19 +74,55 @@ const AdminNavbar = ({ questionsPage }: props) => {
                     </button>
                 ) : null}
 
-                <CopyToClipboard
-                    text={`http://localhost:3000/form/${
-                        form?.currentForm?.linkId !== undefined
-                            ? form?.currentForm?.linkId
-                            : form?.currentForm?.id
-                    }`}
-                >
-                    <button className="navbar-icon-btn">
-                        <CopyIcon style={{ width: "1.2rem" }} />
-                        <span className="icon-info">Copy Link to Form</span>
-                        <span className="text-info-arrow" />
-                    </button>
-                </CopyToClipboard>
+                {questionsPage === true && (
+                    <CopyToClipboard
+                        text={`http://localhost:3000/form/${
+                            form?.currentForm?.linkId !== undefined
+                                ? form?.currentForm?.linkId
+                                : form?.currentForm?.id
+                        }`}
+                    >
+                        <button className="navbar-icon-btn">
+                            <CopyIcon style={{ width: "1.2rem" }} />
+                            <span className="icon-info">Copy Link to Form</span>
+                            <span className="text-info-arrow" />
+                        </button>
+                    </CopyToClipboard>
+                )}
+                {questionsPage === false &&
+                    form?.currentForm?.sheetId === null && (
+                        <button
+                            className="navbar-icon-btn"
+                            onClick={async () => {
+                                const data = await (
+                                    await get(
+                                        `/api/createnewsheet/${form?.currentForm?.id}`
+                                    )
+                                ).json()
+                                if (data.success) {
+                                    form?.setSheetId(data.data)
+                                }
+                            }}
+                        >
+                            <CopyIcon style={{ width: "1.2rem" }} />
+                            <span className="icon-info">Create Sheet</span>
+                            <span className="text-info-arrow" />
+                        </button>
+                    )}
+                {questionsPage === false &&
+                    form?.currentForm?.sheetId !== null && (
+                        <a
+                            className="navbar-icon-btn"
+                            href={`https://docs.google.com/spreadsheets/d/${form?.currentForm?.sheetId}/edit#gid=0`}
+                            target="_blank"
+                        >
+                            <>
+                                <CopyIcon style={{ width: "1.2rem" }} />
+                                <span className="icon-info">Go To Sheet</span>
+                                <span className="text-info-arrow" />
+                            </>
+                        </a>
+                    )}
                 <button
                     className="navbar-icon-btn"
                     onClick={() => history.push("/")}

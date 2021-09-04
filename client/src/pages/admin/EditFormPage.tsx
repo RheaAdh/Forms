@@ -194,7 +194,7 @@ const EditFormPage: React.FC = () => {
     }, [formId])
 
     useUpdateForm()
-    useDocumentTitle(form?.currentForm?.title || "Forms by IECSE")
+    useDocumentTitle(form?.currentForm?.title || "Forms | IECSE")
 
     if (loading) {
         return <Loading />

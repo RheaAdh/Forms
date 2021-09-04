@@ -6,7 +6,7 @@ export default () => {
     const questions = useQuestionsList()?.questions
 
     useEffect(() => {
-        if (newQuestionIndex === questions?.length) {
+        if (questions && newQuestionIndex >= questions?.length) {
             // last question id
             document
                 .getElementById(questions[questions.length - 1].qid || "")

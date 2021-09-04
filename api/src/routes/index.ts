@@ -135,7 +135,7 @@ router.post(
     checkAuthentication,
     getQuestionsByFormid
 )
-router.post("/submitresponse", checkAuthentication, submitResponse)
+router.post("/submitresponse/:formId", checkAuthentication, submitResponse)
 
 ////////////////////NO-AUTH///////////////////////////////////////////////////
 

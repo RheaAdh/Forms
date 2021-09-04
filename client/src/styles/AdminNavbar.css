@@ -13,6 +13,12 @@
     align-items: center;
 }
 
+@supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+    .navbar {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+}
+
 .navbar-row1 {
     display: flex;
     flex-direction: row-reverse;
@@ -103,7 +109,7 @@
     height: 0rem;
     overflow: hidden;
     transform: translateY(-0.5rem) translateX(-0.1em) rotate(-45deg);
-    -webkit-transform: translateY(-0.5rem) translateX(-0.1em) rotate(-45deg);
+    -webkit-transform: translateY(-0.5rem) translateX(-0.12em) rotate(-45deg);
     background-color: rebeccapurple;
 }
 

@@ -26,7 +26,8 @@ declare module "express-session" {
 
 export const submitResponse = async (req: Request, res: Response) => {
     console.log("POST REQUEST WAS MADE for submit response")
-    let { formId, responses, sendMail, submitted, mailHTML } = req.body
+    let { responses, sendMail, submitted, mailHTML } = req.body
+    let formId = req.params.formId
     const username = req.session.username as string
     const userid = req.session.userId
     let form: any = await Form.findOne({ _id: formId })
@@ -201,6 +202,7 @@ export const submitResponse = async (req: Request, res: Response) => {
 
 export const getResponsesByForm = async (req: Request, res: Response) => {
     let formId = req.params.formId
+
     try {
         let formResponses = await FormResponse.findOne({
             formId: formId,

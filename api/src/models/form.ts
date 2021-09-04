@@ -29,7 +29,7 @@ export interface FormDoc extends Document {
 const form: Schema = new Schema(
     {
         _id: { type: String, required: true, length: 6 }, // nanoid of length 6
-        linkId: { type: String, unique: true, sparse: true, min: 5, max: 25 }, //optional, set by user
+        linkId: { type: String, unique: true, min: 5, max: 25 }, //optional, set by user
         title: { type: String, required: true },
         theme: [{ type: Schema.Types.ObjectId, ref: "theme" }],
         questions: [{ type: Schema.Types.ObjectId, ref: "question" }],
@@ -44,7 +44,7 @@ const form: Schema = new Schema(
         editors: [{ type: Schema.Types.ObjectId, ref: "user" }],
         dontdelete: { type: Boolean, default: false }, //To be used only with default Templates
         anonymous: { type: Boolean, default: false },
-        sheetId: { type: String },
+        sheetId: { type: String, default: null },
         pages: { type: Number, default: 1 },
     },
     {

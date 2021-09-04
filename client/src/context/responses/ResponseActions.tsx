@@ -27,7 +27,7 @@ export const getUsersAction = async (formId: string) => {
     return data.data
 }
 
-export const submitAction = async (body: any) => {
-    const data = await (await post("/api/submitresponse", body)).json()
+export const submitAction = async (body: any, id: string | undefined) => {
+    const data = await (await post(`/api/submitresponse/${id}`, body)).json()
     return data
 }

@@ -13,7 +13,6 @@ export const validateLinkId = async (
     let modifiedId = ""
     if (linkId !== undefined) {
         modifiedId = linkId?.replace(/ /g, "-")
-        console.log(modifiedId)
     }
     if (modifiedId.length < 5 || modifiedId.length > 25) {
         setLinkIdError("Link ID must contain 5 to 25 characters")

@@ -36,25 +36,9 @@
 }
 
 @supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
-    /* .display-form-component {
-        box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
-        border-radius: 1em;
-        z-index: 1;
-        background: inherit;
+    .display-form-component {
+        background-color: rgba(0, 0, 0, 0.2);
     }
-
-    .display-form-component:before {
-        content: "";
-        position: absolute;
-        background: inherit;
-        z-index: -1;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        filter: blur(2px);
-        margin: -1rem;
-    } */
 }
 
 .form-submit-btn {

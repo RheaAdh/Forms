@@ -33,16 +33,16 @@ export interface ResponseActions {
         requiredData: boolean[],
         readOnly: boolean
     ) => void
-    getUsers: () => Promise<IUser[]>
+    getUsers: (formId: string | undefined) => Promise<IUser[]>
     findPreviousUser: (currentUser: IUser) => IUser
     findNextUser: (currentUser: IUser) => IUser
     updateResponse: (qid: string, response: IResponse) => void
-    setFormId: React.Dispatch<React.SetStateAction<string>>
     clearResponse: (questions: any[]) => void
     submit: (
         sendMail: boolean,
         submitted: boolean,
-        mailHTML: string | null
+        mailHTML: string | null,
+        formId: string | undefined
     ) => Promise<any>
 }
 
@@ -52,7 +52,6 @@ interface Props {
 
 export interface IResponseList {
     readOnly: boolean
-    formId: string
     userid: string
     username: string
     submitted: boolean
@@ -69,7 +68,6 @@ export const useResponses = () => useContext(ResponseListContext)
 export default function ResponseListProvider({
     children,
 }: Props): ReactElement {
-    const [formId, setFormId] = useState<string>("")
     const [userid, setUserid] = useState<string>("")
     const [username, setUsername] = useState<string>("")
     const [submitError, setSubmitError] = useState<string | null>(null)
@@ -84,7 +82,6 @@ export default function ResponseListProvider({
         requiredData: boolean[],
         readOnly: boolean
     ) => {
-        setFormId(formId)
         setUserid(prevResponses.userid) // Could be undefined, but not an issue
         setUsername(prevResponses.username) // Could be undefined, but not an issue
         setReadOnly(readOnly)
@@ -98,6 +95,9 @@ export default function ResponseListProvider({
                 questionId: resp.questionId || resp._id,
                 formId: resp.formId || resp.formid,
                 canSubmit: prevResponses?.responses?.length
+                    ? true
+                    : resp.answerType === "dropdown-answer" ||
+                      resp.questionType === "dropdown-answer"
                     ? true
                     : !requiredData[i],
                 canSave: true,
@@ -122,9 +122,9 @@ export default function ResponseListProvider({
         )
     }
 
-    const getUsers = async () => {
+    const getUsers = async (formId: string | undefined) => {
         try {
-            const data = await getUsersAction(formId)
+            const data = await getUsersAction(formId || "")
             setUsers(
                 data.map((user: any) => ({
                     responseid: user.responseid,
@@ -178,7 +178,8 @@ export default function ResponseListProvider({
     const submit = async (
         sendMail: boolean,
         submitted: boolean,
-        mailHTML: string | null = null
+        mailHTML: string | null = null,
+        id: string | undefined
     ) => {
         if (!submitted && responses.some((res) => res.canSave === false)) {
             setSubmitError(
@@ -195,13 +196,12 @@ export default function ResponseListProvider({
         const body = {
             username: username,
             userid: userid,
-            formId: formId,
             responses: responses.filter((resp: any) => JSON.stringify(resp)),
             sendMail,
             submitted,
             mailHTML,
         }
-        const data = await submitAction(body)
+        const data = await submitAction(body, id)
         return data
     }
 
@@ -228,14 +228,12 @@ export default function ResponseListProvider({
         findPreviousUser,
         findNextUser,
         updateResponse,
-        setFormId,
         submit,
         clearResponse,
     }
 
     const responseList: IResponseList = {
         readOnly,
-        formId,
         userid,
         username,
         responses,

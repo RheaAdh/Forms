@@ -88,7 +88,7 @@ svg path {
 input[type="text"] {
     margin-top: var(--marginTop);
     border-bottom: 1px solid var(--fontColor);
-    width: 20vw;
+    width: 35%;
 }
 
 input[type="text"]:active,

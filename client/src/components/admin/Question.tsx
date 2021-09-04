@@ -457,13 +457,7 @@ const Question: React.FC<props> = ({ question, index }) => {
                         </div>
                     )}
                 </div>
-                <div
-                    className={`${
-                        question.questionType === "page-header"
-                            ? ""
-                            : "question-component-primary-row2"
-                    }`}
-                >
+                <div className="question-component-primary-row2">
                     {question.questionType === "page-header"
                         ? types[9]
                         : types[type]}
@@ -547,7 +541,7 @@ const Question: React.FC<props> = ({ question, index }) => {
                                     return pg + 1
                                 }
                             })
-                            setNewQuestionIndex(-1)
+                            setNewQuestionIndex(index + 1)
                         }}
                     >
                         <NewPageIcon />

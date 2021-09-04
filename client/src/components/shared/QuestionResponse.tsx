@@ -134,17 +134,13 @@ const QuestionResponse: React.FC<props> = ({ question, prevResponse }) => {
     }
 
     const handleDropdown = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        var submit = !question.required
         const answer = {
             answerType: "dropdown-answer",
             selectedOption: e.target.value,
             formId: question.formId,
-            canSubmit: submit,
+            canSubmit: true, // true because this function was called
             questionId: question.qid ? question.qid : "",
             canSave: true,
-        }
-        if (question["required"]) {
-            submit = true
         }
         responseList?.responseActions?.updateResponse(
             question?.qid || "",

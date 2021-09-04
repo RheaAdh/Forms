@@ -172,8 +172,9 @@ export async function getSuperAdminForms(req: Request, res: Response) {
 export async function addForm(req: any, res: Response) {
     try {
         let newForm: any
+        const id = nanoid()
         newForm = new Form({
-            _id: nanoid(),
+            _id: id,
             title: req.body.title,
             owner: req.session.userId,
             description: req.body.description,
@@ -182,7 +183,7 @@ export async function addForm(req: any, res: Response) {
             role: req.session.role,
             isTemplate: req.body.isTemplate,
             theme: req.body.theme,
-            linkId: null,
+            linkId: id,
         })
         newForm.editors.push(req.session.userId)
         const form = await newForm.save()

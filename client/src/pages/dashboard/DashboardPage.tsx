@@ -20,6 +20,7 @@ import {
 } from "../../context/form/FormActions"
 import ErrorPopup from "../../components/shared/ErrorPopup"
 import { post } from "../../utils/requests"
+import useDocumentTitle from "../../hooks/useDocumentTitle"
 
 const DashboardPage: React.FC = () => {
     const auth = useAuth()
@@ -44,6 +45,8 @@ const DashboardPage: React.FC = () => {
             })
         }
     }, [])
+
+    useDocumentTitle("Forms | IECSE")
 
     const keyGen = () => {
         return uuidv4()

@@ -38,9 +38,7 @@ const AdminLoginPage: React.FC = () => {
                 setErrorMessage(resp.data)
             }
         } else {
-            console.log("This function runs")
             const resp = await auth?.login(email, password)
-            console.log(resp)
             if (resp.success === true) {
                 history.push("/")
             } else {

@@ -6,6 +6,7 @@ import { updateFormAction } from "./FormActions"
 export interface ICurrentForm {
     id: string
     linkId?: string
+    sheetId: string | null
     isTemplate?: boolean
     anonymous?: boolean
     date?: Date | null
@@ -38,6 +39,7 @@ export interface IForm {
     setEditors: React.Dispatch<React.SetStateAction<string[] | undefined>>
     setPages: React.Dispatch<React.SetStateAction<number | undefined>>
     setLinkId: React.Dispatch<React.SetStateAction<string | undefined>>
+    setSheetId: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 const CurrentFormContext = React.createContext<IForm | null>(null)
@@ -59,6 +61,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
     const [isTemplate, setIsTemplate] = useState<boolean>()
     const [pages, setPages] = useState<number>()
     const [linkId, setLinkId] = useState<string | undefined>()
+    const [sheetId, setSheetId] = useState<string | null>(null)
 
     const queryClient = useQueryClient()
 
@@ -85,6 +88,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         if (formData.closes) {
             new Date(formData.closes)
         } else setDate(null)
+        setSheetId(formData.sheetId)
         setLinkId(formData.linkId)
         setId(formData._id)
     }
@@ -143,6 +147,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         isTemplate,
         pages,
         linkId,
+        sheetId,
     }
 
     const form: IForm = {
@@ -160,6 +165,7 @@ export default function CurrentFormProvider({ children }: Props): ReactElement {
         setEditors,
         setPages,
         setLinkId,
+        setSheetId,
     }
 
     return (

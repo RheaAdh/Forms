@@ -135,7 +135,12 @@ export default () => {
                 />
             )
             responseList?.responseActions
-                ?.submit(sendMail, true, renderToString(element))
+                ?.submit(
+                    sendMail,
+                    true,
+                    renderToString(element),
+                    form?.currentForm?.id
+                )
                 .then((data) => {
                     if (data.success) {
                         setThankYou(true)
@@ -204,30 +209,47 @@ export default () => {
                     //Save button
                 }
 
-                {!form?.currentForm?.anonymous && !responseList?.submitted && (
-                    <button
-                        className="form-submit-btn"
-                        onClick={() =>
-                            responseList?.responseActions?.submit(
-                                false,
-                                false,
-                                null
-                            )
-                        }
-                    >
-                        Save
-                    </button>
-                )}
+                {form?.currentForm?.anonymous === false &&
+                    form?.currentForm?.isTemplate === false &&
+                    responseList?.submitted === false && (
+                        <button
+                            className="form-submit-btn"
+                            onClick={() =>
+                                responseList?.responseActions?.submit(
+                                    false,
+                                    false,
+                                    null,
+                                    form?.currentForm?.id
+                                )
+                            }
+                        >
+                            Save
+                        </button>
+                    )}
                 {
-                    // Submit / next page button
+                    // Next page
                 }
+                {form?.currentForm?.pages &&
+                    currentPageNo < form?.currentForm?.pages && (
+                        <button
+                            className="form-submit-btn"
+                            onClick={handleSubmit}
+                        >
+                            Next
+                        </button>
+                    )}
                 {
-                    <button className="form-submit-btn" onClick={handleSubmit}>
-                        {currentPageNo === form?.currentForm?.pages
-                            ? "Submit"
-                            : "Next"}
-                    </button>
+                    // Submit
                 }
+                {form?.currentForm?.isTemplate === false &&
+                    currentPageNo === form?.currentForm?.pages && (
+                        <button
+                            className="form-submit-btn"
+                            onClick={handleSubmit}
+                        >
+                            Submit
+                        </button>
+                    )}
                 {!form?.currentForm?.anonymous && (
                     <div className="radio-checkbox">
                         <input
