@@ -261,6 +261,8 @@ export const downloadResponse = async (req: Request, res: Response) => {
     // console.log("$$Response is " + resp)
     let questions = form.questions
     for (let i in questions) {
+        // if(questions[i].questionType=="page-header")
+            // continue
         quesidtotext[String(questions[i]._id)] = questions[i].questionText
         console.log(quesidtotext[questions[i]._id])
     }
@@ -279,6 +281,8 @@ export const downloadResponse = async (req: Request, res: Response) => {
             }
         for (let j = 0; j < temp.length; j++) {
             let str = quesidtotext[temp[j].questionId]
+            if(temp[j].answerType == "page-header")
+                continue
             if (temp[j].shortText) {
                 let test: any = {}
                 test[str] = temp[j].shortText

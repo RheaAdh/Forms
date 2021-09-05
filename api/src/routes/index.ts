@@ -114,11 +114,12 @@ router.get(
 router.get("/download/:formId", isValidAdmin, downloadResponse)
 router.post("/updateeditor", isValidAdmin, updateeditor)
 router.put("/updateLinkId", isValidAdmin, updateLinkId)
-
 router.get("/getadmins", isValidAdmin, getAllAdmins)
 router.get("/makeTemplate/:formId", isValidAdmin, makeTemplate)
 router.get("/useTemplate/:formId", isValidAdmin, useTemplate)
 router.get("/viewAllTemplates", isValidAdmin, viewAllTempalates)
+router.get("/createnewsheet/:formId",isValidAdmin, writeToNewSheet)
+
 
 ///////////////////////////SUPERADMIN ONLY////////////////////////////////
 router.get("/getsuperadminforms", isValidSuperAdmin, getSuperAdminForms)
@@ -127,7 +128,6 @@ router.get("/getsuperadminforms", isValidSuperAdmin, getSuperAdminForms)
 router.get("/getform/:formId", checkAuthentication, getForm)
 router.get("/getanonymity/:formId", isAnonymous)
 router.get("/getformforresp/:formId", checkAuthentication, getFormForResponse)
-
 router.get("/getquestions", checkAuthentication, getQuestions)
 router.get("/getquestion/:qid", checkAuthentication, getQuestion)
 router.post(
@@ -145,9 +145,6 @@ router.get("/emailverification/:token", verifyEmail)
 router.get("/response/:respid", getResponsebyRespid)
 // http://localhost:7000/api/emailreverify
 router.get("/emailreverify", resendEmailVerificationLink)
-
-//Writing to sheet
-router.get("/createnewsheet/:formId", writeToNewSheet)
 
 //Sending CSS File for Email
 router.get("/css/main", getCssMain)

@@ -38,7 +38,6 @@ Router.post("/auth/google", async (req: Request, res: Response) => {
 })
 
 export async function userLogout(req: Request, res: Response) {
-    // console.log("Inside logout")
     if (req.user) {
         req.logOut()
         req.session.destroy(function (err: Error) {
@@ -58,7 +57,6 @@ export async function userLogout(req: Request, res: Response) {
 }
 
 export async function getUser(req: any, res: any) {
-    // console.log(req.user)
     return res.send(req.user)
 }
 

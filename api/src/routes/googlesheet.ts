@@ -25,7 +25,7 @@ export async function updateSheet(formId: any) {
         _id: formId,
     }).populate("questions")
     let questions: any
-    questions = form.questions
+    questions = form.questions  
     //Sorting Question based on initial index --- order of fields displayed in forms
     questions.sort(function compare(a: any, b: any) {
         if (a.quesIndex < b.quesIndex) return -1
@@ -118,6 +118,8 @@ export async function updateSheet(formId: any) {
 
     //Filling Up Ques - header
     for (let i in questions) {
+        if(questions[i].questionType=="page-header")
+            continue
         let str = questions[i].questionText
         if (
             questions[i].questionType == "multiplechoicegrid-answer" ||
@@ -142,6 +144,8 @@ export async function updateSheet(formId: any) {
             datarow.push(resp[i].userid.email)
         }
         for (let j = 0; j < temp.length; j++) {
+            if(temp[j].answerType == "page-header")
+                continue
             let str = quesidtotext[temp[j].questionId]
             if (temp[j].shortText) {
                 datarow.push(temp[j].shortText)
@@ -160,9 +164,7 @@ export async function updateSheet(formId: any) {
                 let rowToCol: Map<string, string[]> = new Map()
 
                 for (let k = 0; k < temp[j].selectedOptionsGrid.length; k++) {
-                    console.log("K is " + k)
                     if (rowToCol.has(temp[j].selectedOptionsGrid[k].row)) {
-                        console.log("Inside")
                         let tempArray: any = rowToCol.get(
                             temp[j].selectedOptionsGrid[k].row
                         )
@@ -180,10 +182,7 @@ export async function updateSheet(formId: any) {
                     )
                 }
 
-                console.log("Here")
                 rowToCol.forEach((value, key) => {
-                    console.log("key is " + key)
-                    console.log("value is " + value)
                     let tempArray: any = value
                     let str = ""
                     for (let k = 0; k < tempArray.length; k++) {
@@ -193,7 +192,6 @@ export async function updateSheet(formId: any) {
                             str = str + ", " + tempArray[k]
                         }
                     }
-                    console.log("Required String :" + str)
                     datarowColWise.push(str)
                 })
                 datarow.push(...datarowColWise)
