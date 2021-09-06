@@ -25,6 +25,7 @@ interface ThankYouPageProps {
 
 const ThankYouPage = ({ auth, form }: ThankYouPageProps) => {
     const formId = form?.currentForm?.id
+    const [loggedOutText, setLoggedOutText] = useState<string>("")
 
     return (
         <div className="display-form-page">
@@ -40,15 +41,19 @@ const ThankYouPage = ({ auth, form }: ThankYouPageProps) => {
             ) : (
                 <div>You cannot edit this form</div>
             )}
-            {!form?.currentForm?.anonymous && (
+            {!form?.currentForm?.anonymous && loggedOutText.length === 0 && (
                 <button
                     onClick={() => {
-                        auth?.logout()
-                        window.location.reload()
+                        auth?.logout().then((data) => {
+                            setLoggedOutText("You have been logged out")
+                        })
                     }}
                 >
                     Logout
                 </button>
+            )}
+            {!form?.currentForm?.anonymous && loggedOutText.length !== 0 && (
+                <h3>You have been logged out successfully</h3>
             )}
         </div>
     )

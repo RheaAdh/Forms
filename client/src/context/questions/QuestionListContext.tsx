@@ -186,13 +186,18 @@ export default function QuestionsListProvider({
 
     const deleteQuestion = async (qid: string) => {
         if (!formId) return
+        const index = questions.findIndex((question) => question.qid === qid)
+        let questionType = ""
+        if (index !== -1) {
+            questionType = questions[index].questionType
+        }
         setQuestions((prevQuestions) =>
             prevQuestions.filter((q) => q.qid !== qid)
         )
-        deleteQuestionMutation({ qid, formId }).catch((error) => {
+        deleteQuestionMutation({ qid, formId, questionType }).catch((error) => {
             if (!questionError) setQuestionError(error.message)
-            queryClient.invalidateQueries("questionsAndResponses")
         })
+        queryClient.invalidateQueries("questionsAndResponses")
     }
     const addOptions = (qid: string) => {
         var q = questions.find((question) => question.qid === qid)

@@ -13,15 +13,18 @@ export const addQuestionAction = async (newQuestion: IQuestion) => {
 export interface IDeleteQuestion {
     qid: string
     formId: string
+    questionType: string
 }
 
 export const deleteQuestionAction = async ({
     qid,
     formId,
+    questionType,
 }: IDeleteQuestion) => {
     const resp = await deleteRequest("/api/deletequestion", {
         id: qid,
         formId: formId,
+        questionType,
     })
     const data = await resp.json()
     if (!data.success || resp.status >= 400) {

@@ -417,12 +417,19 @@ export async function updateQuestion(req: Request, res: Response) {
 export async function deleteQuestion(req: Request, res: Response) {
     try {
         let ques = await Question.findById(req.body.id)
+        const questionType = req.body.questionType
         await Question.findByIdAndDelete(req.body.id)
-        await Question.updateMany(
-            { formid: ques?.formid, quesIndex: { $gt: ques?.quesIndex } },
-            { $inc: { quesIndex: -1 } }
-        )
-
+        if (questionType === "page-header") {
+            await Question.updateMany(
+                { formid: ques?.formid, quesIndex: { $gt: ques?.quesIndex } },
+                { $inc: { quesIndex: -1, pageNo: -1 } }
+            )
+        } else {
+            await Question.updateMany(
+                { formid: ques?.formid, quesIndex: { $gt: ques?.quesIndex } },
+                { $inc: { quesIndex: -1 } }
+            )
+        }
         console.log(req.body.id)
 
         await Form.findOneAndUpdate(
