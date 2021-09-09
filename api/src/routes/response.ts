@@ -5,6 +5,7 @@ import { Form } from "../models/form"
 import { resolve } from "path"
 import { read } from "fs"
 import { updateSheet } from "./googlesheet"
+import { mailHTMLResponse } from "./responseMail/template"
 
 // import nodemailer from "nodemailer"
 const nodemailer = require("nodemailer")
@@ -26,7 +27,20 @@ declare module "express-session" {
 
 export const submitResponse = async (req: Request, res: Response) => {
     console.log("POST REQUEST WAS MADE for submit response")
-    let { responses, sendMail, submitted, mailHTML } = req.body
+    let {
+        responses,
+        sendMail,
+        submitted,
+        formFromClient,
+        responseFromClient,
+        questionsFromClient,
+    } = req.body
+    const mailHTML = mailHTMLResponse(
+        formFromClient,
+        questionsFromClient,
+        responseFromClient
+    )
+    console.log(mailHTML)
     let formId = req.params.formId
     const username = req.session.username as string
     const userid = req.session.userId
@@ -262,7 +276,7 @@ export const downloadResponse = async (req: Request, res: Response) => {
     let questions = form.questions
     for (let i in questions) {
         // if(questions[i].questionType=="page-header")
-            // continue
+        // continue
         quesidtotext[String(questions[i]._id)] = questions[i].questionText
         console.log(quesidtotext[questions[i]._id])
     }
@@ -281,8 +295,7 @@ export const downloadResponse = async (req: Request, res: Response) => {
             }
         for (let j = 0; j < temp.length; j++) {
             let str = quesidtotext[temp[j].questionId]
-            if(temp[j].answerType == "page-header")
-                continue
+            if (temp[j].answerType == "page-header") continue
             if (temp[j].shortText) {
                 let test: any = {}
                 test[str] = temp[j].shortText

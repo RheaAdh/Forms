@@ -245,7 +245,7 @@ export async function getQuestionsByFormid(req: Request, res: Response) {
         //}
         let user = await FormResponse.findOne({
             userid: req.session.userId,
-            formId: req.params.formId,
+            formId: form._id,
         })
         if (!user) {
             let data = { prevResponse: null, ques: questions }

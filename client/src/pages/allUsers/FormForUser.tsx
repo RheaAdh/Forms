@@ -45,7 +45,11 @@ const ThankYouPage = ({ auth, form }: ThankYouPageProps) => {
                 <button
                     onClick={() => {
                         auth?.logout().then((data) => {
-                            setLoggedOutText("You have been logged out")
+                            if (data.success)
+                                setLoggedOutText("You have been logged out")
+                            else {
+                                console.log(data)
+                            }
                         })
                     }}
                 >
@@ -143,8 +147,8 @@ export default () => {
                 ?.submit(
                     sendMail,
                     true,
-                    renderToString(element),
-                    form?.currentForm?.id
+                    form?.currentForm || null,
+                    questions?.questions || null
                 )
                 .then((data) => {
                     if (data.success) {
@@ -223,8 +227,8 @@ export default () => {
                                 responseList?.responseActions?.submit(
                                     false,
                                     false,
-                                    null,
-                                    form?.currentForm?.id
+                                    form?.currentForm,
+                                    questions?.questions || null
                                 )
                             }
                         >

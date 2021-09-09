@@ -1,4 +1,6 @@
 import React, { createContext, ReactElement, useContext, useState } from "react"
+import { ICurrentForm } from "../form/CurrentFormContext"
+import { IQuestion } from "../questions/QuestionListContext"
 import { getUsersAction, submitAction } from "./ResponseActions"
 
 export interface gridOptions {
@@ -41,8 +43,8 @@ export interface ResponseActions {
     submit: (
         sendMail: boolean,
         submitted: boolean,
-        mailHTML: string | null,
-        formId: string | undefined
+        formFromClient: ICurrentForm | null,
+        questionsFromClient: IQuestion[] | null
     ) => Promise<any>
 }
 
@@ -178,8 +180,8 @@ export default function ResponseListProvider({
     const submit = async (
         sendMail: boolean,
         submitted: boolean,
-        mailHTML: string | null = null,
-        id: string | undefined
+        formFromClient: ICurrentForm | null,
+        questionsFromClient: IQuestion[] | null
     ) => {
         if (!submitted && responses.some((res) => res.canSave === false)) {
             setSubmitError(
@@ -199,9 +201,11 @@ export default function ResponseListProvider({
             responses: responses.filter((resp: any) => JSON.stringify(resp)),
             sendMail,
             submitted,
-            mailHTML,
+            responseFromClient: responses,
+            questionsFromClient,
+            formFromClient,
         }
-        const data = await submitAction(body, id)
+        const data = await submitAction(body, formFromClient?.id)
         return data
     }
 

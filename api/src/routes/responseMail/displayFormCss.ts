@@ -1,5 +1,6 @@
+export const displayForm = `
 .dashboard-page {
-    background: var(--backgroundImage) no-repeat;
+    background: url("http://localhost:3000/logo.png") no-repeat;
     background-position: right top;
     background-size: 40rem 44rem;
     background-color: var(--backgroundColor);
@@ -87,3 +88,4 @@
     overflow: visible;
     height: 1.5rem;
 }
+`
