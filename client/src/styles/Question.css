@@ -1,0 +1,201 @@
+.question-container {
+    width: 100%;
+    display: flex;
+    left: 0;
+}
+
+.question-component-primary {
+    padding: 1em;
+    width: 80%;
+    margin: 2em 1.5em 2em 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background: rgba(190, 190, 190, 0.1);
+    backdrop-filter: saturate(180%) blur(25px);
+    border-radius: 1em;
+}
+@supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+    .question-component-primary {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+}
+
+.question-component-primary-row1 {
+    position: relative;
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.question-component-primary-row1 > .question-text-editable {
+    border: none !important;
+    padding: 1em;
+    background-color: var(--secondaryBackground);
+    position: relative;
+    width: 50% !important;
+}
+
+.question-component-primary-row1 > .select {
+    width: 30% !important;
+}
+
+.question-component-primary-row2 {
+    width: 90%;
+    margin-top: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+}
+
+.admin-question-container {
+    padding-top: 1em;
+    width: 100%;
+}
+
+.admin-question-container > p {
+    position: relative;
+    left: 0;
+}
+
+.admin-question-container > textarea {
+    margin-bottom: 1.5em;
+}
+
+.grid-container {
+    width: 100%;
+    display: flex;
+    margin-top: 2em;
+    justify-content: space-between;
+}
+
+.grid-container > div {
+    flex-basis: 50%;
+}
+
+.grid-container button {
+    margin: 1em 0;
+}
+
+.option-container {
+    display: flex;
+}
+
+.admin-question-container .add-option-btn {
+    border-bottom: 1px solid var(--fontColor);
+    margin: 1em 0;
+    text-align: left;
+    width: 35%;
+}
+
+.admin-question-container > input[type="text"]:last-child {
+    margin-bottom: 1em;
+}
+
+.delete-option-btn {
+    width: 0.8rem;
+    margin-left: 0.5rem;
+}
+.linear-scale-flexbox {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 2em;
+}
+
+.linear-scale-flexbox-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    flex-basis: 50%;
+}
+.linear-scale-flexbox-item > .select {
+    min-width: 35%;
+    max-width: 35%;
+}
+
+.linear-scale-flexbox-item > input[type="text"] {
+    width: 75%;
+}
+
+.question-component-primary-row3 {
+    border-top: 1px solid var(--fontColor);
+    width: 95%;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.required-checkbox {
+    border-left: 1px solid var(--fontColor);
+    margin-top: 0.8em !important;
+    padding: 0.5em 0.5em;
+    position: relative;
+}
+
+.required-checkbox .styled-checkbox {
+    border: 1px solid var(--fontColor);
+    transform: translateX(0.5em);
+    pointer-events: none;
+}
+
+.required-checkbox input[type="checkbox"] {
+    right: 0;
+}
+
+.required-checkbox label {
+    margin-left: 0;
+    margin-right: 1em;
+}
+
+.required-checkbox .checkbox-tick {
+    right: 0;
+    transform: rotate(-45deg) translateY(-0.1em);
+}
+
+.question-component-primary-row3 button {
+    margin: 1.2em 2em 0 0;
+}
+
+.question-component-primary-row3 button .icon-info {
+    z-index: 2;
+    position: absolute;
+    width: max-content;
+    display: block;
+    font-size: 0.9rem;
+    height: 0;
+    padding: 0;
+    background-color: rebeccapurple;
+    overflow: hidden;
+    transition: 250ms;
+    -webkit-transition: 250ms;
+    -moz-transition: 250ms;
+    transform: translateX(-0.45em) translateY(0.1em);
+}
+
+.question-component-primary-row3 button:hover .icon-info {
+    padding: 0.5em;
+    overflow: visible;
+    height: auto;
+    box-shadow: 4px 5px 5px -2px black;
+}
+
+.question-component-primary-row3 button .text-info-arrow {
+    z-index: 1;
+    position: absolute;
+    display: block;
+    width: 1.5rem;
+    height: 0rem;
+    overflow: hidden;
+    transform: translateY(-0.5rem) translateX(-0.1em) rotate(-45deg);
+    -webkit-transform: translateY(-0.5rem) translateX(-0.1em) rotate(-45deg);
+    background-color: rebeccapurple;
+}
+
+.question-component-primary-row3 button:hover .text-info-arrow {
+    overflow: visible;
+    height: 1.5rem;
+}

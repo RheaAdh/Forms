@@ -1,0 +1,55 @@
+Frontend
+there is some bug in google login button for user response 
+show message like requires editor access, form is closed, registration closed,verificaton email sent/verified etc whereever required
+form input character limit, error color change
+date picker needs styling
+edit form button functionality
+add section
+open trashcan transition on delete
+prevent first update in question list context
+background blur
+Complete Email verification frontend, make a fetch request when email sent is clicked to verify and after verificaton redirect to login 
+file upload
+form-admin page - redirect to responses or just change state?
+dashboard search does not work
+if delete form / template not allowed for an admin, don't keep delete button
+painful question (unique key) instant update issue
+
+BACKEND
+sort response based on time ---> done i guess
+timesramp for responses
+
+single response / editabe / anonymous backend implementation (first check anonymous if false, check editable or not) , not able to fetch form or questions 
+for anonymous form  ----> channged checkAuth middleware as implemented earlier seems working and  For where ever anonymous mark multipleresponse true and editable false  
+
+---NEED DETAILS(SAVED FOR LAST)---
+    s3 bucket(IMP)
+    file upload
+
+
+
+DESIGN
+Domain theme
+Form error
+Not Logged in
+Session expired (if possible)
+No access
+404 (all error page with illustration or animation)
+Toggler For form open close
+slider
+substitute for blur (Firefox error)
+permission list 
+edit, multiple, single resp only
+anonymous option
+Form in card view
+admin/superadmin dashboard
+Login page
+registration page
+OAuth page
+Forget password page 
+ 
+
+
+
+
+

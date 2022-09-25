@@ -1,0 +1,59 @@
+.form-card {
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 0.5em;
+    position: relative;
+    height: auto;
+    width: 20vw;
+    overflow: hidden;
+    margin: 2rem 0;
+}
+
+.card-display-form {
+    background: var(--backgroundImage) no-repeat;
+    background-position: right top;
+    background-size: 20em 22em;
+    background-color: var(--backgroundColor);
+    position: relative;
+    overflow: hidden;
+    height: 10rem;
+    width: 20vw;
+    font-size: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+}
+
+.card-form-component {
+    position: absolute;
+    z-index: 2;
+    font-size: inherit;
+    position: relative;
+    background: rgba(190, 190, 190, 0.1);
+    backdrop-filter: saturate(180%) blur(25px);
+    border-radius: 1em;
+    width: 80%;
+    padding: 1em 1em 2em 1.5em;
+    margin: 2em auto;
+}
+
+@supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+    .card-form-component {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+}
+
+.card-form-component {
+    font-size: 1.2em;
+}
+
+.card-form-component h2 {
+    font-size: 2em;
+}
+
+.card-display-form > .display-form-component {
+    margin: 0 auto !important;
+}
+
+.card-info {
+    padding: 0.5em 1em;
+}

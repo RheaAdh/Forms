@@ -1,0 +1,15 @@
+version: "2"
+services: 
+    client: 
+        build: ./client
+        container_name: client
+        ports:
+            - 80:80
+    api:
+        build: ./api
+        container_name: api
+    db:
+        image: mongo
+        container_name: db
+        volumes:
+            - /var/lib/forms:/data/db

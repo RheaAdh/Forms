@@ -1,0 +1,114 @@
+.edit-form-page {
+    background: var(--backgroundImage) no-repeat;
+    background-position: right top;
+    background-size: 40rem 44rem;
+    background-color: var(--backgroundColor);
+    z-index: -1;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+}
+
+.edit-form-container {
+    overflow-y: auto;
+    width: 85vw;
+    height: calc(100vh - var(--adminNavbarHeight));
+    position: relative;
+    left: 15vw;
+    z-index: 3;
+    scroll-behavior: smooth;
+}
+
+.edit-form-component {
+    position: relative;
+    background: rgba(190, 190, 190, 0.1);
+    backdrop-filter: saturate(180%) blur(25px);
+    border-radius: 1em;
+    width: 80%;
+    padding: 1em 2em;
+    margin: 2em 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+    .edit-form-component {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+}
+
+.edit-form-component > .row1 {
+    position: relative;
+    height: 1.5rem;
+}
+
+.edit-form-component > .row1 .switch-slider {
+    position: absolute;
+    right: 10%;
+}
+
+.edit-form-component > .row1 .switch-btn {
+    position: absolute;
+}
+
+.edit-form-component > .row2 {
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-form-component > .row2 input[type="text"] {
+    margin: 0;
+}
+
+.edit-form-component > .row3 > textarea {
+    margin: 0;
+}
+
+.edit-form-component > .row3 > input[type="text"] {
+    margin-top: 0;
+}
+
+.form-title-editable {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.switch-btn .icon-info {
+    z-index: 5;
+    position: absolute;
+    width: max-content;
+    display: block;
+    font-size: 0.9rem;
+    height: 0;
+    background-color: rebeccapurple;
+    overflow: hidden;
+    transition: 250ms;
+    -webkit-transition: 250ms;
+    -moz-transition: 250ms;
+    transform: translateX(-0.4em) translateY(1.5em);
+}
+
+.switch-btn:hover .icon-info {
+    padding: 0.5em 1em;
+    overflow: visible;
+    height: auto;
+}
+
+.switch-btn .text-info-arrow {
+    z-index: 1;
+    position: absolute;
+    display: block;
+    width: 1.5rem;
+    height: 0rem;
+    overflow: hidden;
+    transform: translateY(0.9rem) translateX(-0.1em) rotate(-45deg);
+    -webkit-transform: translateY(0.9rem) translateX(-0.1em) rotate(-45deg);
+    background-color: rebeccapurple;
+}
+.switch-btn:hover .text-info-arrow {
+    overflow: visible;
+    height: 1.5rem;
+}
