@@ -105,4 +105,5 @@ const timeAnswerSchema: Schema = new Schema({
     timeHours: { type: Number, min: 1, max: 23 }, // Time is in 24 hrs Clock format
     timeMinutes: { type: Number, min: 0, max: 59 },
 })
+
 export const timeAnswer = Answer.discriminator("timeanswer", timeAnswerSchema)

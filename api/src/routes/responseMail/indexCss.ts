@@ -7,7 +7,7 @@ body {
 }
 
 :root {
-    --backgroundImage: url("/logo.png");
+    // --backgroundImage: url("/logo.png");
     --backgroundColor: #252525;
     --fontColor: #fff;
     --borderBottom: #02b7db;

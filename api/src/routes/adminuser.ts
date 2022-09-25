@@ -104,11 +104,12 @@ export async function adminRegister(req: Request, res: Response) {
 }
 
 export async function adminLogin(req: Request, res: Response) {
-    // console.log(" adminLogin POST REQUEST WAS MADE")
+    console.log(" adminLogin POST REQUEST WAS MADE")
     const { email, password } = req.body
     let user: any
     try {
         user = await User.findOne({ email })
+        console.log(user)
     } catch (error) {
         // console.error("error")
         return res.status(500).send({ success: false, msg: "Server Error" })
